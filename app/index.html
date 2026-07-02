@@ -7,11 +7,110 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=Russo+One&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;500;600;800&family=Russo+One&display=swap"
       rel="stylesheet"
     />
+    <style>
+      /* Boot loader — inline so it paints before any JS or CSS module arrives.
+         Removed by main.tsx once React mounts + WebGL leaf chunk resolves. */
+      html, body { margin: 0; }
+      #mm-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 28px;
+        background: #161020;
+        color: #F4F0FB;
+        font-family: 'Russo One', 'Manrope', sans-serif;
+        transition: opacity .5s ease;
+      }
+      #mm-loader.mm-loader--out { opacity: 0; pointer-events: none; }
+      .mm-loader__glow {
+        position: absolute;
+        width: 480px;
+        height: 480px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(139,92,246,0.55), rgba(139,92,246,0) 65%);
+        filter: blur(4px);
+        animation: mm-loader-breathe 3.4s ease-in-out infinite;
+        pointer-events: none;
+      }
+      .mm-loader__mark {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        z-index: 1;
+      }
+      .mm-loader__mark svg {
+        width: 48px;
+        height: 48px;
+        display: block;
+        animation: mm-loader-sway 3.4s ease-in-out infinite;
+        transform-origin: 50% 60%;
+      }
+      .mm-loader__mark span {
+        font-size: 32px;
+        letter-spacing: 0.06em;
+      }
+      .mm-loader__caption {
+        position: relative;
+        z-index: 1;
+        font-family: 'Manrope', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: #A78BFA;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .mm-loader__caption .mm-loader__dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #A78BFA;
+        opacity: 0.35;
+        animation: mm-loader-dot 1.2s ease-in-out infinite;
+      }
+      .mm-loader__caption .mm-loader__dot:nth-child(2) { animation-delay: 0.15s; }
+      .mm-loader__caption .mm-loader__dot:nth-child(3) { animation-delay: 0.3s; }
+      @keyframes mm-loader-sway {
+        0%, 100% { transform: rotate(-8deg) scale(1); }
+        50%      { transform: rotate(8deg) scale(1.06); }
+      }
+      @keyframes mm-loader-breathe {
+        0%, 100% { transform: scale(0.9); opacity: 0.55; }
+        50%      { transform: scale(1.08); opacity: 0.85; }
+      }
+      @keyframes mm-loader-dot {
+        0%, 100% { opacity: 0.25; transform: translateY(0); }
+        50%      { opacity: 1;    transform: translateY(-3px); }
+      }
+    </style>
   </head>
   <body>
+    <div id="mm-loader" aria-hidden="true">
+      <div class="mm-loader__glow"></div>
+      <div class="mm-loader__mark">
+        <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-label="Maple">
+          <path d="M 37.80 14.47 C 38.73 17.75, 36.04 22.40, 33.85 25.78 C 31.66 29.15, 28.32 33.93, 24.68 34.72 C 21.03 35.51, 15.68 32.54, 11.96 30.50 C 8.25 28.46, 3.41 25.74, 2.37 22.49 C 1.32 19.24, 3.56 14.41, 5.70 10.99 C 7.85 7.57, 11.47 2.79, 15.24 1.98 C 19.00 1.17, 24.54 4.02, 28.30 6.10 C 32.06 8.18, 36.88 11.19, 37.80 14.47 Z" fill="#8B5CF6" />
+          <path d="M 8.5 28.5 C 9.50 26.08, 12.42 15.17, 14.50 14.00 C 16.58 12.83, 18.33 22.42, 21.00 21.50 C 23.67 20.58, 28.92 10.67, 30.50 8.50" fill="none" stroke="#161020" stroke-width="4.8" stroke-linejoin="round" stroke-linecap="round" />
+        </svg>
+        <span>МЭПЛ</span>
+      </div>
+      <div class="mm-loader__caption">
+        Растим проекты
+        <span class="mm-loader__dot"></span>
+        <span class="mm-loader__dot"></span>
+        <span class="mm-loader__dot"></span>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

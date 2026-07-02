@@ -1,10 +1,28 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { DISPLAY, marqueeText, whyCards, roles, team, type Member } from './data';
-import MapleLeaf from './components/MapleLeaf';
+import {
+  alpha,
+  ink100,
+  ink400,
+  ink500,
+  ink600,
+  ink700,
+  ink850,
+  ink900,
+  paper,
+  violet400,
+  violet50,
+  violet500,
+} from './tokens';
+// three.js is the heaviest dependency (~600 KB min); split into its own chunk
+// so hero text/kicker/CTA paint immediately and the WebGL leaf hydrates async.
+const MapleLeaf = lazy(() => import('./components/MapleLeaf'));
+// Modals only render after user interaction — no reason to bundle them into
+// the initial payload.
+const CVModal = lazy(() => import('./components/CVModal'));
+const LeadModal = lazy(() => import('./components/LeadModal'));
 import SystemAssembly from './components/SystemAssembly';
 import ProcessPuzzle from './components/ProcessPuzzle';
-import CVModal from './components/CVModal';
-import LeadModal from './components/LeadModal';
 
 const heading: React.CSSProperties = {
   fontFamily: DISPLAY,
@@ -28,7 +46,7 @@ const col = (padding: string, extra: React.CSSProperties = {}): React.CSSPropert
 });
 
 const navTgIcon = (
-  <svg width="19" height="19" viewBox="0 0 24 24" fill="#fff">
+  <svg width="19" height="19" viewBox="0 0 24 24" fill={paper}>
     <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z" />
   </svg>
 );
@@ -43,20 +61,20 @@ export default function App() {
   };
 
   return (
-    <div style={{ background: '#FFFFFF', color: '#181226', minWidth: PAGE_MAX }}>
+    <div style={{ background: paper, color: ink850, overflowX: 'hidden' }}>
       {/* nav */}
-      <div style={{ background: '#161020', color: '#F4F0FB' }}>
-        <div style={col('26px 56px', { display: 'flex', alignItems: 'center', justifyContent: 'space-between' })}>
+      <div style={{ background: ink900, color: ink100 }}>
+        <div style={col('26px clamp(20px,4vw,56px)', { display: 'flex', alignItems: 'center', justifyContent: 'space-between' })}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
             <svg viewBox="0 0 40 40" width="30" height="30" style={{ display: 'block' }} aria-label="Maple">
               <path
                 d="M 37.80 14.47 C 38.73 17.75, 36.04 22.40, 33.85 25.78 C 31.66 29.15, 28.32 33.93, 24.68 34.72 C 21.03 35.51, 15.68 32.54, 11.96 30.50 C 8.25 28.46, 3.41 25.74, 2.37 22.49 C 1.32 19.24, 3.56 14.41, 5.70 10.99 C 7.85 7.57, 11.47 2.79, 15.24 1.98 C 19.00 1.17, 24.54 4.02, 28.30 6.10 C 32.06 8.18, 36.88 11.19, 37.80 14.47 Z"
-                fill="#8B5CF6"
+                fill={violet500}
               />
               <path
                 d="M 8.5 28.5 C 9.50 26.08, 12.42 15.17, 14.50 14.00 C 16.58 12.83, 18.33 22.42, 21.00 21.50 C 23.67 20.58, 28.92 10.67, 30.50 8.50"
                 fill="none"
-                stroke="#161020"
+                stroke={ink900}
                 strokeWidth="4.8"
                 strokeLinejoin="round"
                 strokeLinecap="round"
@@ -66,14 +84,14 @@ export default function App() {
               МЭПЛ
             </span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 34, fontSize: 14, fontWeight: 600 }}>
-            <a href="#services" style={{ color: '#CFC6E2', textDecoration: 'none' }}>
+          <div className="mm-nav-links">
+            <a className="mm-nav-anchor" href="#services" style={{ color: ink400, textDecoration: 'none' }}>
               Услуги
             </a>
-            <a href="#cases" style={{ color: '#CFC6E2', textDecoration: 'none' }}>
+            <a className="mm-nav-anchor" href="#cases" style={{ color: ink400, textDecoration: 'none' }}>
               Кейсы
             </a>
-            <a href="#team" style={{ color: '#CFC6E2', textDecoration: 'none' }}>
+            <a className="mm-nav-anchor" href="#team" style={{ color: ink400, textDecoration: 'none' }}>
               Команда
             </a>
             <a
@@ -81,8 +99,8 @@ export default function App() {
               onClick={openLead}
               style={{
                 textDecoration: 'none',
-                color: '#161020',
-                background: '#A78BFA',
+                color: ink900,
+                background: violet400,
                 padding: '11px 20px',
                 borderRadius: 8,
                 fontWeight: 800,
@@ -96,7 +114,7 @@ export default function App() {
       </div>
 
       {/* hero */}
-      <div style={{ background: '#161020', color: '#F4F0FB', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: ink900, color: ink100, position: 'relative', overflow: 'hidden' }}>
         {/* full-bleed corner glow (relative to the band, so it hugs the viewport corner) */}
         <div
           style={{
@@ -106,36 +124,29 @@ export default function App() {
             width: 520,
             height: 520,
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(139,92,246,0.55), rgba(139,92,246,0) 70%)',
+            background: `radial-gradient(circle, ${alpha('violet500', 0.55)}, ${alpha('violet500', 0)} 70%)`,
             pointerEvents: 'none',
           }}
         />
-        <div style={col('78px 56px 70px', { position: 'relative' })}>
-          {/* leaf sits at the right edge of the content column */}
-          <div
-            style={{
-              position: 'absolute',
-              right: 96,
-              top: '42%',
-              width: 560,
-              height: 560,
-              pointerEvents: 'none',
-              zIndex: 1,
-              animation: 'mm-leaf-float 7s ease-in-out infinite',
-            }}
-          >
-            <MapleLeaf />
+        <div style={col('clamp(48px,7vw,78px) clamp(20px,4vw,56px) clamp(48px,6vw,70px)', { position: 'relative' })}>
+          {/* leaf sits at the right edge of the content column — .mm-hero-leaf
+              handles the mobile/tablet reflow (size, position, animation). */}
+          <div className="mm-hero-leaf">
+            <Suspense fallback={null}>
+              <MapleLeaf />
+            </Suspense>
           </div>
           <div style={{ position: 'relative', zIndex: 2 }}>
             <span
+              className="mm-hero-kicker"
               style={{
                 display: 'inline-block',
                 fontSize: 13,
                 fontWeight: 400,
                 letterSpacing: '0.14em',
                 textTransform: 'uppercase',
-                color: '#A78BFA',
-                border: '1px solid rgba(167,139,250,1.0)',
+                color: violet400,
+                border: `1px solid ${violet400}`,
                 padding: '8px 16px',
                 borderRadius: 999,
               }}
@@ -143,35 +154,24 @@ export default function App() {
               Диджитал-агентство полного цикла
             </span>
             <h1
+              className="mm-hero-title"
               style={{
                 ...heading,
-                fontSize: 108,
-                lineHeight: 0.92,
-                letterSpacing: '0.06em',
-                margin: '34px 0 0',
+                textTransform: 'uppercase',
               }}
             >
               Растим
               <br />
               проекты,
               <br />
-              <span style={{ color: 'rgb(167, 139, 250)' }}>А&nbsp;НЕ ОТЧЕТЫ</span>
+              <span style={{ color: violet400 }}>А&nbsp;НЕ ОТЧЕТЫ</span>
             </h1>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'flex-end',
-                justifyContent: 'space-between',
-                gap: 40,
-                marginTop: 40,
-                flexWrap: 'wrap',
-              }}
-            >
+            <div className="mm-hero-copy-row">
               <p
                 style={{
-                  fontSize: 22,
+                  fontSize: 'clamp(17px, 2vw, 22px)',
                   lineHeight: 1.5,
-                  color: '#CFC6E2',
+                  color: ink400,
                   maxWidth: 540,
                   margin: 0,
                   fontWeight: 500,
@@ -185,13 +185,14 @@ export default function App() {
                   onClick={openLead}
                   style={{
                     textDecoration: 'none',
-                    background: '#8B5CF6',
-                    color: '#fff',
+                    background: violet500,
+                    color: paper,
                     fontWeight: 800,
-                    fontSize: 17,
-                    padding: '18px 34px',
+                    fontSize: 'clamp(15px, 4.5vw, 17px)',
+                    padding: 'clamp(14px, 4vw, 18px) clamp(20px, 6vw, 34px)',
                     borderRadius: 10,
                     cursor: 'pointer',
+                    whiteSpace: 'nowrap',
                   }}
                 >
                   Обсудить проект →
@@ -200,10 +201,10 @@ export default function App() {
                   href="#cases"
                   style={{
                     textDecoration: 'none',
-                    color: '#F4F0FB',
+                    color: ink100,
                     fontWeight: 200,
                     fontSize: 16,
-                    borderBottom: '2px solid rgba(167,139,250,0.6)',
+                    borderBottom: `2px solid ${alpha('violet400', 0.6)}`,
                     paddingBottom: 3,
                   }}
                 >
@@ -216,7 +217,7 @@ export default function App() {
       </div>
 
       {/* marquee (full-bleed) */}
-      <div style={{ background: '#8B5CF6', color: '#fff', padding: '16px 0', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+      <div style={{ background: violet500, color: paper, padding: '16px 0', overflow: 'hidden', whiteSpace: 'nowrap' }}>
         <div
           style={{
             display: 'flex',
@@ -246,25 +247,25 @@ export default function App() {
       </div>
 
       {/* why */}
-      <div style={{ background: '#FFFFFF' }}>
-        <div style={col('84px 56px')}>
-          <h2 style={{ ...heading, fontSize: 48, lineHeight: 1.0, margin: '0 0 14px' }}>
+      <div style={{ background: paper }}>
+        <div style={col('84px clamp(20px,4vw,56px)')}>
+          <h2 style={{ ...heading, fontSize: 'clamp(32px, 5vw, 48px)', lineHeight: 1.0, margin: '0 0 14px' }}>
             Почему с нами
             <br />
             нормально?
           </h2>
-          <p style={{ fontSize: 19, lineHeight: 1.55, color: '#56505F', maxWidth: 560, margin: '0 0 46px' }}>
+          <p style={{ fontSize: 19, lineHeight: 1.55, color: ink700, maxWidth: 560, margin: '0 0 46px' }}>
             Потому что делаем, чтобы работало. По умолчанию будем креативными. Если нужно — будем скучными и
             эффективными.
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 18 }}>
+          <div className="mm-why-grid">
             {whyCards.map((c) => (
               <div
                 key={c.n}
                 style={{
                   position: 'relative',
                   overflow: 'hidden',
-                  background: '#F3EEFC',
+                  background: violet50,
                   borderRadius: 16,
                   padding: '26px 24px 30px',
                   minHeight: 200,
@@ -275,7 +276,7 @@ export default function App() {
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="#8B5CF6"
+                  stroke={violet500}
                   strokeWidth="1.3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -288,7 +289,7 @@ export default function App() {
                       fontFamily: DISPLAY,
                       fontSize: 36,
                       fontWeight: 600,
-                      color: '#8B5CF6',
+                      color: violet500,
                       lineHeight: 1,
                       marginBottom: 16,
                     }}
@@ -296,7 +297,7 @@ export default function App() {
                     {c.n}
                   </div>
                   <div style={{ fontSize: 19, fontWeight: 800, lineHeight: 1.2, marginBottom: 9 }}>{c.t}</div>
-                  <div style={{ fontSize: 15, lineHeight: 1.5, color: '#6B6577' }}>{c.s}</div>
+                  <div style={{ fontSize: 15, lineHeight: 1.5, color: ink600 }}>{c.s}</div>
                 </div>
               </div>
             ))}
@@ -305,14 +306,14 @@ export default function App() {
       </div>
 
       {/* services */}
-      <div id="services" style={{ background: '#FFFFFF', scrollMarginTop: 24 }}>
-        <div style={col('30px 56px 90px')}>
+      <div id="services" style={{ background: paper, scrollMarginTop: 24 }}>
+        <div style={col('30px clamp(20px,4vw,56px) 90px')}>
           <div
             style={{
-              background: '#181226',
+              background: ink850,
               borderRadius: 24,
-              padding: '64px 56px',
-              color: '#F4F0FB',
+              padding: '64px clamp(20px,4vw,56px)',
+              color: ink100,
               position: 'relative',
               overflow: 'hidden',
             }}
@@ -325,7 +326,7 @@ export default function App() {
                 width: '60%',
                 height: '120%',
                 borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(139,92,246,0.55), rgba(139,92,246,0) 70%)',
+                background: `radial-gradient(circle, ${alpha('violet500', 0.55)}, ${alpha('violet500', 0)} 70%)`,
                 filter: 'blur(20px)',
                 pointerEvents: 'none',
                 zIndex: 0,
@@ -340,7 +341,7 @@ export default function App() {
                 width: '58%',
                 height: '120%',
                 borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(167,139,250,0.42), rgba(167,139,250,0) 70%)',
+                background: `radial-gradient(circle, ${alpha('violet400', 0.42)}, ${alpha('violet400', 0)} 70%)`,
                 filter: 'blur(20px)',
                 pointerEvents: 'none',
                 zIndex: 0,
@@ -348,11 +349,11 @@ export default function App() {
               }}
             />
             <div style={{ maxWidth: 680, marginBottom: 34, position: 'relative', zIndex: 1 }}>
-              <h2 style={{ ...heading, fontSize: 50, lineHeight: 1.0 }}>
+              <h2 style={{ ...heading, fontSize: 'clamp(32px, 5.2vw, 50px)', lineHeight: 1.0 }}>
                 Собираем диджитал
-                <br />в <span style={{ color: '#A78BFA' }}>одно целое</span>
+                <br />в <span style={{ color: violet400 }}>одно целое</span>
               </h2>
-              <p style={{ fontSize: 19, lineHeight: 1.55, color: '#CFC6E2', margin: '22px 0 0' }}>
+              <p style={{ fontSize: 19, lineHeight: 1.55, color: ink400, margin: '22px 0 0' }}>
                 Мы не продаём отдельные услуги. Мы собираем систему под задачу и доводим её до результата.
               </p>
             </div>
@@ -362,9 +363,9 @@ export default function App() {
       </div>
 
       {/* process */}
-      <div style={{ background: '#FFFFFF' }}>
-        <div style={col('0 56px 90px')}>
-          <h2 style={{ ...heading, fontSize: 48, margin: '0 0 48px' }}>
+      <div style={{ background: paper }}>
+        <div style={col('0 clamp(20px,4vw,56px) 90px')}>
+          <h2 style={{ ...heading, fontSize: 'clamp(32px, 5vw, 48px)', margin: '0 0 48px' }}>
             Как это
             <br />
             происходит
@@ -374,10 +375,10 @@ export default function App() {
       </div>
 
       {/* cases */}
-      <div id="cases" style={{ background: '#FFFFFF', scrollMarginTop: 24 }}>
-        <div style={col('0 56px 90px')}>
+      <div id="cases" style={{ background: paper, scrollMarginTop: 24 }}>
+        <div style={col('0 clamp(20px,4vw,56px) 90px')}>
           <div style={{ display: 'flex', alignItems: 'end', justifyContent: 'space-between', marginBottom: 40 }}>
-            <h2 style={{ ...heading, fontSize: 50 }}>
+            <h2 style={{ ...heading, fontSize: 'clamp(32px, 5.2vw, 50px)' }}>
               Что мы уже
               <br />
               сделали
@@ -387,8 +388,8 @@ export default function App() {
               style={{
                 whiteSpace: 'nowrap',
                 textDecoration: 'none',
-                background: '#181226',
-                color: '#fff',
+                background: ink850,
+                color: paper,
                 fontWeight: 800,
                 fontSize: 15,
                 padding: '14px 24px',
@@ -398,13 +399,13 @@ export default function App() {
               Все кейсы →
             </a>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 20 }}>
+          <div className="mm-cases-hero">
             <div
               style={{
-                background: '#8B5CF6',
+                background: violet500,
                 borderRadius: 20,
                 overflow: 'hidden',
-                color: '#fff',
+                color: paper,
                 display: 'flex',
                 flexDirection: 'column',
               }}
@@ -433,7 +434,7 @@ export default function App() {
               <div
                 style={{
                   flex: 1,
-                  background: '#F3EEFC',
+                  background: violet50,
                   borderRadius: 20,
                   padding: '28px 30px',
                   display: 'flex',
@@ -441,7 +442,7 @@ export default function App() {
                   justifyContent: 'space-between',
                 }}
               >
-                <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8B5CF6' }}>
+                <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: violet500 }}>
                   PR
                 </span>
                 <div style={{ fontFamily: DISPLAY, fontSize: 22, fontWeight: 200, lineHeight: 1.2 }}>
@@ -451,8 +452,8 @@ export default function App() {
               <div
                 style={{
                   flex: 1,
-                  background: '#181226',
-                  color: '#F4F0FB',
+                  background: ink850,
+                  color: ink100,
                   borderRadius: 20,
                   padding: '28px 30px',
                   display: 'flex',
@@ -460,7 +461,7 @@ export default function App() {
                   justifyContent: 'space-between',
                 }}
               >
-                <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A78BFA' }}>
+                <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: violet400 }}>
                   Маркетинг
                 </span>
                 <div style={{ fontFamily: DISPLAY, fontSize: 22, fontWeight: 200, lineHeight: 1.2 }}>
@@ -469,17 +470,17 @@ export default function App() {
               </div>
             </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginTop: 20 }}>
-            <div style={{ background: '#F3EEFC', borderRadius: 20, padding: '28px 30px' }}>
-              <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8B5CF6' }}>
+          <div className="mm-cases-pair">
+            <div style={{ background: violet50, borderRadius: 20, padding: '28px 30px' }}>
+              <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: violet500 }}>
                 E-commerce
               </span>
               <div style={{ fontFamily: DISPLAY, fontSize: 22, fontWeight: 200, lineHeight: 1.2, marginTop: 10 }}>
                 Запуск ecom-направления «Всёгазин»
               </div>
             </div>
-            <div style={{ background: '#F3EEFC', borderRadius: 20, padding: '28px 30px' }}>
-              <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8B5CF6' }}>
+            <div style={{ background: violet50, borderRadius: 20, padding: '28px 30px' }}>
+              <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: violet500 }}>
                 Туры
               </span>
               <div style={{ fontFamily: DISPLAY, fontSize: 22, fontWeight: 200, lineHeight: 1.2, marginTop: 10 }}>
@@ -491,30 +492,30 @@ export default function App() {
       </div>
 
       {/* team (full-bleed) */}
-      <div id="team" style={{ background: '#161020', color: '#F4F0FB', scrollMarginTop: 24 }}>
-        <div style={col('84px 56px')}>
+      <div id="team" style={{ background: ink900, color: ink100, scrollMarginTop: 24 }}>
+        <div style={col('84px clamp(20px,4vw,56px)')}>
           <div style={{ marginBottom: 50 }}>
-            <h2 style={{ ...heading, fontSize: 48, lineHeight: 1.0 }}>
+            <h2 style={{ ...heading, fontSize: 'clamp(32px, 5vw, 48px)', lineHeight: 1.0 }}>
               Небольшая команда —
               <br />
-              <span style={{ color: '#A78BFA' }}>БОЛЬШАЯ ВОВЛЕЧЕННОСТЬ</span>
+              <span style={{ color: violet400 }}>БОЛЬШАЯ ВОВЛЕЧЕННОСТЬ</span>
             </h2>
-            <p style={{ fontSize: 19, lineHeight: 1.55, color: '#CFC6E2', maxWidth: 600, margin: '22px 0 0' }}>
+            <p style={{ fontSize: 19, lineHeight: 1.55, color: ink400, maxWidth: 600, margin: '22px 0 0' }}>
               Мы не раздутое агентство. Над проектами работают люди, которые принимают решения, а не передают задачи
               по цепочке.
             </p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 20 }}>
+          <div className="mm-team-grid">
             {team.map((m) => (
-              <div key={m.name}>
+              <div key={m.name} className="mm-team-card">
                 <div
+                  className="mm-team-avatar"
                   style={{
                     aspectRatio: '4/5',
                     borderRadius: 16,
                     overflow: 'hidden',
                     position: 'relative',
-                    background:
-                      'repeating-linear-gradient(135deg,rgba(167,139,250,0.28),rgba(167,139,250,0.28) 10px,rgba(167,139,250,0.12) 10px,rgba(167,139,250,0.12) 20px)',
+                    background: `repeating-linear-gradient(135deg,${alpha('violet400', 0.28)},${alpha('violet400', 0.28)} 10px,${alpha('violet400', 0.12)} 10px,${alpha('violet400', 0.12)} 20px)`,
                     display: 'flex',
                     alignItems: 'flex-end',
                     padding: 14,
@@ -532,8 +533,9 @@ export default function App() {
                     }}
                   />
                 </div>
-                <div style={{ fontFamily: DISPLAY, fontSize: 18, fontWeight: 200, margin: '16px 0 6px' }}>{m.name}</div>
-                <div style={{ fontSize: 14, lineHeight: 1.45, color: '#BDB3D4' }}>{m.role}</div>
+                <div className="mm-team-info">
+                <div className="mm-team-name" style={{ fontFamily: DISPLAY, fontSize: 18, fontWeight: 200, margin: '16px 0 6px' }}>{m.name}</div>
+                <div style={{ fontSize: 14, lineHeight: 1.45, color: ink500 }}>{m.role}</div>
                 <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
                   <a
                     href={m.tg}
@@ -547,7 +549,7 @@ export default function App() {
                       width: 42,
                       height: 42,
                       borderRadius: 9,
-                      background: '#8B5CF6',
+                      background: violet500,
                     }}
                   >
                     {navTgIcon}
@@ -563,11 +565,11 @@ export default function App() {
                       width: 42,
                       height: 42,
                       borderRadius: 9,
-                      background: 'rgba(167,139,250,0.14)',
-                      border: '1px solid rgba(167,139,250,0.32)',
+                      background: alpha('violet400', 0.14),
+                      border: `1px solid ${alpha('violet400', 0.32)}`,
                     }}
                   >
-                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={violet400} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path>
                       <polyline points="14 3 14 8 19 8"></polyline>
                       <line x1="8.5" y1="13" x2="15.5" y2="13"></line>
@@ -575,11 +577,13 @@ export default function App() {
                     </svg>
                   </button>
                 </div>
+                </div>
               </div>
             ))}
             <div
+              className="mm-team-more"
               style={{
-                border: '1.5px solid rgba(167,139,250,0.38)',
+                border: `1.5px solid ${alpha('violet400', 0.38)}`,
                 borderRadius: 16,
                 padding: '24px 22px',
                 display: 'flex',
@@ -595,17 +599,18 @@ export default function App() {
                   width: 52,
                   height: 52,
                   borderRadius: 14,
-                  background: '#8B5CF6',
+                  background: alpha('violet400', 0.1),
+                  border: `1px dashed ${alpha('violet400', 0.45)}`,
                   flex: '0 0 auto',
                 }}
               >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={violet400} strokeWidth="1.6" strokeLinecap="round">
                   <line x1="12" y1="5" x2="12" y2="19"></line>
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
               </div>
               <div>
-                <div style={{ fontFamily: DISPLAY, fontSize: 16, fontWeight: 200, color: '#F4F0FB', marginBottom: 16, lineHeight: 1.25 }}>
+                <div style={{ fontFamily: DISPLAY, fontSize: 16, fontWeight: 200, color: ink100, marginBottom: 16, lineHeight: 1.25 }}>
                   команда специалистов
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -613,8 +618,8 @@ export default function App() {
                     <span
                       key={r}
                       style={{
-                        background: 'rgba(167,139,250,0.14)',
-                        border: '1px solid rgba(167,139,250,0.32)',
+                        background: alpha('violet400', 0.14),
+                        border: `1px solid ${alpha('violet400', 0.32)}`,
                         color: '#D9CEF0',
                         borderRadius: 999,
                         padding: '7px 13px',
@@ -634,34 +639,26 @@ export default function App() {
       </div>
 
       {/* scenika cta */}
-      <div style={{ background: '#FFFFFF' }}>
-        <div
-          style={col('74px 56px', {
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 40,
-            flexWrap: 'wrap',
-          })}
-        >
+      <div style={{ background: paper }}>
+        <div className="mm-scenika-row" style={col('clamp(48px,6vw,74px) clamp(20px,4vw,56px)')}>
           <div>
-            <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8B5CF6' }}>
+            <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: violet500 }}>
               Сценика
             </span>
-            <h3 style={{ ...heading, fontSize: 40, fontWeight: 200, lineHeight: 1.02, margin: '14px 0 12px' }}>
+            <h3 style={{ ...heading, fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 200, lineHeight: 1.02, margin: '14px 0 12px' }}>
               Концертное агентство
               <br />
               полного цикла
             </h3>
-            <p style={{ fontSize: 19, color: '#56505F', margin: 0 }}>Концерты, туры, шоу. 3 звонка до солдаута.</p>
+            <p style={{ fontSize: 19, color: ink700, margin: 0 }}>Концерты, туры, шоу. 3 звонка до солдаута.</p>
           </div>
           <a
             href="#"
             style={{
               whiteSpace: 'nowrap',
               textDecoration: 'none',
-              background: '#8B5CF6',
-              color: '#fff',
+              background: violet500,
+              color: paper,
               fontWeight: 800,
               fontSize: 17,
               padding: '18px 34px',
@@ -674,22 +671,23 @@ export default function App() {
       </div>
 
       {/* footer (full-bleed) */}
-      <div style={{ background: '#181226', color: 'rgba(244,240,251,0.6)' }}>
-        <div
-          style={col('32px 56px', {
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            fontSize: 14,
-          })}
-        >
-          <span style={{ fontFamily: DISPLAY, fontSize: 16, color: '#F4F0FB', fontWeight: 200 }}>МЭПЛ</span>
+      <div style={{ background: ink850, color: 'rgba(244,240,251,0.6)' }}>
+        <div className="mm-footer-row" style={col('32px clamp(20px,4vw,56px)')}>
+          <span style={{ fontFamily: DISPLAY, fontSize: 16, color: ink100, fontWeight: 200 }}>МЭПЛ</span>
           <span>© 2026 · Растим проекты, а не отчёты</span>
         </div>
       </div>
 
-      {cvOpen && <CVModal member={cvOpen} onClose={() => setCvOpen(null)} />}
-      {leadOpen && <LeadModal onClose={() => setLeadOpen(false)} />}
+      {cvOpen && (
+        <Suspense fallback={null}>
+          <CVModal member={cvOpen} onClose={() => setCvOpen(null)} />
+        </Suspense>
+      )}
+      {leadOpen && (
+        <Suspense fallback={null}>
+          <LeadModal onClose={() => setLeadOpen(false)} />
+        </Suspense>
+      )}
     </div>
   );
 }

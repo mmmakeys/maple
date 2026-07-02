@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { threeColors } from '../tokens';
 
 /**
  * Volumetric 3D maple leaf that gently sways (<=65deg on every axis) and morphs
@@ -37,21 +38,27 @@ export default function MapleLeaf() {
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       wrap.appendChild(renderer.domElement);
 
-      // --- maple-leaf silhouette (explicit half, mirrored, then edge-subdivided) ---
+      // --- maple-leaf silhouette (explicit half, mirrored, then edge-subdivided).
+      // Classic FIVE-lobe layout with an actual narrow stem, not a lower spike:
+      //   top spike (shared, dominant) → upper-side lobe → lower-side lobe →
+      //   ABRUPT shoulder → narrow parallel-sided stem → stem tip (shared).
+      // The two consecutive stem-width points (0.09 → 0.07) force a near-
+      // vertical thin rectangle rather than a triangular pointed corner.
       const half = [
-        [0.0, 1.14],
-        [0.28, 0.7],
-        [0.66, 0.74],
-        [0.54, 0.36],
-        [1.02, 0.26],
-        [0.52, -0.12],
-        [0.6, -0.52],
-        [0.24, -0.54],
-        [0.12, -1.05],
+        [0.00, 1.30],  // central spike — taller so it dominates the outline
+        [0.28, 0.60],  // sinus 1 — deep valley between center and upper-side
+        [0.98, 0.68],  // upper-side lobe tip (diagonal top-right)
+        [0.44, 0.02],  // sinus 2 — between upper-side and lower-side
+        [0.88, -0.40], // lower-side lobe tip (diagonal bottom-right)
+        [0.42, -0.62], // sinus 3 — deep valley before the stem
+        [0.09, -0.66], // stem shoulder — abrupt jump inward to stem width
+        [0.07, -1.20], // stem tip (shared with mirrored half at x=0)
       ];
       const corners: number[][] = [];
       for (let i = 0; i < half.length; i++) corners.push([half[i][0], half[i][1]]);
       for (let i = half.length - 1; i >= 1; i--) corners.push([-half[i][0], half[i][1]]);
+      // Enough subdivisions for smooth edges between lobe tips — with only 5
+      // acute peaks left, higher SUB no longer rounds them into blobs.
       const SUB = 5;
       const boundary: number[][] = [];
       for (let i = 0; i < corners.length; i++) {
@@ -73,13 +80,15 @@ export default function MapleLeaf() {
       });
       const curXY = leafXY.map((p) => [p[0], p[1]]);
 
-      // beveled extruded solid rebuilt per frame from curXY.
+      // Beveled extruded solid rebuilt per frame from curXY. Moderate bevel
+      // keeps the lobe tips readable (0.17 / 0.085 previously rounded them
+      // into blobs).
       const EX = {
-        depth: 0.34,
+        depth: 0.32,
         bevelEnabled: true,
-        bevelThickness: 0.17,
-        bevelSize: 0.085,
-        bevelSegments: 4,
+        bevelThickness: 0.10,
+        bevelSize: 0.048,
+        bevelSegments: 3,
         curveSegments: 1,
         steps: 1,
       };
@@ -96,10 +105,10 @@ export default function MapleLeaf() {
       let geo = buildGeo(curXY);
 
       const mat = new THREE.MeshStandardMaterial({
-        color: 0x8b5cf6,
+        color: threeColors.violet500,
         roughness: 0.34,
         metalness: 0.28,
-        emissive: 0x3a1a8a,
+        emissive: threeColors.violetDeep,
         emissiveIntensity: 0.32,
       });
       const mesh = new THREE.Mesh(geo, mat);
@@ -120,8 +129,8 @@ export default function MapleLeaf() {
       scene.add(plane);
 
       // lighting
-      scene.add(new THREE.AmbientLight(0x9b7fe0, 0.5));
-      const key = new THREE.DirectionalLight(0xffffff, 1.6);
+      scene.add(new THREE.AmbientLight(threeColors.violetAmbient, 0.5));
+      const key = new THREE.DirectionalLight(threeColors.paper, 1.6);
       key.position.set(-2.4, 3.0, 3.4);
       key.castShadow = true;
       key.shadow.mapSize.set(1024, 1024);
@@ -129,7 +138,7 @@ export default function MapleLeaf() {
       key.shadow.camera.far = 14;
       Object.assign(key.shadow.camera, { left: -3, right: 3, top: 3, bottom: -3 });
       scene.add(key);
-      const rim = new THREE.DirectionalLight(0xc4a6ff, 1.1);
+      const rim = new THREE.DirectionalLight(threeColors.violetLight, 1.1);
       rim.position.set(3, -1, -2);
       scene.add(rim);
 
@@ -154,7 +163,7 @@ export default function MapleLeaf() {
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         uniforms: {
-          uColor: { value: new THREE.Color(0xb78bff) },
+          uColor: { value: new THREE.Color(threeColors.violet400) },
           uDpr: { value: Math.min(window.devicePixelRatio, 2) },
         },
         vertexShader:
@@ -200,22 +209,53 @@ export default function MapleLeaf() {
       };
 
       let prevTs = performance.now();
-      let prevT = 0.5;
+      let prevT = 0;
+      // Full cycle: hold leaf → morph to circle → hold circle → morph back.
+      // Longer overall period + explicit hold plateaus give the eye time to
+      // read each end shape before it starts changing again.
+      const MORPH_PERIOD_S = 11;
+      const HOLD_LEAF = 0.22;   // 22% of the cycle sitting on the leaf
+      const MORPH_UP = 0.26;    // 26% morphing leaf → circle
+      const HOLD_CIRCLE = 0.22; // 22% sitting on a clean circle
+      // (remaining 30% morphs back)
+      const smoothstep = (x: number) => x * x * (3 - 2 * x);
       const loop = (ts: number) => {
         const sTime = ts * 0.001;
         const dt = Math.min(0.05, Math.max(0.001, (ts - prevTs) * 0.001));
         prevTs = ts;
 
-        // morph leaf <-> circle, then rebuild the beveled solid
-        let t =
-          0.5 +
-          0.34 * Math.sin(sTime * 0.31) +
-          0.22 * Math.sin(sTime * 0.73 + 1.7) -
-          0.14 * Math.sin(sTime * 1.27 + 0.4);
-        t = Math.max(0, Math.min(1, t));
+        // Piecewise cycle amount, smoothstep-eased on both transitions.
+        const cyclePhase = (sTime % MORPH_PERIOD_S) / MORPH_PERIOD_S;
+        let cycle: number;
+        if (cyclePhase < HOLD_LEAF) {
+          cycle = 0;
+        } else if (cyclePhase < HOLD_LEAF + MORPH_UP) {
+          cycle = smoothstep((cyclePhase - HOLD_LEAF) / MORPH_UP);
+        } else if (cyclePhase < HOLD_LEAF + MORPH_UP + HOLD_CIRCLE) {
+          cycle = 1;
+        } else {
+          const morphDown = 1 - HOLD_LEAF - MORPH_UP - HOLD_CIRCLE;
+          cycle = 1 - smoothstep(
+            (cyclePhase - HOLD_LEAF - MORPH_UP - HOLD_CIRCLE) / morphDown
+          );
+        }
+
+        // Sub-breath only in the middle of morph — endpoints stay pinned so
+        // the "circle" plateau really is a perfect circle.
+        const midMask = 4 * cycle * (1 - cycle);
+        const breath = 0.025 * Math.sin(sTime * 1.9) * midMask;
+        const t = Math.max(0, Math.min(1, cycle + breath));
+
+        // Per-vertex jitter for organic imperfection — fades out as we
+        // approach the circle so the ring stays mathematically clean.
+        const jitterAmp = 0.014;
+        const jitterT = sTime * 0.9;
+        const jitterScale = (1 - cycle) * (1 - cycle);
         for (let i = 0; i < N; i++) {
-          curXY[i][0] = leafXY[i][0] + (circXY[i][0] - leafXY[i][0]) * t;
-          curXY[i][1] = leafXY[i][1] + (circXY[i][1] - leafXY[i][1]) * t;
+          const jx = Math.sin(jitterT + i * 0.71) * jitterAmp * jitterScale;
+          const jy = Math.cos(jitterT * 1.13 + i * 0.87) * jitterAmp * jitterScale;
+          curXY[i][0] = leafXY[i][0] + (circXY[i][0] - leafXY[i][0]) * t + jx;
+          curXY[i][1] = leafXY[i][1] + (circXY[i][1] - leafXY[i][1]) * t + jy;
         }
         const ng = buildGeo(curXY);
         mesh.geometry.dispose();
@@ -231,7 +271,8 @@ export default function MapleLeaf() {
           0.26 + 0.34 * Math.sin(sTime * 0.19 + 1.1) + 0.12 * Math.sin(sTime * 0.61)
         );
         leafGroup.rotation.z = clampR(0.3 * Math.sin(sTime * 0.13 + 0.7));
-        mesh.scale.setScalar(0.98 + 0.02 * Math.sin(sTime * 0.8));
+        // Breathing pulse — slightly stronger than before to sell the motion.
+        mesh.scale.setScalar(0.97 + 0.03 * Math.sin(sTime * 1.15));
         leafGroup.updateMatrixWorld();
 
         // sparkles while actively morphing

@@ -1,5 +1,22 @@
 import { useState } from 'react';
 import { DISPLAY, budgetOpts } from '../data';
+import {
+  alpha,
+  ink600,
+  ink800,
+  ink850,
+  ink900,
+  paper,
+  violet25,
+  violet75,
+  violet100,
+  violet400,
+  violet500,
+  violet700,
+} from '../tokens';
+
+// One-off input border tint — appears only inside this component.
+const inputBorder = '#E4DCF3';
 
 type Lead = {
   name: string;
@@ -24,10 +41,10 @@ const emptyLead: Lead = {
 const inputStyle: React.CSSProperties = {
   fontSize: 16,
   padding: '13px 15px',
-  border: '1.5px solid #E4DCF3',
+  border: `1.5px solid ${inputBorder}`,
   borderRadius: 11,
-  background: '#FBF9FE',
-  color: '#181226',
+  background: violet25,
+  color: ink850,
   outline: 'none',
   fontFamily: 'inherit',
   fontWeight: 500,
@@ -40,7 +57,7 @@ const fieldLabel: React.CSSProperties = {
   fontSize: 13,
   fontWeight: 800,
   letterSpacing: '0.02em',
-  color: '#3B3646',
+  color: ink800,
 };
 
 const primaryBtn: React.CSSProperties = {
@@ -49,8 +66,8 @@ const primaryBtn: React.CSSProperties = {
   fontWeight: 600,
   fontSize: 16,
   textTransform: 'uppercase',
-  color: '#fff',
-  background: '#8B5CF6',
+  color: paper,
+  background: violet500,
   border: 'none',
   padding: 16,
   borderRadius: 11,
@@ -71,11 +88,11 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
         position: 'fixed',
         inset: 0,
         zIndex: 1100,
-        background: 'rgba(16,12,24,0.72)',
+        background: alpha('ink900', 0.72),
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 40,
+        padding: 'clamp(12px, 4vw, 40px)',
       }}
     >
       <div
@@ -85,11 +102,11 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
           maxWidth: '100%',
           maxHeight: '88vh',
           overflow: 'auto',
-          background: '#FFFFFF',
-          color: '#181226',
+          background: paper,
+          color: ink850,
           borderRadius: 20,
-          padding: '38px 40px 40px',
-          boxShadow: '0 40px 100px -30px rgba(16,12,24,0.6)',
+          padding: 'clamp(22px, 5vw, 40px) clamp(20px, 5vw, 40px)',
+          boxShadow: `0 40px 100px -30px ${alpha('ink900', 0.6)}`,
         }}
       >
         <div
@@ -114,7 +131,7 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
             >
               Тут оставляют заявки
             </h3>
-            <p style={{ fontSize: 16, lineHeight: 1.5, color: '#6B6577', margin: '12px 0 0' }}>
+            <p style={{ fontSize: 16, lineHeight: 1.5, color: ink600, margin: '12px 0 0' }}>
               Никаких прайс-листов – только индивидуальный подход
             </p>
           </div>
@@ -128,8 +145,8 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
               height: 38,
               borderRadius: 10,
               border: 'none',
-              background: '#F1ECFA',
-              color: '#6B6577',
+              background: violet75,
+              color: ink600,
               fontSize: 17,
               lineHeight: 1,
             }}
@@ -145,7 +162,7 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
                 width: 64,
                 height: 64,
                 borderRadius: 16,
-                background: '#EAE1FA',
+                background: violet100,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -157,7 +174,7 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
                 width="32"
                 height="32"
                 fill="none"
-                stroke="#8B5CF6"
+                stroke={violet500}
                 strokeWidth="2.2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -176,7 +193,7 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
             >
               Заявка отправлена
             </div>
-            <p style={{ fontSize: 16, lineHeight: 1.55, color: '#6B6577', margin: '0 auto', maxWidth: 380 }}>
+            <p style={{ fontSize: 16, lineHeight: 1.55, color: ink600, margin: '0 auto', maxWidth: 380 }}>
               Свяжемся с вами в ближайшее время и предложим индивидуальное решение.
             </p>
             <button
@@ -188,8 +205,8 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
                 fontWeight: 600,
                 fontSize: 15,
                 textTransform: 'uppercase',
-                color: '#161020',
-                background: '#A78BFA',
+                color: ink900,
+                background: violet400,
                 border: 'none',
                 padding: '15px 30px',
                 borderRadius: 10,
@@ -201,13 +218,13 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
         ) : (
           <>
             <div style={{ display: 'flex', gap: 8, margin: '28px 0 24px' }}>
-              <div style={{ flex: 1, height: 4, borderRadius: 2, background: '#8B5CF6' }} />
+              <div style={{ flex: 1, height: 4, borderRadius: 2, background: violet500 }} />
               <div
                 style={{
                   flex: 1,
                   height: 4,
                   borderRadius: 2,
-                  background: step === 2 ? '#8B5CF6' : '#EAE1FA',
+                  background: step === 2 ? violet500 : violet100,
                 }}
               />
             </div>
@@ -287,7 +304,7 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
                     />
                   </label>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-                    <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.02em', color: '#3B3646' }}>
+                    <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.02em', color: ink800 }}>
                       Бюджет
                     </span>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -303,9 +320,9 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
                               fontWeight: 600,
                               padding: '9px 15px',
                               borderRadius: 999,
-                              border: `1.5px solid ${active ? '#8B5CF6' : '#E4DCF3'}`,
-                              background: active ? '#8B5CF6' : '#FBF9FE',
-                              color: active ? '#fff' : '#5B4A79',
+                              border: `1.5px solid ${active ? violet500 : inputBorder}`,
+                              background: active ? violet500 : violet25,
+                              color: active ? paper : violet700,
                               fontFamily: 'inherit',
                             }}
                           >
@@ -326,8 +343,8 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
                       fontWeight: 600,
                       fontSize: 16,
                       textTransform: 'uppercase',
-                      color: '#161020',
-                      background: '#F1ECFA',
+                      color: ink900,
+                      background: violet75,
                       border: 'none',
                       padding: '16px 24px',
                       borderRadius: 11,
