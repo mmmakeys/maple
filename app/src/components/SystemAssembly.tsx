@@ -9,6 +9,14 @@ const NARROW_THRESHOLD = 640;
 const WIDE_W = 1056;
 const WIDE_H = 590;
 
+/** Build a circular outline overlay for the core — sits inside the core box
+ *  with `inset: -8px` so its stroke lands slightly past the box's own edge. */
+const makeOutlineRing = (): HTMLDivElement => {
+  const ring = document.createElement('div');
+  ring.style.cssText = `position:absolute;inset:-8px;border-radius:50%;border:1.5px solid ${alpha('violet400', 0.55)};opacity:0;transform:scale(.85);transition:opacity .5s ease, transform .55s cubic-bezier(.34,1.56,.64,1);pointer-events:none;`;
+  return ring;
+};
+
 /**
  * Gamified "assemble the system" block: six service cards fly into place around
  * a glowing "МЭПЛ" core, connector lines draw in, checks pop, and a spark burst
@@ -75,6 +83,9 @@ export default function SystemAssembly() {
        *  `translate(-50%,-50%)` to center an absolutely-positioned core;
        *  narrow's core is a flex-item and needs no translate. */
       coreTransformBase: string;
+      /** Circular outline around the core. Hidden until final assembly,
+       *  faded out on disassemble. */
+      outlineRing: HTMLDivElement;
       /** Called after the stage is inserted into the DOM — used by the narrow
        *  layout to measure natural card positions before drawing rail
        *  segments. Optional; wide layout has fully pre-computed geometry. */
@@ -123,6 +134,13 @@ export default function SystemAssembly() {
       svg.setAttribute('stroke-linecap', 'round');
       svg.style.cssText = 'position:absolute;inset:0;z-index:1;overflow:visible;';
       const g = document.createElementNS(NS, 'g');
+      // Radius used to terminate the connector lines on the core's visual
+      // edge (matches the outlineRing overlay added to the core box below —
+      // core width 170 + 8px inset on each side ≈ 93px radius).
+      const CORE_CX = 528;
+      const CORE_CY = 292;
+      const CORE_R = 92;
+
       const lineEnds: [number, number][] = [
         [300, 92], [300, 292], [300, 492],
         [756, 92], [756, 292], [756, 492],
@@ -131,11 +149,18 @@ export default function SystemAssembly() {
       const lineLen: number[] = [];
       lineEnds.forEach((e) => {
         const ln = document.createElementNS(NS, 'line');
-        ln.setAttribute('x1', '528');
-        ln.setAttribute('y1', '292');
+        // Line starts on the outline's edge (unit vector from core center to
+        // the card) so the whole radial "spoke" ends at the ring, not inside.
+        const dx = e[0] - CORE_CX;
+        const dy = e[1] - CORE_CY;
+        const dist = Math.hypot(dx, dy) || 1;
+        const startX = CORE_CX + (dx / dist) * CORE_R;
+        const startY = CORE_CY + (dy / dist) * CORE_R;
+        ln.setAttribute('x1', String(startX));
+        ln.setAttribute('y1', String(startY));
         ln.setAttribute('x2', String(e[0]));
         ln.setAttribute('y2', String(e[1]));
-        const len = Math.hypot(e[0] - 528, e[1] - 292);
+        const len = Math.hypot(e[0] - startX, e[1] - startY);
         ln.setAttribute('stroke-dasharray', String(len));
         ln.style.strokeDashoffset = String(len);
         ln.style.opacity = '0';
@@ -152,10 +177,12 @@ export default function SystemAssembly() {
         'position:absolute;left:528px;top:292px;transform:translate(-50%,-50%);width:170px;height:170px;display:flex;align-items:center;justify-content:center;z-index:2;transition:transform .4s cubic-bezier(.34,1.56,.64,1);';
       const glow = document.createElement('div');
       glow.style.cssText = `position:absolute;inset:-12px;border-radius:50%;background:radial-gradient(circle,${alpha('violet500', 0.85)},${alpha('violet500', 0.04)} 70%);transform:scale(.82);opacity:.32;transition:transform .8s ease, opacity .8s ease;`;
+      const outlineRing = makeOutlineRing();
       const word = document.createElement('div');
-      word.style.cssText = `position:relative;font-family:${disp};font-weight:600;font-size:30px;color:${paper};letter-spacing:.02em;`;
+      word.style.cssText = `position:relative;font-family:${disp};font-weight:600;font-size:30px;color:${paper};letter-spacing:.02em;z-index:1;`;
       word.textContent = 'МЭПЛ';
       core.appendChild(glow);
+      core.appendChild(outlineRing);
       core.appendChild(word);
       root.appendChild(core);
 
@@ -190,9 +217,11 @@ export default function SystemAssembly() {
       return {
         root, core, glow, cards, checks, lines, lineLen,
         arranged, scattered,
-        sparkOrigin: { left: 528, top: 292 },
+        // Core box is 170×170 — center is the spark origin (core-relative).
+        sparkOrigin: { left: 85, top: 85 },
         applyScale,
         coreTransformBase: 'translate(-50%,-50%) ',
+        outlineRing,
       };
     };
 
@@ -250,18 +279,20 @@ export default function SystemAssembly() {
       core.style.cssText = `position:relative;align-self:center;width:${CORE_D}px;height:${CORE_D}px;margin-top:${CORE_MARGIN_TOP}px;display:flex;align-items:center;justify-content:center;z-index:2;transition:transform .4s cubic-bezier(.34,1.56,.64,1);`;
       const glow = document.createElement('div');
       glow.style.cssText = `position:absolute;inset:-56px;border-radius:50%;background:radial-gradient(circle,${alpha('violet500', 0.75)},${alpha('violet500', 0)} 62%);transform:scale(.82);opacity:.32;transition:transform .8s ease, opacity .8s ease;pointer-events:none;`;
+      const outlineRing = makeOutlineRing();
       const word = document.createElement('div');
-      word.style.cssText = `position:relative;font-family:${disp};font-weight:600;font-size:22px;color:${paper};letter-spacing:.02em;`;
+      word.style.cssText = `position:relative;font-family:${disp};font-weight:600;font-size:22px;color:${paper};letter-spacing:.02em;z-index:1;`;
       word.textContent = 'МЭПЛ';
       core.appendChild(glow);
+      core.appendChild(outlineRing);
       core.appendChild(word);
       root.appendChild(core);
 
       const lines: SVGLineElement[] = [];
       const lineLen: number[] = [];
-      // Spark origin is a mutable object so we can update it in-place after
-      // the flex layout resolves and the core lands at its natural Y.
-      const sparkOrigin = { left: W / 2, top: 0 };
+      // Sparks live inside the core box now — origin is the box center and
+      // no longer depends on where the core lands vertically in the flex flow.
+      const sparkOrigin = { left: CORE_D / 2, top: CORE_D / 2 };
 
       // Build rail segments once the flex flow has resolved positions. Each
       // segment i sits BELOW card i, connecting it to the next flex-item
@@ -278,12 +309,16 @@ export default function SystemAssembly() {
         g.innerHTML = '';
         lines.length = 0;
         lineLen.length = 0;
+        // Outline ring extends 8px past the core box (inset:-8), so the last
+        // rail segment terminates on the ring's top edge, not the core box.
+        const RING_INSET = 8;
+        const ringTopY = core.offsetTop - RING_INSET;
         for (let i = 0; i < cards.length; i++) {
           const cardEl = cards[i];
           const segTop = cardEl.offsetTop + cardEl.offsetHeight;
           const nextTop = i < cards.length - 1
             ? cards[i + 1].offsetTop
-            : core.offsetTop;
+            : ringTopY;
           const len = Math.max(1, nextTop - segTop);
           const ln = document.createElementNS(NS, 'line');
           ln.setAttribute('x1', String(centerX));
@@ -299,8 +334,6 @@ export default function SystemAssembly() {
           lines.push(ln);
           lineLen.push(len);
         }
-        sparkOrigin.left = centerX;
-        sparkOrigin.top = core.offsetTop + CORE_D / 2;
       };
 
       const applyScale = () => {
@@ -329,6 +362,7 @@ export default function SystemAssembly() {
         applyScale,
         // Flex-item core is already centered — no translate baseline needed.
         coreTransformBase: '',
+        outlineRing,
         postMount,
       };
     };
@@ -363,8 +397,12 @@ export default function SystemAssembly() {
         const dy = Math.sin(ang) * dist;
         const dur = 1100 + Math.random() * 900;
         const delay = Math.random() * 500;
-        sp.style.cssText = `position:absolute;left:${s.sparkOrigin.left}px;top:${s.sparkOrigin.top}px;width:${size.toFixed(1)}px;height:${size.toFixed(1)}px;border-radius:50%;background:${sparkCore};box-shadow:0 0 8px 2px ${alpha('violet400', 0.9)};z-index:4;pointer-events:none;--dx:${dx.toFixed(0)}px;--dy:${dy.toFixed(0)}px;animation:mm-spark ${dur}ms ease-out ${delay.toFixed(0)}ms forwards;`;
-        s.root.appendChild(sp);
+        // Sparks live inside `core` (not root) — z-index:0 keeps them behind
+        // the wordmark (z-index:1) while still above the glow and outline
+        // ring (both z-auto). Coordinates are core-relative: origin is the
+        // core box center.
+        sp.style.cssText = `position:absolute;left:${s.sparkOrigin.left}px;top:${s.sparkOrigin.top}px;width:${size.toFixed(1)}px;height:${size.toFixed(1)}px;border-radius:50%;background:${sparkCore};box-shadow:0 0 8px 2px ${alpha('violet400', 0.9)};z-index:0;pointer-events:none;--dx:${dx.toFixed(0)}px;--dy:${dy.toFixed(0)}px;animation:mm-spark ${dur}ms ease-out ${delay.toFixed(0)}ms forwards;`;
+        s.core.appendChild(sp);
         setTimeout(() => sp.remove(), dur + delay + 60);
       }
     };
@@ -374,6 +412,11 @@ export default function SystemAssembly() {
       if (stage) setCoreProgress(stage, k);
     };
 
+    const showOutlineRing = (s: Stage, on: boolean) => {
+      s.outlineRing.style.opacity = on ? '1' : '0';
+      s.outlineRing.style.transform = `scale(${on ? 1 : 0.85})`;
+    };
+
     const showAssembled = (instant: boolean) => {
       if (!stage) return;
       const s = stage;
@@ -381,11 +424,16 @@ export default function SystemAssembly() {
         for (let i = 0; i < s.cards.length; i++) setCardVisual(s, i, true);
         setProgress(6);
         s.glow.style.animation = 'mm-core-breathe 4.5s ease-in-out infinite';
+        showOutlineRing(s, true);
       }
     };
 
     const order = [0, 3, 1, 4, 2, 5];
     const orderNarrow = [0, 1, 2, 3, 4, 5];
+
+    // Ring animates in first (~450 ms), then the connector spokes reach out
+    // from its edge one by one — hence the delay before the first card lock.
+    const RING_LEAD_MS = 550;
 
     const runAssemble = () => {
       if (!stage) return;
@@ -411,13 +459,13 @@ export default function SystemAssembly() {
                 }, 1400)
               );
             }
-          }, 180 + step * 260)
+          }, RING_LEAD_MS + step * 260)
         );
       });
     };
 
     const assemble = () => {
-      if (on) return;
+      if (on || !stage) return;
       on = true;
       busy = true;
       btnLabel.textContent = 'Собираем…';
@@ -426,6 +474,8 @@ export default function SystemAssembly() {
       btn.style.cursor = 'default';
       status.style.opacity = '1';
       status.textContent = 'Соединяем направления в одну систему…';
+      // Ring appears immediately so lines look like they originate from it.
+      showOutlineRing(stage, true);
       runAssemble();
     };
 
@@ -435,6 +485,7 @@ export default function SystemAssembly() {
       clearTimers();
       if (stage) {
         stage.glow.style.animation = '';
+        showOutlineRing(stage, false);
         for (let i = 0; i < stage.cards.length; i++) setCardVisual(stage, i, false);
       }
       setProgress(0);
