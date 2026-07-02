@@ -1,0 +1,100 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #dad6cf;
+  -webkit-font-smoothing: antialiased;
+  font-family: 'Manrope', sans-serif;
+}
+
+/* ---- design display font stack (Russo One) ---- */
+:root {
+  --mm-display: 'Russo One', sans-serif;
+}
+
+/* infinite marquee: 8 copies -> shift exactly 1/8 */
+@keyframes mm-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-12.5%);
+  }
+}
+
+@keyframes mm-leaf-float {
+  0%,
+  100% {
+    transform: translateY(-50%);
+  }
+  50% {
+    transform: translateY(calc(-50% - 16px));
+  }
+}
+
+@keyframes mm-breathe {
+  0% {
+    transform: scale(1) translate(0, 0);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.18) translate(3%, -2%);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1) translate(0, 0);
+    opacity: 0.55;
+  }
+}
+
+@keyframes mm-breathe-2 {
+  0% {
+    transform: scale(1.1) translate(0, 0);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(0.92) translate(-4%, 3%);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.1) translate(0, 0);
+    opacity: 0.4;
+  }
+}
+
+@keyframes mm-spark {
+  0% {
+    transform: translate(0, 0) scale(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  60% {
+    transform: translate(var(--dx), var(--dy)) scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(calc(var(--dx) * 1.4), calc(var(--dy) * 1.4)) scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes mm-core-breathe {
+  0%,
+  100% {
+    transform: scale(1.12);
+    opacity: 0.98;
+  }
+  50% {
+    transform: scale(1.28);
+    opacity: 0.72;
+  }
+}
+
+/* smooth anchor scroll for nav links */
+html {
+  scroll-behavior: smooth;
+}
