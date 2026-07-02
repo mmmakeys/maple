@@ -115,18 +115,28 @@ html {
   display: inline;
 }
 
+/* Kicker → title → copy-row live in a flex column with a single fluid gap,
+   so vertical rhythm stays consistent between 320px and 1440px instead of
+   drifting from the fixed 34/40 px margins the inline `margin:0` used to
+   override. */
+.mm-hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(18px, 2.4vw, 34px);
+}
 .mm-hero-title {
   font-size: clamp(46px, 9vw, 108px);
   line-height: 0.92;
   letter-spacing: 0.06em;
-  margin: 34px 0 0;
+  margin: 0;
 }
 .mm-hero-copy-row {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: 40px;
-  margin-top: 40px;
+  margin: 0;
   flex-wrap: wrap;
 }
 .mm-hero-leaf {
@@ -235,9 +245,6 @@ html {
     padding: 6px 12px !important;
     max-width: 100%;
   }
-  .mm-hero-title {
-    margin-top: 22px !important;
-  }
   .mm-hero-leaf {
     position: absolute;
     inset: auto;
@@ -255,7 +262,6 @@ html {
     flex-direction: column;
     align-items: stretch;
     gap: 20px;
-    margin-top: 24px !important;
   }
   .mm-why-grid {
     grid-template-columns: 1fr;

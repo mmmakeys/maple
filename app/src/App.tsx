@@ -136,7 +136,10 @@ export default function App() {
               <MapleLeaf />
             </Suspense>
           </div>
-          <div style={{ position: 'relative', zIndex: 2 }}>
+          <div
+            className="mm-hero-content"
+            style={{ position: 'relative', zIndex: 2 }}
+          >
             <span
               className="mm-hero-kicker"
               style={{
