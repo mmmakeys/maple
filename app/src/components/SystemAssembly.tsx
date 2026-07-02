@@ -444,7 +444,8 @@ export default function SystemAssembly() {
 
     btn.addEventListener('click', () => {
       if (busy) return;
-      on ? disassemble() : assemble();
+      if (on) disassemble();
+      else assemble();
     });
 
     const pickMode = (): 'wide' | 'narrow' =>
