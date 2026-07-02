@@ -14,6 +14,19 @@ const heading: React.CSSProperties = {
   margin: 0,
 };
 
+// Full-bleed sections: each band background spans the whole viewport width,
+// while its content lives in this centered, max-width column.
+const PAGE_MAX = 1280;
+const col = (padding: string, extra: React.CSSProperties = {}): React.CSSProperties => ({
+  width: '100%',
+  maxWidth: PAGE_MAX,
+  marginLeft: 'auto',
+  marginRight: 'auto',
+  boxSizing: 'border-box',
+  padding,
+  ...extra,
+});
+
 const navTgIcon = (
   <svg width="19" height="19" viewBox="0 0 24 24" fill="#fff">
     <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z" />
@@ -30,29 +43,10 @@ export default function App() {
   };
 
   return (
-    <div style={{ padding: 70, display: 'flex', justifyContent: 'center' }}>
-      <div
-        style={{
-          width: 1280,
-          flex: '0 0 auto',
-          background: '#FFFFFF',
-          color: '#181226',
-          overflow: 'hidden',
-          borderRadius: 6,
-          boxShadow: '0 40px 90px -50px rgba(27,23,34,0.5)',
-        }}
-      >
-        {/* nav */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '26px 56px',
-            background: '#161020',
-            color: '#F4F0FB',
-          }}
-        >
+    <div style={{ background: '#FFFFFF', color: '#181226', minWidth: PAGE_MAX }}>
+      {/* nav */}
+      <div style={{ background: '#161020', color: '#F4F0FB' }}>
+        <div style={col('26px 56px', { display: 'flex', alignItems: 'center', justifyContent: 'space-between' })}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
             <svg viewBox="0 0 40 40" width="30" height="30" style={{ display: 'block' }} aria-label="Maple">
               <path
@@ -99,28 +93,25 @@ export default function App() {
             </a>
           </div>
         </div>
+      </div>
 
-        {/* hero */}
+      {/* hero */}
+      <div style={{ background: '#161020', color: '#F4F0FB', position: 'relative', overflow: 'hidden' }}>
+        {/* full-bleed corner glow (relative to the band, so it hugs the viewport corner) */}
         <div
           style={{
-            padding: '78px 56px 70px',
-            background: '#161020',
-            color: '#F4F0FB',
-            position: 'relative',
-            overflow: 'hidden',
+            position: 'absolute',
+            right: -120,
+            top: -120,
+            width: 520,
+            height: 520,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(139,92,246,0.55), rgba(139,92,246,0) 70%)',
+            pointerEvents: 'none',
           }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              right: -120,
-              top: -120,
-              width: 520,
-              height: 520,
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(139,92,246,0.55), rgba(139,92,246,0) 70%)',
-            }}
-          />
+        />
+        <div style={col('78px 56px 70px', { position: 'relative' })}>
+          {/* leaf sits at the right edge of the content column */}
           <div
             style={{
               position: 'absolute',
@@ -222,39 +213,41 @@ export default function App() {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* marquee */}
-        <div style={{ background: '#8B5CF6', color: '#fff', padding: '16px 0', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-          <div
-            style={{
-              display: 'flex',
-              width: 'max-content',
-              animation: 'mm-marquee 22s linear infinite',
-              fontFamily: DISPLAY,
-              fontWeight: 200,
-              fontSize: 20,
-              letterSpacing: '0.02em',
-            }}
-          >
-            {Array.from({ length: 8 }).map((_, i) => (
-              <span
-                key={i}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  flex: '0 0 auto',
-                  paddingRight: 56,
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {marqueeText}
-              </span>
-            ))}
-          </div>
+      {/* marquee (full-bleed) */}
+      <div style={{ background: '#8B5CF6', color: '#fff', padding: '16px 0', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+        <div
+          style={{
+            display: 'flex',
+            width: 'max-content',
+            animation: 'mm-marquee 22s linear infinite',
+            fontFamily: DISPLAY,
+            fontWeight: 200,
+            fontSize: 20,
+            letterSpacing: '0.02em',
+          }}
+        >
+          {Array.from({ length: 8 }).map((_, i) => (
+            <span
+              key={i}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                flex: '0 0 auto',
+                paddingRight: 56,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {marqueeText}
+            </span>
+          ))}
         </div>
+      </div>
 
-        {/* why */}
-        <div style={{ padding: '84px 56px' }}>
+      {/* why */}
+      <div style={{ background: '#FFFFFF' }}>
+        <div style={col('84px 56px')}>
           <h2 style={{ ...heading, fontSize: 48, lineHeight: 1.0, margin: '0 0 14px' }}>
             Почему с нами
             <br />
@@ -309,9 +302,11 @@ export default function App() {
             ))}
           </div>
         </div>
+      </div>
 
-        {/* services */}
-        <div id="services" style={{ padding: '30px 56px 90px', scrollMarginTop: 24 }}>
+      {/* services */}
+      <div id="services" style={{ background: '#FFFFFF', scrollMarginTop: 24 }}>
+        <div style={col('30px 56px 90px')}>
           <div
             style={{
               background: '#181226',
@@ -364,9 +359,11 @@ export default function App() {
             <SystemAssembly />
           </div>
         </div>
+      </div>
 
-        {/* process */}
-        <div style={{ padding: '0 56px 90px' }}>
+      {/* process */}
+      <div style={{ background: '#FFFFFF' }}>
+        <div style={col('0 56px 90px')}>
           <h2 style={{ ...heading, fontSize: 48, margin: '0 0 48px' }}>
             Как это
             <br />
@@ -374,9 +371,11 @@ export default function App() {
           </h2>
           <ProcessPuzzle />
         </div>
+      </div>
 
-        {/* cases */}
-        <div id="cases" style={{ padding: '0 56px 90px', scrollMarginTop: 24 }}>
+      {/* cases */}
+      <div id="cases" style={{ background: '#FFFFFF', scrollMarginTop: 24 }}>
+        <div style={col('0 56px 90px')}>
           <div style={{ display: 'flex', alignItems: 'end', justifyContent: 'space-between', marginBottom: 40 }}>
             <h2 style={{ ...heading, fontSize: 50 }}>
               Что мы уже
@@ -489,9 +488,11 @@ export default function App() {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* team */}
-        <div id="team" style={{ padding: '84px 56px', background: '#161020', color: '#F4F0FB', scrollMarginTop: 24 }}>
+      {/* team (full-bleed) */}
+      <div id="team" style={{ background: '#161020', color: '#F4F0FB', scrollMarginTop: 24 }}>
+        <div style={col('84px 56px')}>
           <div style={{ marginBottom: 50 }}>
             <h2 style={{ ...heading, fontSize: 48, lineHeight: 1.0 }}>
               Небольшая команда —
@@ -630,17 +631,18 @@ export default function App() {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* scenika cta */}
+      {/* scenika cta */}
+      <div style={{ background: '#FFFFFF' }}>
         <div
-          style={{
-            padding: '74px 56px',
+          style={col('74px 56px', {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: 40,
             flexWrap: 'wrap',
-          }}
+          })}
         >
           <div>
             <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8B5CF6' }}>
@@ -669,18 +671,17 @@ export default function App() {
             Перейти на Сценику →
           </a>
         </div>
+      </div>
 
-        {/* footer */}
+      {/* footer (full-bleed) */}
+      <div style={{ background: '#181226', color: 'rgba(244,240,251,0.6)' }}>
         <div
-          style={{
-            padding: '32px 56px',
-            background: '#181226',
-            color: 'rgba(244,240,251,0.6)',
+          style={col('32px 56px', {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             fontSize: 14,
-          }}
+          })}
         >
           <span style={{ fontFamily: DISPLAY, fontSize: 16, color: '#F4F0FB', fontWeight: 200 }}>МЭПЛ</span>
           <span>© 2026 · Растим проекты, а не отчёты</span>
