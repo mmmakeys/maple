@@ -317,8 +317,8 @@ html {
     gap: 16px;
   }
   .mm-team-avatar {
-    flex: 0 0 120px;
-    width: 120px;
+    flex: 0 0 144px;
+    width: 144px;
     height: auto;
   }
   .mm-team-info {
@@ -328,12 +328,14 @@ html {
   .mm-team-info .mm-team-name {
     margin-top: 0 !important;
   }
-  .mm-team-more {
-    flex-direction: row !important;
-    align-items: flex-start;
+  .mm-team-more-head > div:first-child {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 11px !important;
   }
-  .mm-team-more > div:first-child {
-    flex: 0 0 52px;
+  .mm-team-more-head > div:first-child svg {
+    width: 16px;
+    height: 16px;
   }
   .mm-scenika-row {
     flex-direction: column;

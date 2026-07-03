@@ -596,50 +596,50 @@ export default function App() {
                 padding: '24px 22px',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 20,
+                gap: 16,
               }}
             >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 52,
-                  height: 52,
-                  borderRadius: 14,
-                  background: alpha('violet400', 0.1),
-                  border: `1px dashed ${alpha('violet400', 0.45)}`,
-                  flex: '0 0 auto',
-                }}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={violet400} strokeWidth="1.6" strokeLinecap="round">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-              </div>
-              <div>
-                <div style={{ fontFamily: DISPLAY, fontSize: 16, fontWeight: 200, color: ink100, marginBottom: 16, lineHeight: 1.25 }}>
+              <div className="mm-team-more-head" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 52,
+                    height: 52,
+                    borderRadius: 14,
+                    background: alpha('violet400', 0.1),
+                    border: `1px dashed ${alpha('violet400', 0.45)}`,
+                    flex: '0 0 auto',
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={violet400} strokeWidth="1.6" strokeLinecap="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </div>
+                <div style={{ fontFamily: DISPLAY, fontSize: 16, fontWeight: 200, color: ink100, lineHeight: 1.25 }}>
                   команда специалистов
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                  {roles.map((r) => (
-                    <span
-                      key={r}
-                      style={{
-                        background: alpha('violet400', 0.14),
-                        border: `1px solid ${alpha('violet400', 0.32)}`,
-                        color: '#D9CEF0',
-                        borderRadius: 999,
-                        padding: '7px 13px',
-                        fontSize: 13,
-                        fontWeight: 600,
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {r}
-                    </span>
-                  ))}
-                </div>
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {roles.map((r) => (
+                  <span
+                    key={r}
+                    style={{
+                      background: alpha('violet400', 0.14),
+                      border: `1px solid ${alpha('violet400', 0.32)}`,
+                      color: '#D9CEF0',
+                      borderRadius: 999,
+                      padding: '7px 13px',
+                      fontSize: 13,
+                      fontWeight: 600,
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {r}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
