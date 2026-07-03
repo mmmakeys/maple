@@ -29,7 +29,7 @@ export default function MapleLeaf() {
 
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(33, W / H, 0.1, 100);
-      camera.position.set(0, 0.12, 4.1);
+      camera.position.set(0, 0.05, 4.9);
 
       const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));

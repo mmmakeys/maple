@@ -208,11 +208,18 @@ html {
 
 /* ---- tablet ---- */
 @media (max-width: 1023px) {
+  .mm-hero-band {
+    min-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
   .mm-hero-leaf {
     width: clamp(280px, 42vw, 480px);
     height: clamp(280px, 42vw, 480px);
     right: 4vw;
-    top: 50%;
+    top: 45%;
+    transform: translateY(-50%);
     opacity: 0.6;
   }
   .mm-why-grid {
@@ -245,11 +252,16 @@ html {
     padding: 6px 12px !important;
     max-width: 100%;
   }
+  .mm-hero-band {
+    min-height: 92dvh;
+    justify-content: center;
+  }
   .mm-hero-leaf {
     position: absolute;
     inset: auto;
     right: -60px;
-    top: 45%;
+    top: 40%;
+    transform: translateY(-50%);
     width: min(85vw, 360px);
     height: min(85vw, 360px);
     margin: 0;

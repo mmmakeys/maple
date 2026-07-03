@@ -128,7 +128,10 @@ export default function App() {
             pointerEvents: 'none',
           }}
         />
-        <div style={col('clamp(48px,7vw,78px) clamp(20px,4vw,56px) clamp(48px,6vw,70px)', { position: 'relative' })}>
+        <div
+          className="mm-hero-band"
+          style={col('clamp(48px,7vw,78px) clamp(20px,4vw,56px) clamp(48px,6vw,70px)', { position: 'relative' })}
+        >
           {/* leaf sits at the right edge of the content column — .mm-hero-leaf
               handles the mobile/tablet reflow (size, position, animation). */}
           <div className="mm-hero-leaf">
