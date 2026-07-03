@@ -1,11 +1,22 @@
-import { StrictMode } from 'react'
+import { StrictMode, Suspense, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 
+const Scenika = lazy(() => import('./components/Scenika.tsx'))
+
+const path = window.location.pathname.replace(/\/+$/, '') || '/'
+const Page = path === '/scenika' ? (
+  <Suspense fallback={null}>
+    <Scenika />
+  </Suspense>
+) : (
+  <App />
+)
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    {Page}
   </StrictMode>,
 )
 

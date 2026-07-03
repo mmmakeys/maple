@@ -49,6 +49,37 @@ body {
   }
 }
 
+/* ---- Scenika keyframes ---- */
+@keyframes sc-bell {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.55);
+  }
+}
+@keyframes sc-gear-cw {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes sc-gear-ccw {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+@keyframes sc-caret {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
 @keyframes mm-breathe-2 {
   0% {
     transform: scale(1.1) translate(0, 0);
@@ -344,5 +375,31 @@ html {
   .mm-footer-row {
     justify-content: center;
     text-align: center;
+  }
+  /* ---- Scenika mobile ---- */
+  .sc-nav-links {
+    gap: 14px !important;
+    font-size: 13px !important;
+  }
+  .sc-nav-anchor {
+    display: none !important;
+  }
+  .sc-first-grid,
+  .sc-why-grid {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+  .sc-numbers-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 36px 20px !important;
+  }
+  .sc-case-row {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+  .sc-footer {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 12px !important;
   }
 }
