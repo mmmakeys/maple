@@ -128,7 +128,7 @@ html {
 .mm-hero-title {
   font-size: clamp(46px, 9vw, 108px);
   line-height: 0.92;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.03em;
   margin: 0;
 }
 .mm-hero-copy-row {

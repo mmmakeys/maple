@@ -164,6 +164,7 @@ export default function App() {
               style={{
                 ...heading,
                 textTransform: 'uppercase',
+                letterSpacing: '0.03em',
               }}
             >
               Растим
