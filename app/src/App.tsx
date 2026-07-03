@@ -224,8 +224,9 @@ export default function App() {
       </div>
 
       {/* marquee (full-bleed) */}
-      <div style={{ background: violet500, color: paper, padding: '16px 0', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+      <div className="mm-marquee-band" style={{ background: violet500, color: paper, padding: '16px 0', overflow: 'hidden', whiteSpace: 'nowrap' }}>
         <div
+          className="mm-marquee-track"
           style={{
             display: 'flex',
             width: 'max-content',
