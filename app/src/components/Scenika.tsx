@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-const DISPLAY = "'Russo One', sans-serif";
+const DISPLAY = "'Onest', sans-serif";
 const RED = '#A31621';
 const INK = '#111111';
 const PAPER = '#FFFFFF';
@@ -53,7 +53,7 @@ function ScenikaNav() {
         borderBottom: `1px solid ${BORDER}`,
       }}
     >
-      <div style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 20, letterSpacing: '0.24em', textTransform: 'uppercase' }}>
+      <div style={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: 20, letterSpacing: '0.24em', textTransform: 'uppercase' }}>
         Сценика
       </div>
       <div className="sc-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 28, fontSize: 14, letterSpacing: '0.04em' }}>
@@ -127,7 +127,7 @@ function ScenikaHero() {
       <h1
         style={{
           fontFamily: DISPLAY,
-          fontWeight: 700,
+          fontWeight: 800,
           fontSize: 'clamp(56px, 10vw, 148px)',
           lineHeight: 0.98,
           margin: 0,
@@ -177,7 +177,7 @@ function ScenikaHero() {
 
 const CALL_LABEL: React.CSSProperties = {
   fontFamily: DISPLAY,
-  fontWeight: 600,
+  fontWeight: 800,
   fontSize: 15,
   letterSpacing: '0.22em',
   textTransform: 'uppercase',
@@ -186,7 +186,7 @@ const CALL_LABEL: React.CSSProperties = {
 
 const SECTION_H2: React.CSSProperties = {
   fontFamily: DISPLAY,
-  fontWeight: 600,
+  fontWeight: 800,
   fontSize: 'clamp(32px, 5vw, 72px)',
   lineHeight: 1.05,
   textTransform: 'uppercase',
@@ -284,9 +284,9 @@ function FirstCall() {
       const distance = Math.max(1, rect.height * 0.9);
       const scrolled = vh - rect.top;
       const raw = Math.max(0, Math.min(1, scrolled / distance));
-      // Ease-out quadratic: shutters close gently early, snap shut near the end
-      // so that "почти полностью белый" is reached by ~90% of the way through.
-      setProgress(1 - (1 - raw) * (1 - raw));
+      // Ease-out cubic — тяжёлая ткань уверенно доходит до центра
+      const inv = 1 - raw;
+      setProgress(1 - inv * inv * inv);
     };
     const onScroll = () => {
       cancelAnimationFrame(raf);
@@ -314,36 +314,37 @@ function FirstCall() {
         scrollMarginTop: 24,
       }}
     >
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '50%',
-          height: '100%',
-          background: PAPER,
-          transform: `translateX(${-100 + progress * 100}%)`,
-          willChange: 'transform',
-          zIndex: 0,
-          pointerEvents: 'none',
-        }}
-      />
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          width: '50%',
-          height: '100%',
-          background: PAPER,
-          transform: `translateX(${100 - progress * 100}%)`,
-          willChange: 'transform',
-          zIndex: 0,
-          pointerEvents: 'none',
-        }}
-      />
+      {(() => {
+        // складки колышутся во время движения (несколько полу-волн за путь),
+        // передний край постепенно теряет тень к моменту смыкания
+        const swayL = Math.sin(progress * Math.PI * 3) * 10;
+        const swayR = Math.sin(progress * Math.PI * 3 + 0.7) * 10;
+        const edge = progress < 0.6 ? 1 : Math.max(0, 1 - (progress - 0.6) / 0.3);
+        return (
+          <>
+            <div
+              aria-hidden
+              className="sc-curtain sc-curtain-l"
+              style={{
+                transform: `translateX(${-100 + progress * 100}%)`,
+                backgroundPosition: `0px ${swayL}px`,
+                ['--sc-curtain-edge' as string]: String(edge),
+                ['--sc-curtain-mask-y' as string]: `${swayL}px`,
+              } as React.CSSProperties}
+            />
+            <div
+              aria-hidden
+              className="sc-curtain sc-curtain-r"
+              style={{
+                transform: `translateX(${100 - progress * 100}%)`,
+                backgroundPosition: `0px ${swayR}px`,
+                ['--sc-curtain-edge' as string]: String(edge),
+                ['--sc-curtain-mask-y' as string]: `${swayR}px`,
+              } as React.CSSProperties}
+            />
+          </>
+        );
+      })()}
       <div style={{ position: 'relative', zIndex: 1 }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 24 }}>
         <div style={CALL_LABEL}>Первый звонок</div>
@@ -377,7 +378,7 @@ function FirstCall() {
               key={w.t}
               style={{
                 fontFamily: DISPLAY,
-                fontWeight: 600,
+                fontWeight: 800,
                 fontSize: 'clamp(28px, 3.6vw, 54px)',
                 textTransform: 'uppercase',
                 lineHeight: 1.1,
@@ -659,7 +660,7 @@ function SecondCall() {
                     style={{
                       fontFamily: "'Manrope', sans-serif",
                       fontSize: 14,
-                      fontWeight: 600,
+                      fontWeight: 800,
                       letterSpacing: '0.01em',
                       color: lit ? RED : '#8A857C',
                       whiteSpace: 'nowrap',
@@ -818,7 +819,7 @@ function MapleBridge() {
           <h2
             style={{
               fontFamily: DISPLAY,
-              fontWeight: 600,
+              fontWeight: 800,
               textTransform: 'uppercase',
               fontSize: 'clamp(34px, 5.4vw, 76px)',
               lineHeight: 1.02,
@@ -972,7 +973,7 @@ function MapleBridge() {
             }}
           >
             МЭПЛ собирает систему. СЦЕНИКА собирает тур.{' '}
-            <span style={{ color: MAPLE_INK_100, fontWeight: 700 }}>Вместе собираем зал.</span>
+            <span style={{ color: MAPLE_INK_100, fontWeight: 800 }}>Вместе собираем зал.</span>
           </p>
           <a
             href="/"
@@ -1141,7 +1142,7 @@ function ThirdCall() {
             transformOrigin: 'left top',
             transform: `scale(${lerp(0.72, 1, soldOutAppear)}) translateY(${lerp(24, 0, soldOutAppear)}px)`,
             fontFamily: DISPLAY,
-            fontWeight: 700,
+            fontWeight: 800,
             fontSize: 'clamp(64px, 12vw, 184px)',
             textTransform: 'uppercase',
             color: RED,
@@ -1305,7 +1306,7 @@ function Numbers() {
             <div
               style={{
                 fontFamily: DISPLAY,
-                fontWeight: 600,
+                fontWeight: 800,
                 fontSize: 'clamp(36px, 4.6vw, 68px)',
                 lineHeight: 1,
                 color: s.hi ? RED : INK,
@@ -1350,7 +1351,7 @@ function WhyStay() {
               </div>
             ))}
           </div>
-          <p style={{ fontSize: 20, fontWeight: 600, color: INK, margin: '28px 0 0' }}>
+          <p style={{ fontSize: 20, fontWeight: 800, color: INK, margin: '28px 0 0' }}>
             Мы просим только выйти на сцену.
           </p>
         </div>
@@ -1413,7 +1414,7 @@ function ScenikaFooter() {
         flexWrap: 'wrap',
       }}
     >
-      <div style={{ fontFamily: DISPLAY, fontWeight: 600, letterSpacing: '0.24em', textTransform: 'uppercase', color: '#F5F5F3' }}>
+      <div style={{ fontFamily: DISPLAY, fontWeight: 800, letterSpacing: '0.24em', textTransform: 'uppercase', color: '#F5F5F3' }}>
         Сценика
       </div>
       <div style={{ display: 'flex', gap: 28, alignItems: 'center', flexWrap: 'wrap' }}>
