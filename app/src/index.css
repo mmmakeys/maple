@@ -79,6 +79,14 @@ body {
     opacity: 0;
   }
 }
+@keyframes sc-pulse-flow {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -100;
+  }
+}
 
 @keyframes mm-breathe-2 {
   0% {
