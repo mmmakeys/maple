@@ -71,7 +71,7 @@
 
   <div aria-hidden="true" style="position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;">
     <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,46,126,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(91,140,255,.022) 1px,transparent 1px);background-size:54px 54px;"></div>
-    <div style="position:absolute;inset:0;opacity:.52;-webkit-mask-image:linear-gradient(90deg,#000 0%,#000 15%,transparent 33%,transparent 67%,#000 85%,#000 100%);mask-image:linear-gradient(90deg,#000 0%,#000 15%,transparent 33%,transparent 67%,#000 85%,#000 100%);">
+    <div id="nl-coderain" style="position:absolute;inset:0;opacity:0;transition:opacity .5s ease-out;-webkit-mask-image:linear-gradient(90deg,#000 0%,#000 15%,transparent 33%,transparent 67%,#000 85%,#000 100%);mask-image:linear-gradient(90deg,#000 0%,#000 15%,transparent 33%,transparent 67%,#000 85%,#000 100%);">
       <pre style="position:absolute;top:0;left:1.5%;margin:0;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.95;color:rgba(255,46,126,.12);white-space:pre;animation:nl-codescroll 40s linear infinite;">{{ codeRainA }}</pre>
       <pre style="position:absolute;top:0;right:1.5%;margin:0;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.95;color:rgba(91,140,255,.11);white-space:pre;text-align:right;animation:nl-codescroll 54s linear infinite;">{{ codeRainB }}</pre>
     </div>
@@ -670,6 +670,7 @@ class Component extends DCLogic {
     // Scroll: nav state + progress + hero parallax
     const nav = document.getElementById('nl-nav');
     const prog = document.getElementById('nl-progress');
+    const rain = document.getElementById('nl-coderain');
     let solid = false;
     let ticking = false;
     const onScroll = () => {
@@ -679,6 +680,7 @@ class Component extends DCLogic {
         const y = window.scrollY || 0;
         const h = document.documentElement.scrollHeight - window.innerHeight;
         if (prog) prog.style.width = (h > 0 ? (y / h) * 100 : 0) + '%';
+        if (rain) rain.style.opacity = String(Math.max(0, Math.min(1, (y - 500) / 400)) * 0.52);
         if (nav) {
           const wantSolid = y > 40;
           if (wantSolid !== solid) {
