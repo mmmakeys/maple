@@ -660,7 +660,7 @@ export default function App() {
         </div>
         <div
           className="mm-scenika-row"
-          style={{ ...col('clamp(56px,7vw,84px) clamp(20px,4vw,56px)'), position: 'relative', zIndex: 1 }}
+          style={{ ...col('clamp(96px,11vw,150px) clamp(20px,4vw,56px)'), position: 'relative', zIndex: 1 }}
         >
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
