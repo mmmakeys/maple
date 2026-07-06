@@ -653,30 +653,68 @@ export default function App() {
       </div>
 
       {/* scenika cta */}
-      <div style={{ background: paper }}>
-        <div className="mm-scenika-row" style={col('clamp(48px,6vw,74px) clamp(20px,4vw,56px)')}>
+      <div style={{ background: '#0C0C0C', color: paper, position: 'relative', overflow: 'hidden' }}>
+        <div className="mm-scenika-mesh" aria-hidden>
+          <div className="mm-scenika-blob mm-scenika-blob--a" />
+          <div className="mm-scenika-blob mm-scenika-blob--b" />
+          <div className="mm-scenika-blob mm-scenika-blob--c" />
+        </div>
+        <div
+          className="mm-scenika-row"
+          style={{ ...col('clamp(56px,7vw,84px) clamp(20px,4vw,56px)'), position: 'relative', zIndex: 1 }}
+        >
           <div>
-            <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: violet500 }}>
-              Сценика
-            </span>
-            <h3 style={{ ...heading, fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 200, lineHeight: 1.02, margin: '14px 0 12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 30 }} aria-hidden>
+                <span style={{ width: 6, height: 30, background: '#A31621' }} />
+                <span style={{ width: 6, height: 30, background: '#A31621' }} />
+                <span style={{ width: 6, height: 30, background: '#A31621' }} />
+              </div>
+              <span
+                style={{
+                  fontFamily: "'Onest', sans-serif",
+                  fontWeight: 800,
+                  letterSpacing: '0.16em',
+                  textTransform: 'uppercase',
+                  fontSize: 20,
+                  color: paper,
+                }}
+              >
+                Сценика
+              </span>
+            </div>
+            <h3
+              style={{
+                fontFamily: "'Onest', sans-serif",
+                fontSize: 'clamp(28px, 4vw, 44px)',
+                fontWeight: 800,
+                lineHeight: 1.02,
+                letterSpacing: '0.02em',
+                textTransform: 'uppercase',
+                margin: '0 0 14px',
+                color: paper,
+              }}
+            >
               Концертное агентство
               <br />
               полного цикла
             </h3>
-            <p style={{ fontSize: 19, color: ink700, margin: 0 }}>Концерты, туры, шоу. 3 звонка до солдаута.</p>
+            <p style={{ fontSize: 19, color: 'rgba(255,255,255,0.68)', margin: 0 }}>
+              Концерты, туры, шоу. 3 звонка до солдаута.
+            </p>
           </div>
           <a
-            href="#"
+            href="/scenika"
             style={{
               whiteSpace: 'nowrap',
               textDecoration: 'none',
-              background: violet500,
+              background: '#A31621',
               color: paper,
               fontWeight: 800,
               fontSize: 17,
               padding: '18px 34px',
               borderRadius: 10,
+              boxShadow: '0 12px 40px rgba(163,22,33,0.36), inset 0 1px 0 rgba(255,255,255,0.18)',
             }}
           >
             Перейти на Сценику →

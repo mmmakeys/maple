@@ -387,6 +387,60 @@ html {
   flex-wrap: wrap;
 }
 
+.mm-scenika-mesh {
+  position: absolute;
+  inset: -120px 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.mm-scenika-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(110px);
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+.mm-scenika-blob--a {
+  width: 55%;
+  height: 130%;
+  left: -12%;
+  top: -20%;
+  background: radial-gradient(circle at 50% 50%, rgba(163, 22, 33, 0.55), transparent 62%);
+  animation: mm-scenika-a 28s ease-in-out infinite alternate;
+}
+.mm-scenika-blob--b {
+  width: 50%;
+  height: 130%;
+  right: -10%;
+  top: -10%;
+  background: radial-gradient(circle at 50% 50%, rgba(220, 60, 80, 0.45), transparent 62%);
+  animation: mm-scenika-b 34s ease-in-out infinite alternate;
+}
+.mm-scenika-blob--c {
+  width: 45%;
+  height: 110%;
+  left: 30%;
+  bottom: -30%;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 210, 190, 0.28), transparent 66%);
+  animation: mm-scenika-c 40s ease-in-out infinite alternate;
+}
+@keyframes mm-scenika-a {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(14%, 10%, 0) scale(1.15); }
+}
+@keyframes mm-scenika-b {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(-12%, 16%, 0) scale(1.1); }
+}
+@keyframes mm-scenika-c {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(8%, -14%, 0) scale(1.2); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mm-scenika-blob { animation: none; }
+}
+
 .mm-footer-row {
   display: flex;
   align-items: center;
