@@ -21,7 +21,7 @@ export default function Scenika() {
   }, []);
 
   return (
-    <div style={{ fontFamily: "'Manrope', sans-serif", color: INK, background: PAPER, overflow: 'hidden' }}>
+    <div style={{ fontFamily: "'Manrope', sans-serif", color: INK, background: PAPER, overflowX: 'clip' }}>
       <ScenikaNav />
       <ScenikaHero />
       <FirstCall />
