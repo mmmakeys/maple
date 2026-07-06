@@ -684,11 +684,11 @@ export default function App() {
             </div>
             <h3
               style={{
-                fontFamily: "'Onest', sans-serif",
+                fontFamily: "'Manrope', sans-serif",
                 fontSize: 'clamp(28px, 4vw, 44px)',
                 fontWeight: 800,
                 lineHeight: 1.02,
-                letterSpacing: '0.02em',
+                letterSpacing: '0.01em',
                 textTransform: 'uppercase',
                 margin: '0 0 14px',
                 color: paper,
