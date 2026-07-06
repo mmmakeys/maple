@@ -260,11 +260,11 @@ export default function App() {
           <h2 style={{ ...heading, fontSize: 'clamp(32px, 5vw, 48px)', lineHeight: 1.0, margin: '0 0 14px' }}>
             Почему с нами
             <br />
-            нормально?
+            легко?
           </h2>
           <p style={{ fontSize: 19, lineHeight: 1.55, color: ink700, maxWidth: 560, margin: '0 0 46px' }}>
-            Потому что делаем, чтобы работало. По умолчанию будем креативными. Если нужно — будем скучными и
-            эффективными.
+            Потому что делаем так, чтобы всё работало. По умолчанию будем креативными. Если нужно — будем простыми
+            и эффективными.
           </p>
           <div className="mm-why-grid">
             {whyCards.map((c) => (
