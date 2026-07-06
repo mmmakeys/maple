@@ -202,7 +202,7 @@ export const team: Member[] = [
         'Управление проектами и командой разработки в «Диджитех»',
         'Построение e-commerce и digital-маркетинга в VOLЯ WEAR (бренд Павла Воли и Ляйсан Утяшевой)',
         'Маркетинг событий и билетные системы в КЦ «Строгино»',
-        'Digital-маркетинг в Fashion Factory School, Comedy Club Production и Dress Up Bar',
+        'Digital-маркетинг в Fashion Factory School / Comedy Club Production',
         'Магистр по корпоративным ИТ-системам, МИЭТ',
       ],
       skills: [
