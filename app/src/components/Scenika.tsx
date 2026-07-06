@@ -399,15 +399,15 @@ function FirstCall() {
   );
 }
 
-const MECH_NODES: Array<{ label: string; icon: string }> = [
-  { label: 'Площадки', icon: 'M4 20V10L12 4L20 10V20H4Z M9 20V15H15V20' },
-  { label: 'Билеты', icon: 'M3 8H21V16H3Z M9 8V10 M9 12V14 M14 8V10 M14 12V14' },
-  { label: 'Договоры', icon: 'M6 4H14L18 8V20H6Z M14 4V8H18 M9 12H15 M9 15H13' },
-  { label: 'Реклама', icon: 'M3 12L15 6V18Z M15 10V14 M18 8V16' },
-  { label: 'PR и медиа', icon: 'M9 4H15V13H9Z M6 12A6 6 0 0018 12 M12 18V21' },
-  { label: 'Райдеры', icon: 'M6 5H18V20H6Z M10 3H14V6H10Z M9 11H15 M9 14H14' },
-  { label: 'Логистика', icon: 'M2 8H13V16H2Z M13 12H17L20 15V16H13Z M6 20A2 2 0 106 16 A2 2 0 106 20 Z M18 20A2 2 0 1018 16 A2 2 0 1018 20 Z' },
-  { label: 'Турменеджмент', icon: 'M12 3A6 6 0 0118 9C18 13 12 21 12 21C12 21 6 13 6 9A6 6 0 0112 3Z M12 7A2 2 0 1012 11 A2 2 0 1012 7 Z' },
+const MECH_NODES: Array<{ label: string; desc: string; icon: string }> = [
+  { label: 'Площадки', desc: 'Выбираем города, даты и залы под реальный спрос', icon: 'M4 20V10L12 4L20 10V20H4Z M9 20V15H15V20' },
+  { label: 'Билеты', desc: 'Заводим билетный стол и контролируем продажи', icon: 'M3 8H21V16H3Z M9 8V10 M9 12V14 M14 8V10 M14 12V14' },
+  { label: 'Договоры', desc: 'Закрываем юридический и финансовый контур', icon: 'M6 4H14L18 8V20H6Z M14 4V8H18 M9 12H15 M9 15H13' },
+  { label: 'Реклама', desc: 'Запускаем digital, наружку и локальные кампании', icon: 'M3 12L15 6V18Z M15 10V14 M18 8V16' },
+  { label: 'PR и медиа', desc: 'Подключаем СМИ, радио и инфопартнёров', icon: 'M9 4H15V13H9Z M6 12A6 6 0 0018 12 M12 18V21' },
+  { label: 'Райдеры', desc: 'Собираем технические и бытовые требования', icon: 'M6 5H18V20H6Z M10 3H14V6H10Z M9 11H15 M9 14H14' },
+  { label: 'Логистика', desc: 'Планируем перемещения, тайминги и сопровождение', icon: 'M2 8H13V16H2Z M13 12H17L20 15V16H13Z M6 20A2 2 0 106 16 A2 2 0 106 20 Z M18 20A2 2 0 1018 16 A2 2 0 1018 20 Z' },
+  { label: 'Турменеджмент', desc: 'Контролируем день события и работу на площадке', icon: 'M12 3A6 6 0 0118 9C18 13 12 21 12 21C12 21 6 13 6 9A6 6 0 0112 3Z M12 7A2 2 0 1012 11 A2 2 0 1012 7 Z' },
 ];
 
 // 8 grid slots around the centre (row-major, centre skipped).
@@ -426,23 +426,18 @@ const MECH_PALETTES = [
 
 function SecondCall() {
   const N = MECH_NODES.length;
-  const [activated, setActivated] = useState<Set<number>>(new Set());
+  const [assembled, setAssembled] = useState(false);
   const [hovered, setHovered] = useState<number>(-1);
   const [slotByNode, setSlotByNode] = useState<number[]>(() => Array.from({ length: N }, (_, i) => i));
   const [paletteIdx, setPaletteIdx] = useState(0);
-  const [spinning, setSpinning] = useState(false);
   const tileRefs = useRef<Array<HTMLDivElement | null>>([]);
   const prevRects = useRef<Array<DOMRect | null> | null>(null);
 
-  const activate = (i: number) =>
-    setActivated((prev) => {
-      if (prev.has(i)) return prev;
-      const next = new Set(prev);
-      next.add(i);
-      return next;
-    });
-  const reset = () => setActivated(new Set());
-  const shuffleTiles = () => {
+  const toggle = () => {
+    if (!assembled) {
+      setAssembled(true);
+      return;
+    }
     prevRects.current = tileRefs.current.map((el) => el?.getBoundingClientRect() ?? null);
     setSlotByNode((prev) => {
       const arr = [...prev];
@@ -453,8 +448,7 @@ function SecondCall() {
       return arr;
     });
     setPaletteIdx((p) => (p + 1) % MECH_PALETTES.length);
-    setSpinning(true);
-    window.setTimeout(() => setSpinning(false), 700);
+    setAssembled(false);
   };
 
   useLayoutEffect(() => {
@@ -478,9 +472,8 @@ function SecondCall() {
     prevRects.current = null;
   }, [slotByNode]);
 
-  const allDone = activated.size === N;
-  const anyActive = activated.size > 0;
   const palette = MECH_PALETTES[paletteIdx];
+  const focused = hovered >= 0 ? MECH_NODES[hovered] : null;
 
   return (
     <div id="mechanism" style={{ background: '#F8F8F8', color: INK, padding: `120px ${PAD_X}`, scrollMarginTop: 24 }}>
@@ -508,7 +501,7 @@ function SecondCall() {
             strokeLinecap="round"
             style={{
               transformOrigin: '50% 50%',
-              animation: anyActive ? 'sc-gear-cw 3.2s linear infinite' : undefined,
+              animation: assembled ? 'sc-gear-cw 3.2s linear infinite' : undefined,
             }}
           >
             <circle cx="50" cy="50" r="26" />
@@ -526,7 +519,7 @@ function SecondCall() {
             style={{
               transformOrigin: '50% 50%',
               marginLeft: -6,
-              animation: anyActive ? 'sc-gear-ccw 2.1s linear infinite' : undefined,
+              animation: assembled ? 'sc-gear-ccw 2.1s linear infinite' : undefined,
             }}
           >
             <circle cx="50" cy="50" r="26" />
@@ -534,25 +527,9 @@ function SecondCall() {
             {gearTeeth}
           </svg>
         </div>
-        <span style={{ fontSize: 16, color: allDone ? RED : '#8A8A8A', letterSpacing: '0.02em', fontWeight: allDone ? 700 : 400 }}>
-          {allDone ? 'Механизм запущен.' : anyActive ? `Собрано ${activated.size} из ${N}` : 'Наведи или нажми на элемент'}
+        <span style={{ fontSize: 16, color: assembled ? RED : '#8A8A8A', letterSpacing: '0.02em', fontWeight: assembled ? 700 : 400 }}>
+          {assembled ? 'Механизм запущен.' : 'Тапни любой блок — соберём механизм.'}
         </span>
-        {anyActive && (
-          <button
-            onClick={reset}
-            style={{
-              cursor: 'pointer',
-              fontSize: 14,
-              background: 'transparent',
-              border: 'none',
-              color: MUTED,
-              textDecoration: 'underline',
-              padding: 0,
-            }}
-          >
-            сбросить
-          </button>
-        )}
       </div>
 
       <div
@@ -563,16 +540,15 @@ function SecondCall() {
           gridTemplateRows: 'repeat(3, 1fr)',
           gap: 'clamp(10px, 1.4vw, 20px)',
           width: '100%',
-          maxWidth: 640,
+          maxWidth: 560,
           aspectRatio: '1 / 1',
-          marginLeft: 'auto',
-          marginRight: 'auto',
         }}
       >
         {MECH_NODES.map((node, i) => {
           const slot = slotByNode[i];
           const [col, row] = MECH_SLOTS[slot];
-          const lit = activated.has(i) || hovered === i;
+          const lit = assembled;
+          const hoverHint = !assembled && hovered === i;
           return (
             <div
               key={i}
@@ -582,12 +558,12 @@ function SecondCall() {
               <button
                 type="button"
                 aria-label={node.label}
-                aria-pressed={activated.has(i)}
+                aria-pressed={assembled}
                 onMouseEnter={() => setHovered(i)}
                 onMouseLeave={() => setHovered(-1)}
                 onFocus={() => setHovered(i)}
                 onBlur={() => setHovered(-1)}
-                onClick={() => activate(i)}
+                onClick={toggle}
                 style={{
                   width: '100%',
                   height: '100%',
@@ -598,10 +574,10 @@ function SecondCall() {
                   gap: 'clamp(6px, 0.9vw, 12px)',
                   padding: 'clamp(10px, 1.6vw, 22px)',
                   background: lit ? RED : palette.fill,
-                  border: `1.5px solid ${lit ? RED : palette.stroke}`,
+                  border: `1.5px solid ${lit ? RED : hoverHint ? RED : palette.stroke}`,
                   borderRadius: 4,
                   cursor: 'pointer',
-                  transition: 'background 260ms ease, border-color 260ms ease, color 260ms ease',
+                  transition: 'background 320ms ease, border-color 260ms ease, color 320ms ease',
                   fontFamily: "'Manrope', sans-serif",
                   color: lit ? PAPER : INK,
                 }}
@@ -636,35 +612,54 @@ function SecondCall() {
         <div style={{ gridColumn: 2, gridRow: 2, minWidth: 0 }}>
           <button
             type="button"
-            aria-label={allDone ? 'Механизм запущен' : 'Перемешать блоки'}
-            onClick={shuffleTiles}
+            aria-label={assembled ? 'Разобрать механизм' : 'Собрать механизм'}
+            onClick={toggle}
             style={{
               width: '100%',
               height: '100%',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              background: allDone ? RED : PAPER,
+              background: assembled ? RED : PAPER,
               border: `2px solid ${RED}`,
               borderRadius: 4,
               cursor: 'pointer',
-              transition: 'background 300ms ease, transform 300ms ease',
-              transform: spinning ? 'scale(0.94)' : 'scale(1)',
+              transition: 'background 320ms ease, color 320ms ease, box-shadow 400ms ease',
               fontFamily: DISPLAY,
               fontWeight: 800,
               fontSize: 'clamp(18px, 2.4vw, 30px)',
               letterSpacing: '0.08em',
-              color: allDone ? PAPER : RED,
-              boxShadow: allDone ? '0 0 0 6px rgba(163,22,33,0.14)' : 'none',
+              color: assembled ? PAPER : RED,
+              boxShadow: assembled ? '0 0 0 6px rgba(163,22,33,0.14)' : 'none',
             }}
           >
             ШОУ
           </button>
         </div>
       </div>
-      <p style={{ fontSize: 14, color: MUTED, margin: '20px 0 0', textAlign: 'center' }}>
-        Нажми на <b>ШОУ</b>, чтобы перемешать блоки. Тапни блок — он загорится и учтётся в счётчике.
-      </p>
+      <div
+        aria-live="polite"
+        style={{
+          marginTop: 22,
+          minHeight: 56,
+          maxWidth: 560,
+          fontFamily: "'Manrope', sans-serif",
+          fontSize: 15,
+          lineHeight: 1.5,
+          color: MUTED,
+          transition: 'opacity 220ms ease',
+          opacity: focused || assembled ? 1 : 0.6,
+        }}
+      >
+        {focused ? (
+          <>
+            <div style={{ fontWeight: 800, color: INK, marginBottom: 2 }}>{focused.label}</div>
+            <div>{focused.desc}</div>
+          </>
+        ) : assembled ? (
+          <div>Тапни любой блок ещё раз — разберём в рандомное состояние.</div>
+        ) : null}
+      </div>
       <p style={{ fontSize: 18, color: MUTED, margin: '40px 0 0', maxWidth: 720 }}>
         Мы не ведём концерт по списку задач. Мы собираем систему, в которой тур начинает продаваться, двигаться и расти.
       </p>
