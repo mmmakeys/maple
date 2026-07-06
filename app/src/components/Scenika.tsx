@@ -417,27 +417,16 @@ const MECH_SLOTS: Array<[number, number]> = [
   [1, 3], [2, 3], [3, 3],
 ];
 
-const MECH_PALETTES = [
-  { fill: '#FFFFFF', stroke: '#DAD6CE' },
-  { fill: '#EFEBE1', stroke: '#CFC7B4' },
-  { fill: '#F5E4E1', stroke: '#E4B4AC' },
-  { fill: '#E4E7EE', stroke: '#B7BCC8' },
-];
-
 function SecondCall() {
   const N = MECH_NODES.length;
   const [assembled, setAssembled] = useState(false);
   const [hovered, setHovered] = useState<number>(-1);
   const [slotByNode, setSlotByNode] = useState<number[]>(() => Array.from({ length: N }, (_, i) => i));
-  const [paletteIdx, setPaletteIdx] = useState(0);
+  const [flashDelays, setFlashDelays] = useState<number[]>(() => Array(N + 1).fill(0));
   const tileRefs = useRef<Array<HTMLDivElement | null>>([]);
   const prevRects = useRef<Array<DOMRect | null> | null>(null);
 
   const toggle = () => {
-    if (!assembled) {
-      setAssembled(true);
-      return;
-    }
     prevRects.current = tileRefs.current.map((el) => el?.getBoundingClientRect() ?? null);
     setSlotByNode((prev) => {
       const arr = [...prev];
@@ -447,8 +436,8 @@ function SecondCall() {
       }
       return arr;
     });
-    setPaletteIdx((p) => (p + 1) % MECH_PALETTES.length);
-    setAssembled(false);
+    setFlashDelays(Array.from({ length: N + 1 }, () => Math.floor(Math.random() * 380)));
+    setAssembled((prev) => !prev);
   };
 
   useLayoutEffect(() => {
@@ -472,7 +461,6 @@ function SecondCall() {
     prevRects.current = null;
   }, [slotByNode]);
 
-  const palette = MECH_PALETTES[paletteIdx];
   const focused = hovered >= 0 ? MECH_NODES[hovered] : null;
 
   return (
@@ -548,7 +536,7 @@ function SecondCall() {
           const slot = slotByNode[i];
           const [col, row] = MECH_SLOTS[slot];
           const lit = assembled;
-          const hoverHint = !assembled && hovered === i;
+          const delay = flashDelays[i];
           return (
             <div
               key={i}
@@ -573,11 +561,11 @@ function SecondCall() {
                   justifyContent: 'center',
                   gap: 'clamp(6px, 0.9vw, 12px)',
                   padding: 'clamp(10px, 1.6vw, 22px)',
-                  background: lit ? RED : palette.fill,
-                  border: `1.5px solid ${lit ? RED : hoverHint ? RED : palette.stroke}`,
-                  borderRadius: 4,
+                  background: lit ? RED : PAPER,
+                  border: `1.5px solid ${RED}`,
+                  borderRadius: 0,
                   cursor: 'pointer',
-                  transition: 'background 320ms ease, border-color 260ms ease, color 320ms ease',
+                  transition: `background 260ms ease ${delay}ms, color 260ms ease ${delay}ms`,
                   fontFamily: "'Manrope', sans-serif",
                   color: lit ? PAPER : INK,
                 }}
@@ -622,15 +610,14 @@ function SecondCall() {
               justifyContent: 'center',
               background: assembled ? RED : PAPER,
               border: `2px solid ${RED}`,
-              borderRadius: 4,
+              borderRadius: 0,
               cursor: 'pointer',
-              transition: 'background 320ms ease, color 320ms ease, box-shadow 400ms ease',
+              transition: `background 260ms ease ${flashDelays[N]}ms, color 260ms ease ${flashDelays[N]}ms`,
               fontFamily: DISPLAY,
               fontWeight: 800,
               fontSize: 'clamp(18px, 2.4vw, 30px)',
               letterSpacing: '0.08em',
               color: assembled ? PAPER : RED,
-              boxShadow: assembled ? '0 0 0 6px rgba(163,22,33,0.14)' : 'none',
             }}
           >
             ШОУ
