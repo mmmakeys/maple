@@ -385,27 +385,33 @@ export default function App() {
       {/* cases */}
       <div id="cases" style={{ background: paper, scrollMarginTop: 24 }}>
         <div style={col('0 clamp(20px,4vw,56px) 90px')}>
-          <div style={{ display: 'flex', alignItems: 'end', justifyContent: 'space-between', marginBottom: 40 }}>
-            <h2 style={{ ...heading, fontSize: 'clamp(32px, 5.2vw, 50px)' }}>
-              Что мы уже
-              <br />
-              сделали
-            </h2>
-            <a
-              href="#"
+          <div style={{ display: 'flex', alignItems: 'end', justifyContent: 'space-between', gap: 20, marginBottom: 40, flexWrap: 'wrap' }}>
+            <div>
+              <h2 style={{ ...heading, fontSize: 'clamp(32px, 5.2vw, 50px)', margin: 0 }}>
+                Что мы уже
+                <br />
+                сделали
+              </h2>
+              <p style={{ fontSize: 14, color: ink600, margin: '14px 0 0', letterSpacing: '0.01em' }}>
+                Раздел ещё пополняется — скоро тут будет больше
+              </p>
+            </div>
+            <span
+              aria-disabled="true"
               style={{
                 whiteSpace: 'nowrap',
-                textDecoration: 'none',
-                background: ink850,
-                color: paper,
+                background: violet50,
+                color: ink500,
                 fontWeight: 800,
                 fontSize: 15,
                 padding: '14px 24px',
                 borderRadius: 10,
+                cursor: 'not-allowed',
+                userSelect: 'none',
               }}
             >
               Все кейсы →
-            </a>
+            </span>
           </div>
           <div className="mm-cases-hero">
             <div
