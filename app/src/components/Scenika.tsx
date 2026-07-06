@@ -4,9 +4,7 @@ const DISPLAY = "'Onest', sans-serif";
 const RED = '#A31621';
 const INK = '#111111';
 const PAPER = '#FFFFFF';
-const CREAM = '#EFEDE8';
 const CREAM_LIGHT = '#F5F5F3';
-const CREAM_SOFT = '#FBFAF7';
 const CREAM_LINE = '#D8D5CE';
 const BORDER = '#E8E8E8';
 const BLACK = '#0C0C0C';
@@ -1275,14 +1273,13 @@ function Numbers() {
           triggered = true;
           const t0 = performance.now();
           const DUR = 1800;
-          let raf = 0;
           const step = (now: number) => {
             const p = Math.min(1, (now - t0) / DUR);
             const eased = 1 - Math.pow(1 - p, 3);
             setProgress(eased);
-            if (p < 1) raf = requestAnimationFrame(step);
+            if (p < 1) requestAnimationFrame(step);
           };
-          raf = requestAnimationFrame(step);
+          requestAnimationFrame(step);
           io.disconnect();
         }
       },
