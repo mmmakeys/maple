@@ -349,10 +349,7 @@ function FirstCall() {
         );
       })()}
       <div style={{ position: 'relative', zIndex: 1 }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 24 }}>
-        <div style={CALL_LABEL}>Первый звонок</div>
-        <div style={{ flex: 1, height: 1, background: BORDER }} />
-      </div>
+      <div style={CALL_LABEL}>Первый звонок</div>
       <h2 style={{ ...SECTION_H2, margin: '36px 0 0', maxWidth: 900 }}>
         До сцены начинается главное
       </h2>
@@ -463,13 +460,26 @@ function SecondCall() {
   const focused = hovered >= 0 ? MECH_NODES[hovered] : null;
 
   return (
-    <div id="mechanism" style={{ background: INK, color: PAPER, padding: `72px ${PAD_X}`, scrollMarginTop: 24 }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 24 }}>
-        <div style={CALL_LABEL}>Второй звонок</div>
-        <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.14)' }} />
+    <div
+      id="mechanism"
+      style={{
+        position: 'relative',
+        background: PAPER,
+        color: INK,
+        padding: `72px ${PAD_X}`,
+        scrollMarginTop: 24,
+        overflow: 'hidden',
+      }}
+    >
+      <div className="sc-mesh sc-mesh--light" aria-hidden>
+        <div className="sc-mesh-blob sc-mesh-a" />
+        <div className="sc-mesh-blob sc-mesh-b" />
+        <div className="sc-mesh-blob sc-mesh-c" />
       </div>
+      <div style={{ position: 'relative', zIndex: 1 }}>
+      <div style={CALL_LABEL}>Второй звонок</div>
       <h2 style={{ ...SECTION_H2, margin: '20px 0 0', maxWidth: 900 }}>Запускаем механизм полного зала</h2>
-      <p style={{ fontSize: 17, lineHeight: 1.55, color: MUTED_DARK, maxWidth: 720, margin: '18px 0 0' }}>
+      <p style={{ fontSize: 17, lineHeight: 1.55, color: MUTED, maxWidth: 720, margin: '18px 0 0' }}>
         Площадки, билеты, договоры, реклама, PR, райдеры, логистика — каждая часть должна включиться вовремя. Собираем «под ключ», пока артист готовит шоу.
       </p>
 
@@ -480,7 +490,7 @@ function SecondCall() {
             width="34"
             height="34"
             fill="none"
-            stroke={PAPER}
+            stroke={INK}
             strokeWidth="6"
             strokeLinecap="round"
             style={{
@@ -489,7 +499,7 @@ function SecondCall() {
             }}
           >
             <circle cx="50" cy="50" r="26" />
-            <circle cx="50" cy="50" r="7" fill={PAPER} stroke="none" />
+            <circle cx="50" cy="50" r="7" fill={INK} stroke="none" />
             {gearTeeth}
           </svg>
           <svg
@@ -511,7 +521,7 @@ function SecondCall() {
             {gearTeeth}
           </svg>
         </div>
-        <span style={{ fontSize: 15, color: assembled ? '#FF8093' : MUTED_DARK, letterSpacing: '0.02em', fontWeight: assembled ? 700 : 400 }}>
+        <span style={{ fontSize: 15, color: assembled ? RED : '#8A8A8A', letterSpacing: '0.02em', fontWeight: assembled ? 700 : 400 }}>
           {assembled ? 'Механизм запущен.' : 'Тапни любой блок — соберём механизм.'}
         </span>
       </div>
@@ -642,6 +652,7 @@ function SecondCall() {
         ) : assembled ? (
           <div>Тапни любой блок ещё раз — разберём в рандомное состояние.</div>
         ) : null}
+      </div>
       </div>
     </div>
   );
