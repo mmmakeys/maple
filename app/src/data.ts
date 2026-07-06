@@ -197,7 +197,8 @@ export const team: Member[] = [
       about:
         'Помогает бизнесам растить продажи в digital: разворачивает e-commerce-каналы с нуля, ведёт стратегический маркетинг и собирает кросс-функциональные команды. Настраивает процессы, улучшает клиентский путь и превращает трафик в устойчивую выручку.',
       exp: [
-        'Head of E-commerce в Digi Tech («ВсёГазин»)',
+        'Руководил еком-направлением в «ВсёГазин»',
+        'Управлял проектами и командой разработки в «Диджитех»',
         'Head of E-commerce & Digital Marketing в VOLЯ WEAR (бренд Павла Воли и Ляйсан Утяшевой)',
         'Cultural Event Manager в КЦ «Строгино»',
         'Digital-маркетинг: Fashion Factory School, Comedy Club Production, Dress Up Bar',
