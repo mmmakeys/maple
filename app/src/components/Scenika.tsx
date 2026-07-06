@@ -85,7 +85,7 @@ function ScenikaHero() {
       vy = vy * 0.975 + dy * 0.0006 + (Math.random() - 0.5) * 0.02;
       x = Math.max(6, Math.min(94, x + vx));
       y = Math.max(8, Math.min(92, y + vy));
-      el.style.background = `radial-gradient(circle 150px at ${x.toFixed(2)}% ${y.toFixed(2)}%, #ffffff 0, #ffffff 46%, rgba(255,255,255,0) 78%)`;
+      el.style.background = `radial-gradient(circle 280px at ${x.toFixed(2)}% ${y.toFixed(2)}%, rgba(255,255,255,0.85) 0, rgba(255,255,255,0.35) 30%, rgba(255,255,255,0.08) 62%, rgba(255,255,255,0) 88%)`;
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
@@ -119,7 +119,8 @@ function ScenikaHero() {
           pointerEvents: 'none',
           mixBlendMode: 'difference',
           zIndex: 5,
-          background: 'radial-gradient(circle 150px at 50% 45%, #ffffff 0, #ffffff 46%, rgba(255,255,255,0) 78%)',
+          filter: 'blur(18px)',
+          background: 'radial-gradient(circle 280px at 50% 45%, rgba(255,255,255,0.85) 0, rgba(255,255,255,0.35) 30%, rgba(255,255,255,0.08) 62%, rgba(255,255,255,0) 88%)',
         }}
       />
       <div className="sc-hero-bells" style={{ display: 'flex', alignItems: 'flex-end', gap: 10, height: 56, marginBottom: 48 }}>
