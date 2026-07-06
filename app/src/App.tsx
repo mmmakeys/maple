@@ -651,6 +651,89 @@ export default function App() {
         </div>
       </div>
 
+      {/* final MAPLE CTA — closes the МЭПЛ pitch before the Scenika handoff */}
+      <div
+        style={{
+          background: ink900,
+          color: ink100,
+          position: 'relative',
+          overflow: 'hidden',
+          borderTop: `1px solid ${alpha('violet400', 0.1)}`,
+        }}
+      >
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            left: -140,
+            bottom: -180,
+            width: 560,
+            height: 560,
+            borderRadius: '50%',
+            background: `radial-gradient(circle, ${alpha('violet500', 0.45)}, ${alpha('violet500', 0)} 68%)`,
+            pointerEvents: 'none',
+          }}
+        />
+        <div
+          className="mm-final-cta"
+          style={{
+            ...col('clamp(80px,10vw,130px) clamp(20px,4vw,56px)'),
+            position: 'relative',
+            zIndex: 1,
+            display: 'flex',
+            alignItems: 'flex-end',
+            justifyContent: 'space-between',
+            gap: 40,
+            flexWrap: 'wrap',
+          }}
+        >
+          <div style={{ maxWidth: 720 }}>
+            <span
+              style={{
+                display: 'inline-block',
+                fontSize: 13,
+                fontWeight: 400,
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                color: violet400,
+                border: `1px solid ${violet400}`,
+                padding: '8px 16px',
+                borderRadius: 999,
+                marginBottom: 22,
+              }}
+            >
+              Готовы начать?
+            </span>
+            <h2 style={{ ...heading, fontSize: 'clamp(32px, 5vw, 56px)', lineHeight: 1.02, marginBottom: 18 }}>
+              Расскажите о задаче —
+              <br />
+              <span style={{ color: violet400 }}>соберём в одно целое</span>
+            </h2>
+            <p style={{ fontSize: 18, lineHeight: 1.55, color: ink400, margin: 0, maxWidth: 560 }}>
+              Обсудим цели, покажем как решаем и предложим вариант под ваш бизнес.
+            </p>
+          </div>
+          <a
+            href="#"
+            onClick={openLead}
+            style={{
+              textDecoration: 'none',
+              background: violet500,
+              color: paper,
+              fontWeight: 800,
+              fontSize: 17,
+              padding: '18px 34px',
+              borderRadius: 10,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              boxShadow: `0 12px 40px ${alpha('violet500', 0.36)}, inset 0 1px 0 rgba(255,255,255,0.18)`,
+            }}
+          >
+            Обсудить проект →
+          </a>
+        </div>
+      </div>
+
       {/* scenika cta */}
       <div style={{ background: '#0C0C0C', color: paper, position: 'relative', overflow: 'hidden' }}>
         <div className="mm-scenika-mesh" aria-hidden>
