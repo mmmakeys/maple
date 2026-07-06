@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { DISPLAY, type Member } from '../data';
 import {
   alpha,
@@ -13,6 +14,20 @@ import {
   violet500,
   violet700,
 } from '../tokens';
+
+function useBodyScrollLock() {
+  useEffect(() => {
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    const prevOverflow = document.body.style.overflow;
+    const prevPaddingRight = document.body.style.paddingRight;
+    document.body.style.overflow = 'hidden';
+    if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`;
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.body.style.paddingRight = prevPaddingRight;
+    };
+  }, []);
+}
 
 const tgIcon = (
   <svg width="18" height="18" viewBox="0 0 24 24" fill={violet400}>
@@ -37,9 +52,11 @@ export default function CVModal({
   member: Member;
   onClose: () => void;
 }) {
+  useBodyScrollLock();
   return (
     <div
       onClick={onClose}
+      onWheel={(e) => e.stopPropagation()}
       style={{
         position: 'fixed',
         inset: 0,
@@ -54,26 +71,47 @@ export default function CVModal({
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
+          position: 'relative',
           width: 600,
           maxWidth: '100%',
           maxHeight: '84vh',
-          overflow: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
           background: paper,
           color: ink850,
           borderRadius: 20,
-          padding: 'clamp(24px, 5vw, 44px) clamp(20px, 5vw, 42px)',
+          overflow: 'hidden',
           boxShadow: `0 40px 100px -30px ${alpha('ink900', 0.6)}`,
         }}
       >
-        <div
+        <button
+          onClick={onClose}
+          aria-label="Закрыть"
           style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
-            gap: 20,
+            position: 'absolute',
+            top: 14,
+            right: 14,
+            zIndex: 10,
+            cursor: 'pointer',
+            width: 38,
+            height: 38,
+            borderRadius: 10,
+            border: 'none',
+            background: violet75,
+            color: ink600,
+            fontSize: 17,
+            lineHeight: 1,
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          ✕
+        </button>
+        <div
+          style={{
+            overflow: 'auto',
+            padding: 'clamp(24px, 5vw, 44px) clamp(20px, 5vw, 42px)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, paddingRight: 46 }}>
             <div
               role="img"
               aria-label={member.name}
@@ -110,25 +148,6 @@ export default function CVModal({
               </div>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            aria-label="Закрыть"
-            style={{
-              cursor: 'pointer',
-              flex: '0 0 auto',
-              width: 38,
-              height: 38,
-              borderRadius: 10,
-              border: 'none',
-              background: violet75,
-              color: ink600,
-              fontSize: 17,
-              lineHeight: 1,
-            }}
-          >
-            ✕
-          </button>
-        </div>
 
         <p
           style={{
@@ -249,6 +268,7 @@ export default function CVModal({
           {tgIcon}
           Написать в Telegram
         </a>
+        </div>
       </div>
     </div>
   );

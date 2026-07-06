@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DISPLAY, budgetOpts } from '../data';
 import {
   alpha,
@@ -60,6 +60,20 @@ const fieldLabel: React.CSSProperties = {
   color: ink800,
 };
 
+function useBodyScrollLock() {
+  useEffect(() => {
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    const prevOverflow = document.body.style.overflow;
+    const prevPaddingRight = document.body.style.paddingRight;
+    document.body.style.overflow = 'hidden';
+    if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`;
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.body.style.paddingRight = prevPaddingRight;
+    };
+  }, []);
+}
+
 const primaryBtn: React.CSSProperties = {
   cursor: 'pointer',
   fontFamily: DISPLAY,
@@ -77,6 +91,7 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
   const [lead, setLead] = useState<Lead>(emptyLead);
   const [step, setStep] = useState<1 | 2>(1);
   const [sent, setSent] = useState(false);
+  useBodyScrollLock();
 
   const set = (k: keyof Lead) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setLead((s) => ({ ...s, [k]: e.target.value }));
@@ -84,6 +99,7 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
   return (
     <div
       onClick={onClose}
+      onWheel={(e) => e.stopPropagation()}
       style={{
         position: 'fixed',
         inset: 0,
@@ -98,26 +114,47 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
+          position: 'relative',
           width: 560,
           maxWidth: '100%',
           maxHeight: '88vh',
-          overflow: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
           background: paper,
           color: ink850,
           borderRadius: 20,
-          padding: 'clamp(22px, 5vw, 40px) clamp(20px, 5vw, 40px)',
+          overflow: 'hidden',
           boxShadow: `0 40px 100px -30px ${alpha('ink900', 0.6)}`,
         }}
       >
-        <div
+        <button
+          onClick={onClose}
+          aria-label="Закрыть"
           style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
-            gap: 20,
+            position: 'absolute',
+            top: 14,
+            right: 14,
+            zIndex: 10,
+            cursor: 'pointer',
+            width: 38,
+            height: 38,
+            borderRadius: 10,
+            border: 'none',
+            background: violet75,
+            color: ink600,
+            fontSize: 17,
+            lineHeight: 1,
           }}
         >
-          <div>
+          ✕
+        </button>
+        <div
+          style={{
+            overflow: 'auto',
+            padding: 'clamp(22px, 5vw, 40px) clamp(20px, 5vw, 40px)',
+          }}
+        >
+          <div style={{ paddingRight: 46 }}>
             <h3
               style={{
                 fontFamily: DISPLAY,
@@ -135,25 +172,6 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
               Никаких прайс-листов – только индивидуальный подход
             </p>
           </div>
-          <button
-            onClick={onClose}
-            aria-label="Закрыть"
-            style={{
-              cursor: 'pointer',
-              flex: '0 0 auto',
-              width: 38,
-              height: 38,
-              borderRadius: 10,
-              border: 'none',
-              background: violet75,
-              color: ink600,
-              fontSize: 17,
-              lineHeight: 1,
-            }}
-          >
-            ✕
-          </button>
-        </div>
 
         {sent ? (
           <div style={{ marginTop: 34, textAlign: 'center', padding: '20px 0 8px' }}>
@@ -360,6 +378,7 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
             )}
           </>
         )}
+        </div>
       </div>
     </div>
   );
