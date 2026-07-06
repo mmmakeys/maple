@@ -26,7 +26,6 @@ export default function Scenika() {
       <ScenikaHero />
       <FirstCall />
       <SecondCall />
-      <MapleBridge />
       <ThirdCall />
       <AfterConcert />
       <Cases />
@@ -464,21 +463,21 @@ function SecondCall() {
       id="mechanism"
       style={{
         position: 'relative',
-        background: PAPER,
-        color: INK,
+        background: RED,
+        color: PAPER,
         padding: `72px ${PAD_X}`,
         scrollMarginTop: 24,
       }}
     >
-      <div className="sc-mesh sc-mesh--light" aria-hidden>
+      <div className="sc-mesh sc-mesh--warm" aria-hidden>
         <div className="sc-mesh-blob sc-mesh-a" />
         <div className="sc-mesh-blob sc-mesh-b" />
         <div className="sc-mesh-blob sc-mesh-c" />
       </div>
       <div style={{ position: 'relative', zIndex: 1 }}>
-      <div style={CALL_LABEL}>Второй звонок</div>
-      <h2 style={{ ...SECTION_H2, margin: '20px 0 0', maxWidth: 900 }}>Запускаем механизм полного зала</h2>
-      <p style={{ fontSize: 17, lineHeight: 1.55, color: MUTED, maxWidth: 720, margin: '18px 0 0' }}>
+      <div style={{ ...CALL_LABEL, color: PAPER }}>Второй звонок</div>
+      <h2 style={{ ...SECTION_H2, margin: '20px 0 0', maxWidth: 900, color: PAPER }}>Запускаем механизм полного зала</h2>
+      <p style={{ fontSize: 17, lineHeight: 1.55, color: 'rgba(255,255,255,0.78)', maxWidth: 720, margin: '18px 0 0' }}>
         Площадки, билеты, договоры, реклама, PR, райдеры, логистика — каждая часть должна включиться вовремя. Собираем «под ключ», пока артист готовит шоу.
       </p>
 
@@ -489,7 +488,7 @@ function SecondCall() {
             width="34"
             height="34"
             fill="none"
-            stroke={INK}
+            stroke={PAPER}
             strokeWidth="6"
             strokeLinecap="round"
             style={{
@@ -498,7 +497,7 @@ function SecondCall() {
             }}
           >
             <circle cx="50" cy="50" r="26" />
-            <circle cx="50" cy="50" r="7" fill={INK} stroke="none" />
+            <circle cx="50" cy="50" r="7" fill={PAPER} stroke="none" />
             {gearTeeth}
           </svg>
           <svg
@@ -506,7 +505,7 @@ function SecondCall() {
             width="24"
             height="24"
             fill="none"
-            stroke={RED}
+            stroke={INK}
             strokeWidth="6"
             strokeLinecap="round"
             style={{
@@ -516,11 +515,11 @@ function SecondCall() {
             }}
           >
             <circle cx="50" cy="50" r="26" />
-            <circle cx="50" cy="50" r="7" fill={RED} stroke="none" />
+            <circle cx="50" cy="50" r="7" fill={INK} stroke="none" />
             {gearTeeth}
           </svg>
         </div>
-        <span style={{ fontSize: 15, color: assembled ? RED : '#8A8A8A', letterSpacing: '0.02em', fontWeight: assembled ? 700 : 400 }}>
+        <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.82)', letterSpacing: '0.02em', fontWeight: assembled ? 700 : 400 }}>
           {assembled ? 'Механизм запущен.' : 'Тапни любой блок — соберём механизм.'}
         </span>
       </div>
@@ -566,8 +565,8 @@ function SecondCall() {
                   justifyContent: 'center',
                   gap: 'clamp(6px, 0.9vw, 12px)',
                   padding: 'clamp(10px, 1.6vw, 22px)',
-                  background: lit ? RED : PAPER,
-                  border: `1.5px solid ${RED}`,
+                  background: lit ? INK : PAPER,
+                  border: `1.5px solid ${PAPER}`,
                   borderRadius: 0,
                   cursor: 'pointer',
                   transition: `background 260ms ease ${delay}ms, color 260ms ease ${delay}ms`,
@@ -613,8 +612,8 @@ function SecondCall() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              background: assembled ? RED : PAPER,
-              border: `2px solid ${RED}`,
+              background: assembled ? PAPER : INK,
+              border: `2px solid ${PAPER}`,
               borderRadius: 0,
               cursor: 'pointer',
               transition: `background 260ms ease ${flashDelays[N]}ms, color 260ms ease ${flashDelays[N]}ms`,
@@ -622,7 +621,7 @@ function SecondCall() {
               fontWeight: 800,
               fontSize: 'clamp(18px, 2.4vw, 30px)',
               letterSpacing: '0.08em',
-              color: assembled ? PAPER : RED,
+              color: assembled ? INK : PAPER,
             }}
           >
             ШОУ
@@ -638,9 +637,9 @@ function SecondCall() {
           fontFamily: "'Manrope', sans-serif",
           fontSize: 14,
           lineHeight: 1.45,
-          color: MUTED_DARK,
+          color: 'rgba(255,255,255,0.72)',
           transition: 'opacity 220ms ease',
-          opacity: focused || assembled ? 1 : 0.5,
+          opacity: focused || assembled ? 1 : 0.6,
         }}
       >
         {focused ? (
@@ -652,290 +651,141 @@ function SecondCall() {
           <div>Тапни любой блок ещё раз — разберём в рандомное состояние.</div>
         ) : null}
       </div>
+
+      <PartnershipStrap />
       </div>
     </div>
   );
 }
 
-const MAPLE_VIOLET_400 = '#B8A6F5';
-const MAPLE_VIOLET_500 = '#8B5CF6';
-const MAPLE_INK_900 = '#161020';
-const MAPLE_INK_100 = '#F4F0FB';
-const MAPLE_INK_400 = '#9B92B0';
-
-function MapleBridge() {
-  const rootRef = useRef<HTMLDivElement | null>(null);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    const el = rootRef.current;
-    if (!el) return;
-    let raf = 0;
-    const update = () => {
-      const rect = el.getBoundingClientRect();
-      const vh = window.innerHeight;
-      const total = Math.max(1, rect.height - vh);
-      const scrolled = -rect.top;
-      setProgress(Math.max(0, Math.min(1, scrolled / total)));
-    };
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
-    };
-  }, []);
-
-  const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
-  const range = (v: number, a: number, b: number) => clamp01((v - a) / (b - a));
-  const easeOut = (t: number) => 1 - Math.pow(1 - t, 2);
-
-  const headerAppear = range(progress, 0, 0.12);
-  const linesProgress = easeOut(range(progress, 0.22, 0.62));
-  const centerAppear = easeOut(range(progress, 0.55, 0.82));
-  const bottomAppear = range(progress, 0.78, 0.95);
-
-  const LINE_LEN = 260;
-
+function PartnershipStrap() {
   return (
-    <div
-      id="maple"
-      ref={rootRef}
-      style={{ background: MAPLE_INK_900, color: MAPLE_INK_100, position: 'relative', height: '280vh', scrollMarginTop: 24 }}
-    >
-      <div
+    <div style={{ marginTop: 72, borderTop: '1px solid rgba(255,255,255,0.18)', paddingTop: 56 }}>
+      <span
         style={{
-          position: 'sticky',
-          top: 0,
-          height: '100vh',
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          padding: `72px ${PAD_X}`,
-          boxSizing: 'border-box',
+          display: 'inline-block',
+          fontSize: 12,
+          fontWeight: 700,
+          letterSpacing: '0.18em',
+          textTransform: 'uppercase',
+          color: PAPER,
+          border: `1px solid ${PAPER}`,
+          padding: '7px 14px',
+          borderRadius: 999,
+          fontFamily: "'Manrope', sans-serif",
         }}
       >
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            right: -120,
-            top: -120,
-            width: 520,
-            height: 520,
-            borderRadius: '50%',
-            background: `radial-gradient(circle, ${MAPLE_VIOLET_500}55, transparent 70%)`,
-            pointerEvents: 'none',
-          }}
-        />
+        Сценика × Мэпл
+      </span>
+      <h3
+        style={{
+          fontFamily: DISPLAY,
+          fontWeight: 800,
+          textTransform: 'uppercase',
+          fontSize: 'clamp(30px, 4.6vw, 60px)',
+          lineHeight: 1.05,
+          letterSpacing: '0.03em',
+          margin: '24px 0 0',
+          maxWidth: 900,
+          color: PAPER,
+        }}
+      >
+        Один механизм.<br />
+        <span style={{ color: 'rgba(255,255,255,0.7)' }}>Два контура.</span>
+      </h3>
 
-        <div
-          style={{
-            opacity: headerAppear,
-            transform: `translateY(${(1 - headerAppear) * 12}px)`,
-            transition: 'opacity 200ms ease, transform 200ms ease',
-          }}
-        >
-          <span
-            style={{
-              display: 'inline-block',
-              fontSize: 13,
-              fontWeight: 400,
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-              color: MAPLE_VIOLET_400,
-              border: `1px solid ${MAPLE_VIOLET_400}`,
-              padding: '8px 16px',
-              borderRadius: 999,
-            }}
-          >
-            Сценика × Мэпл
-          </span>
-          <h2
-            style={{
-              fontFamily: DISPLAY,
-              fontWeight: 800,
-              textTransform: 'uppercase',
-              fontSize: 'clamp(34px, 5.4vw, 76px)',
-              lineHeight: 1.02,
-              letterSpacing: '0.03em',
-              margin: '28px 0 0',
-              maxWidth: 900,
-            }}
-          >
-            Один механизм.<br />
-            <span style={{ color: MAPLE_VIOLET_400 }}>Два контура.</span>
-          </h2>
-        </div>
+      <div style={{ marginTop: 40, maxWidth: 720 }}>
+        <svg viewBox="0 0 1000 220" preserveAspectRatio="xMidYMid meet" style={{ width: '100%', height: 'auto', display: 'block' }}>
+          <line x1="260" y1="110" x2="500" y2="110" stroke={PAPER} strokeWidth="3" strokeLinecap="round" />
+          <line x1="740" y1="110" x2="500" y2="110" stroke={INK} strokeWidth="3" strokeLinecap="round" />
 
-        <div style={{ flex: 1, position: 'relative', marginTop: 32, minHeight: 260 }}>
-          <svg
-            viewBox="0 0 1000 420"
-            preserveAspectRatio="xMidYMid meet"
-            style={{ width: '100%', height: '100%', display: 'block' }}
-          >
-            <line
-              x1="260"
-              y1="180"
-              x2="500"
-              y2="180"
-              stroke={MAPLE_VIOLET_400}
-              strokeWidth="3"
-              strokeDasharray={LINE_LEN}
-              strokeDashoffset={LINE_LEN * (1 - linesProgress)}
-              strokeLinecap="round"
+          <g transform="translate(180, 80) scale(1.6)">
+            <path
+              d="M 37.80 14.47 C 38.73 17.75, 36.04 22.40, 33.85 25.78 C 31.66 29.15, 28.32 33.93, 24.68 34.72 C 21.03 35.51, 15.68 32.54, 11.96 30.50 C 8.25 28.46, 3.41 25.74, 2.37 22.49 C 1.32 19.24, 3.56 14.41, 5.70 10.99 C 7.85 7.57, 11.47 2.79, 15.24 1.98 C 19.00 1.17, 24.54 4.02, 28.30 6.10 C 32.06 8.18, 36.88 11.19, 37.80 14.47 Z"
+              fill={MAPLE_VIOLET_500}
             />
-            <line
-              x1="740"
-              y1="180"
-              x2="500"
-              y2="180"
-              stroke={RED}
-              strokeWidth="3"
-              strokeDasharray={LINE_LEN}
-              strokeDashoffset={LINE_LEN * (1 - linesProgress)}
-              strokeLinecap="round"
-            />
-
-            <g transform="translate(180, 148) scale(1.6)">
-              <path
-                d="M 37.80 14.47 C 38.73 17.75, 36.04 22.40, 33.85 25.78 C 31.66 29.15, 28.32 33.93, 24.68 34.72 C 21.03 35.51, 15.68 32.54, 11.96 30.50 C 8.25 28.46, 3.41 25.74, 2.37 22.49 C 1.32 19.24, 3.56 14.41, 5.70 10.99 C 7.85 7.57, 11.47 2.79, 15.24 1.98 C 19.00 1.17, 24.54 4.02, 28.30 6.10 C 32.06 8.18, 36.88 11.19, 37.80 14.47 Z"
-                fill={MAPLE_VIOLET_500}
-              />
-              <path
-                d="M 8.5 28.5 C 9.50 26.08, 12.42 15.17, 14.50 14.00 C 16.58 12.83, 18.33 22.42, 21.00 21.50 C 23.67 20.58, 28.92 10.67, 30.50 8.50"
-                fill="none"
-                stroke={MAPLE_INK_900}
-                strokeWidth="4.8"
-                strokeLinejoin="round"
-                strokeLinecap="round"
-              />
-            </g>
-            <text
-              x="212"
-              y="272"
-              fill={MAPLE_INK_100}
-              fontFamily={DISPLAY}
-              fontSize="24"
-              textAnchor="middle"
-              letterSpacing="2"
-            >
-              МЭПЛ
-            </text>
-            <text
-              x="212"
-              y="302"
-              fill={MAPLE_INK_400}
-              fontFamily="'Manrope', sans-serif"
-              fontSize="14"
-              textAnchor="middle"
-            >
-              собирает систему
-            </text>
-
-            <g transform="translate(768, 148)">
-              <rect x="0" y="0" width="10" height="64" fill={RED} />
-              <rect x="20" y="0" width="10" height="64" fill={RED} />
-              <rect x="40" y="0" width="10" height="64" fill={RED} />
-            </g>
-            <text
-              x="793"
-              y="272"
-              fill={MAPLE_INK_100}
-              fontFamily={DISPLAY}
-              fontSize="24"
-              textAnchor="middle"
-              letterSpacing="2"
-            >
-              СЦЕНИКА
-            </text>
-            <text
-              x="793"
-              y="302"
-              fill={MAPLE_INK_400}
-              fontFamily="'Manrope', sans-serif"
-              fontSize="14"
-              textAnchor="middle"
-            >
-              собирает тур
-            </text>
-
-            <circle cx="500" cy="180" r="9" fill={MAPLE_INK_100} opacity={centerAppear} />
-            <circle
-              cx="500"
-              cy="180"
-              r="26"
+            <path
+              d="M 8.5 28.5 C 9.50 26.08, 12.42 15.17, 14.50 14.00 C 16.58 12.83, 18.33 22.42, 21.00 21.50 C 23.67 20.58, 28.92 10.67, 30.50 8.50"
               fill="none"
-              stroke={MAPLE_INK_100}
-              strokeWidth="1.5"
-              opacity={centerAppear * 0.4}
+              stroke={PAPER}
+              strokeWidth="4.8"
+              strokeLinejoin="round"
+              strokeLinecap="round"
             />
-            <text
-              x="500"
-              y="248"
-              fill={MAPLE_INK_100}
-              fontFamily={DISPLAY}
-              fontSize="30"
-              textAnchor="middle"
-              letterSpacing="4"
-              opacity={centerAppear}
-            >
-              ПОЛНЫЙ ЗАЛ
-            </text>
-          </svg>
-        </div>
+          </g>
+          <text x="212" y="180" fill={PAPER} fontFamily={DISPLAY} fontSize="22" textAnchor="middle" letterSpacing="2">
+            МЭПЛ
+          </text>
+          <text x="212" y="204" fill="rgba(255,255,255,0.7)" fontFamily="'Manrope', sans-serif" fontSize="13" textAnchor="middle">
+            собирает систему
+          </text>
 
-        <div
+          <g transform="translate(768, 78)">
+            <rect x="0" y="0" width="10" height="64" fill={INK} />
+            <rect x="20" y="0" width="10" height="64" fill={INK} />
+            <rect x="40" y="0" width="10" height="64" fill={INK} />
+          </g>
+          <text x="793" y="180" fill={PAPER} fontFamily={DISPLAY} fontSize="22" textAnchor="middle" letterSpacing="2">
+            СЦЕНИКА
+          </text>
+          <text x="793" y="204" fill="rgba(255,255,255,0.7)" fontFamily="'Manrope', sans-serif" fontSize="13" textAnchor="middle">
+            собирает тур
+          </text>
+
+          <circle cx="500" cy="110" r="7" fill={PAPER} />
+          <circle cx="500" cy="110" r="22" fill="none" stroke={PAPER} strokeWidth="1.5" opacity="0.4" />
+          <text x="500" y="168" fill={PAPER} fontFamily={DISPLAY} fontSize="24" textAnchor="middle" letterSpacing="3">
+            ПОЛНЫЙ ЗАЛ
+          </text>
+        </svg>
+      </div>
+
+      <div
+        style={{
+          marginTop: 40,
+          display: 'flex',
+          alignItems: 'flex-end',
+          justifyContent: 'space-between',
+          gap: 32,
+          flexWrap: 'wrap',
+        }}
+      >
+        <p
           style={{
-            marginTop: 24,
-            display: 'flex',
-            alignItems: 'flex-end',
-            justifyContent: 'space-between',
-            gap: 32,
-            flexWrap: 'wrap',
-            opacity: bottomAppear,
-            transform: `translateY(${(1 - bottomAppear) * 10}px)`,
-            transition: 'opacity 200ms ease, transform 200ms ease',
+            margin: 0,
+            fontSize: 'clamp(15px, 1.4vw, 18px)',
+            lineHeight: 1.6,
+            color: 'rgba(255,255,255,0.78)',
+            maxWidth: 620,
+            fontFamily: "'Manrope', sans-serif",
           }}
         >
-          <p
-            style={{
-              margin: 0,
-              fontSize: 'clamp(15px, 1.4vw, 18px)',
-              lineHeight: 1.65,
-              color: MAPLE_INK_400,
-              maxWidth: 620,
-            }}
-          >
-            МЭПЛ собирает систему. СЦЕНИКА собирает тур.{' '}
-            <span style={{ color: MAPLE_INK_100, fontWeight: 800 }}>Вместе собираем зал.</span>
-          </p>
-          <a
-            href="/"
-            style={{
-              textDecoration: 'none',
-              background: MAPLE_VIOLET_500,
-              color: MAPLE_INK_100,
-              fontWeight: 800,
-              fontSize: 15,
-              padding: '14px 26px',
-              borderRadius: 10,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            Открыть страницу МЭПЛ →
-          </a>
-        </div>
+          МЭПЛ собирает систему. СЦЕНИКА собирает тур.{' '}
+          <span style={{ color: PAPER, fontWeight: 800 }}>Вместе собираем зал.</span>
+        </p>
+        <a
+          href="/"
+          style={{
+            textDecoration: 'none',
+            background: PAPER,
+            color: RED,
+            fontWeight: 800,
+            fontSize: 15,
+            padding: '14px 26px',
+            whiteSpace: 'nowrap',
+            fontFamily: "'Manrope', sans-serif",
+            letterSpacing: '0.02em',
+          }}
+        >
+          Открыть страницу МЭПЛ →
+        </a>
       </div>
     </div>
   );
 }
+
+const MAPLE_VIOLET_500 = '#8B5CF6';
+
 
 const gearTeeth = (
   <>

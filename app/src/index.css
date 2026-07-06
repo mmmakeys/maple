@@ -166,6 +166,21 @@ body {
 .sc-mesh--light .sc-mesh-c {
   background: radial-gradient(circle at 50% 50%, rgba(120, 140, 220, 0.22), transparent 66%);
 }
+
+/* Warm variant — soft glowing halos on a RED background */
+.sc-mesh--warm .sc-mesh-blob {
+  filter: blur(120px);
+  mix-blend-mode: screen;
+}
+.sc-mesh--warm .sc-mesh-a {
+  background: radial-gradient(circle at 40% 40%, rgba(255, 180, 130, 0.55), transparent 66%);
+}
+.sc-mesh--warm .sc-mesh-b {
+  background: radial-gradient(circle at 50% 50%, rgba(255, 130, 150, 0.5), transparent 66%);
+}
+.sc-mesh--warm .sc-mesh-c {
+  background: radial-gradient(circle at 50% 50%, rgba(255, 220, 180, 0.45), transparent 66%);
+}
 @media (prefers-reduced-motion: reduce) {
   .sc-mesh-blob {
     animation: none;
