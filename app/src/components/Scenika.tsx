@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 const DISPLAY = "'Onest', sans-serif";
 const RED = '#A31621';
@@ -399,9 +399,40 @@ function FirstCall() {
   );
 }
 
+const MECH_NODES: Array<{ label: string; icon: string }> = [
+  { label: 'Площадки', icon: 'M4 20V10L12 4L20 10V20H4Z M9 20V15H15V20' },
+  { label: 'Билеты', icon: 'M3 8H21V16H3Z M9 8V10 M9 12V14 M14 8V10 M14 12V14' },
+  { label: 'Договоры', icon: 'M6 4H14L18 8V20H6Z M14 4V8H18 M9 12H15 M9 15H13' },
+  { label: 'Реклама', icon: 'M3 12L15 6V18Z M15 10V14 M18 8V16' },
+  { label: 'PR и медиа', icon: 'M9 4H15V13H9Z M6 12A6 6 0 0018 12 M12 18V21' },
+  { label: 'Райдеры', icon: 'M6 5H18V20H6Z M10 3H14V6H10Z M9 11H15 M9 14H14' },
+  { label: 'Логистика', icon: 'M2 8H13V16H2Z M13 12H17L20 15V16H13Z M6 20A2 2 0 106 16 A2 2 0 106 20 Z M18 20A2 2 0 1018 16 A2 2 0 1018 20 Z' },
+  { label: 'Турменеджмент', icon: 'M12 3A6 6 0 0118 9C18 13 12 21 12 21C12 21 6 13 6 9A6 6 0 0112 3Z M12 7A2 2 0 1012 11 A2 2 0 1012 7 Z' },
+];
+
+// 8 grid slots around the centre (row-major, centre skipped).
+const MECH_SLOTS: Array<[number, number]> = [
+  [1, 1], [2, 1], [3, 1],
+  [1, 2],         [3, 2],
+  [1, 3], [2, 3], [3, 3],
+];
+
+const MECH_PALETTES = [
+  { fill: '#FFFFFF', stroke: '#DAD6CE' },
+  { fill: '#EFEBE1', stroke: '#CFC7B4' },
+  { fill: '#F5E4E1', stroke: '#E4B4AC' },
+  { fill: '#E4E7EE', stroke: '#B7BCC8' },
+];
+
 function SecondCall() {
+  const N = MECH_NODES.length;
   const [activated, setActivated] = useState<Set<number>>(new Set());
   const [hovered, setHovered] = useState<number>(-1);
+  const [slotByNode, setSlotByNode] = useState<number[]>(() => Array.from({ length: N }, (_, i) => i));
+  const [paletteIdx, setPaletteIdx] = useState(0);
+  const [spinning, setSpinning] = useState(false);
+  const tileRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const prevRects = useRef<Array<DOMRect | null> | null>(null);
 
   const activate = (i: number) =>
     setActivated((prev) => {
@@ -411,32 +442,45 @@ function SecondCall() {
       return next;
     });
   const reset = () => setActivated(new Set());
-
-  const cx = 500, cy = 285, rx = 320, ry = 220, N = 8;
-  const nodeSpec: Array<{ label: string; desc: string; icon: string }> = [
-    { label: 'Площадки', desc: 'Выбираем города, даты и залы под реальный спрос', icon: 'M4 20V10L12 4L20 10V20H4Z M9 20V15H15V20' },
-    { label: 'Билеты', desc: 'Заводим билетный стол и контролируем продажи', icon: 'M3 8H21V16H3Z M9 8V10 M9 12V14 M14 8V10 M14 12V14' },
-    { label: 'Договоры', desc: 'Закрываем юридический и финансовый контур', icon: 'M6 4H14L18 8V20H6Z M14 4V8H18 M9 12H15 M9 15H13' },
-    { label: 'Реклама', desc: 'Запускаем digital, наружку и локальные кампании', icon: 'M3 12L15 6V18Z M15 10V14 M18 8V16' },
-    { label: 'PR и медиа', desc: 'Подключаем СМИ, радио и инфопартнёров', icon: 'M9 4H15V13H9Z M6 12A6 6 0 0018 12 M12 18V21' },
-    { label: 'Райдеры', desc: 'Собираем технические и бытовые требования', icon: 'M6 5H18V20H6Z M10 3H14V6H10Z M9 11H15 M9 14H14' },
-    { label: 'Логистика', desc: 'Планируем перемещения, тайминги и сопровождение', icon: 'M2 8H13V16H2Z M13 12H17L20 15V16H13Z M6 20A2 2 0 106 16 A2 2 0 106 20 Z M18 20A2 2 0 1018 16 A2 2 0 1018 20 Z' },
-    { label: 'Турменеджмент', desc: 'Контролируем день события и работу на площадке', icon: 'M12 3A6 6 0 0118 9C18 13 12 21 12 21C12 21 6 13 6 9A6 6 0 0112 3Z M12 7A2 2 0 1012 11 A2 2 0 1012 7 Z' },
-  ];
-  const pts = nodeSpec.map(({ label, desc, icon }, i) => {
-    const a = -Math.PI / 2 + (i / N) * Math.PI * 2;
-    return { label, desc, icon, x: cx + rx * Math.cos(a), y: cy + ry * Math.sin(a) };
-  });
-  const bezierPath = (x1: number, y1: number, x2: number, y2: number, bend = 34) => {
-    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
-    const dx = x2 - x1, dy = y2 - y1;
-    const len = Math.hypot(dx, dy) || 1;
-    const perpX = -dy / len, perpY = dx / len;
-    const cpx = mx + perpX * bend, cpy = my + perpY * bend;
-    return `M${x1.toFixed(1)},${y1.toFixed(1)} Q${cpx.toFixed(1)},${cpy.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}`;
+  const shuffleTiles = () => {
+    prevRects.current = tileRefs.current.map((el) => el?.getBoundingClientRect() ?? null);
+    setSlotByNode((prev) => {
+      const arr = [...prev];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    });
+    setPaletteIdx((p) => (p + 1) % MECH_PALETTES.length);
+    setSpinning(true);
+    window.setTimeout(() => setSpinning(false), 700);
   };
+
+  useLayoutEffect(() => {
+    const prev = prevRects.current;
+    if (!prev) return;
+    tileRefs.current.forEach((el, i) => {
+      const before = prev[i];
+      if (!el || !before) return;
+      const after = el.getBoundingClientRect();
+      const dx = before.left - after.left;
+      const dy = before.top - after.top;
+      if (Math.hypot(dx, dy) < 0.5) return;
+      el.animate(
+        [
+          { transform: `translate(${dx}px, ${dy}px)` },
+          { transform: 'translate(0, 0)' },
+        ],
+        { duration: 640, easing: 'cubic-bezier(0.32, 0.72, 0.24, 1)' },
+      );
+    });
+    prevRects.current = null;
+  }, [slotByNode]);
+
   const allDone = activated.size === N;
   const anyActive = activated.size > 0;
+  const palette = MECH_PALETTES[paletteIdx];
 
   return (
     <div id="mechanism" style={{ background: '#F8F8F8', color: INK, padding: `120px ${PAD_X}`, scrollMarginTop: 24 }}>
@@ -511,208 +555,116 @@ function SecondCall() {
         )}
       </div>
 
-      <div style={{ marginTop: 32, position: 'relative', maxWidth: 1000, marginLeft: 'auto', marginRight: 'auto' }}>
-        <svg viewBox="0 0 1000 570" style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}>
-          {/* Bezier connectors from activated nodes to hub */}
-          <g fill="none" strokeLinecap="round">
-            {pts.map((pt, i) => {
-              if (!activated.has(i)) return null;
-              const d = bezierPath(pt.x, pt.y, cx, cy);
-              return (
-                <g key={i}>
-                  <path d={d} stroke={RED} strokeWidth="2" opacity="0.85" />
-                  <path
-                    d={d}
-                    stroke="#FF6B6B"
-                    strokeWidth="4"
-                    pathLength="100"
-                    strokeDasharray="6 94"
-                    style={{
-                      animation: 'sc-pulse-flow 1.8s linear infinite',
-                      animationDelay: `${(i * 0.15).toFixed(2)}s`,
-                    }}
-                  />
-                </g>
-              );
-            })}
-          </g>
-          {/* Culmination — expanding rings when all activated */}
-          {allDone && (
-            <g fill="none" stroke={RED} strokeWidth="2">
-              <circle cx={cx} cy={cy} r="48" opacity="0">
-                <animate attributeName="r" from="48" to="150" dur="2.4s" repeatCount="indefinite" />
-                <animate attributeName="opacity" from="0.7" to="0" dur="2.4s" repeatCount="indefinite" />
-              </circle>
-              <circle cx={cx} cy={cy} r="48" opacity="0">
-                <animate attributeName="r" from="48" to="150" dur="2.4s" begin="1.2s" repeatCount="indefinite" />
-                <animate attributeName="opacity" from="0.7" to="0" dur="2.4s" begin="1.2s" repeatCount="indefinite" />
-              </circle>
-            </g>
-          )}
-          {/* Nodes — badges with icons */}
-          {pts.map((pt, i) => {
-            const lit = activated.has(i) || hovered === i;
-            return (
-              <g key={i}>
-                <circle
-                  cx={pt.x.toFixed(1)}
-                  cy={pt.y.toFixed(1)}
-                  r="20"
-                  fill={lit ? RED : PAPER}
-                  stroke={lit ? RED : '#C7C3BB'}
-                  strokeWidth="2.4"
-                  style={{ transition: 'fill 240ms ease, stroke 240ms ease' }}
-                />
-                <g
-                  transform={`translate(${(pt.x - 12).toFixed(1)}, ${(pt.y - 12).toFixed(1)})`}
+      <div
+        style={{
+          marginTop: 40,
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gridTemplateRows: 'repeat(3, 1fr)',
+          gap: 'clamp(10px, 1.4vw, 20px)',
+          width: '100%',
+          maxWidth: 640,
+          aspectRatio: '1 / 1',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+        }}
+      >
+        {MECH_NODES.map((node, i) => {
+          const slot = slotByNode[i];
+          const [col, row] = MECH_SLOTS[slot];
+          const lit = activated.has(i) || hovered === i;
+          return (
+            <div
+              key={i}
+              ref={(el) => { tileRefs.current[i] = el; }}
+              style={{ gridColumn: col, gridRow: row, minWidth: 0 }}
+            >
+              <button
+                type="button"
+                aria-label={node.label}
+                aria-pressed={activated.has(i)}
+                onMouseEnter={() => setHovered(i)}
+                onMouseLeave={() => setHovered(-1)}
+                onFocus={() => setHovered(i)}
+                onBlur={() => setHovered(-1)}
+                onClick={() => activate(i)}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 'clamp(6px, 0.9vw, 12px)',
+                  padding: 'clamp(10px, 1.6vw, 22px)',
+                  background: lit ? RED : palette.fill,
+                  border: `1.5px solid ${lit ? RED : palette.stroke}`,
+                  borderRadius: 4,
+                  cursor: 'pointer',
+                  transition: 'background 260ms ease, border-color 260ms ease, color 260ms ease',
+                  fontFamily: "'Manrope', sans-serif",
+                  color: lit ? PAPER : INK,
+                }}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width="clamp(22px, 3vw, 34px)"
+                  height="clamp(22px, 3vw, 34px)"
                   fill="none"
-                  stroke={lit ? PAPER : INK}
+                  stroke="currentColor"
                   strokeWidth="1.6"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  style={{ transition: 'stroke 240ms ease' }}
                 >
-                  <path d={pt.icon} />
-                </g>
-              </g>
-            );
-          })}
-          {/* Hub */}
-          <circle
-            cx={cx}
-            cy={cy}
-            r="52"
-            fill={allDone ? RED : PAPER}
-            stroke={RED}
-            strokeWidth="3"
-            style={{ transition: 'fill 400ms ease' }}
-          />
-          <text
-            x={cx}
-            y={cy + 11}
-            fill={allDone ? PAPER : RED}
-            fontFamily={DISPLAY}
-            fontSize="30"
-            textAnchor="middle"
-            letterSpacing="2"
-            style={{ transition: 'fill 400ms ease' }}
+                  <path d={node.icon} />
+                </svg>
+                <span
+                  style={{
+                    fontSize: 'clamp(11px, 1.15vw, 14px)',
+                    fontWeight: 700,
+                    letterSpacing: '0.01em',
+                    textAlign: 'center',
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {node.label}
+                </span>
+              </button>
+            </div>
+          );
+        })}
+        <div style={{ gridColumn: 2, gridRow: 2, minWidth: 0 }}>
+          <button
+            type="button"
+            aria-label={allDone ? 'Механизм запущен' : 'Перемешать блоки'}
+            onClick={shuffleTiles}
+            style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: allDone ? RED : PAPER,
+              border: `2px solid ${RED}`,
+              borderRadius: 4,
+              cursor: 'pointer',
+              transition: 'background 300ms ease, transform 300ms ease',
+              transform: spinning ? 'scale(0.94)' : 'scale(1)',
+              fontFamily: DISPLAY,
+              fontWeight: 800,
+              fontSize: 'clamp(18px, 2.4vw, 30px)',
+              letterSpacing: '0.08em',
+              color: allDone ? PAPER : RED,
+              boxShadow: allDone ? '0 0 0 6px rgba(163,22,33,0.14)' : 'none',
+            }}
           >
             ШОУ
-          </text>
-        </svg>
-        <div style={{ position: 'absolute', inset: '16px 12px' }}>
-          {pts.map((pt, i) => {
-            const lit = activated.has(i) || hovered === i;
-            const nxp = (pt.x / 1000) * 100;
-            const nyp = (pt.y / 570) * 100;
-            const isUpper = pt.y < cy;
-            // Side classification — horizontal-dominant nodes anchor the label
-            // by their outer edge so the description grows outward, not into
-            // the SVG center.
-            const HORIZ_TOLERANCE = 80;
-            const isRight = pt.x - cx > HORIZ_TOLERANCE;
-            const isLeft = cx - pt.x > HORIZ_TOLERANCE;
-            const horizAnchor: 'left' | 'right' | 'center' = isRight ? 'left' : isLeft ? 'right' : 'center';
-            // Nudge the label away from the node by a fixed viewBox offset.
-            const OFFSET = 52;
-            const labelX = isRight ? pt.x + OFFSET : isLeft ? pt.x - OFFSET : pt.x;
-            const lxp = (labelX / 1000) * 100;
-            const labelY = horizAnchor === 'center'
-              ? (isUpper ? pt.y - 40 : pt.y + 40)
-              : pt.y;
-            const lyp = (labelY / 570) * 100;
-            const translateX =
-              horizAnchor === 'left' ? '0' : horizAnchor === 'right' ? '-100%' : '-50%';
-            const translateY =
-              horizAnchor === 'center'
-                ? (isUpper ? '-100%' : '0')
-                : '-50%';
-            const flexDir =
-              horizAnchor === 'center'
-                ? (isUpper ? 'column-reverse' : 'column')
-                : 'column';
-            const alignItems =
-              horizAnchor === 'left'
-                ? 'flex-start'
-                : horizAnchor === 'right'
-                ? 'flex-end'
-                : 'center';
-            const textAlign: React.CSSProperties['textAlign'] =
-              horizAnchor === 'left'
-                ? 'left'
-                : horizAnchor === 'right'
-                ? 'right'
-                : 'center';
-            return (
-              <div key={i}>
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: `${lxp.toFixed(2)}%`,
-                    top: `${lyp.toFixed(2)}%`,
-                    transform: `translate(${translateX}, ${translateY})`,
-                    display: 'flex',
-                    flexDirection: flexDir,
-                    alignItems,
-                    gap: 4,
-                    width: 180,
-                    textAlign,
-                    pointerEvents: 'none',
-                  }}
-                >
-                  <div
-                    style={{
-                      fontFamily: "'Manrope', sans-serif",
-                      fontSize: 14,
-                      fontWeight: 800,
-                      letterSpacing: '0.01em',
-                      color: lit ? RED : '#8A857C',
-                      whiteSpace: 'nowrap',
-                      transition: 'color 200ms ease',
-                    }}
-                  >
-                    {pt.label}
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: "'Manrope', sans-serif",
-                      fontSize: 12,
-                      lineHeight: 1.35,
-                      color: MUTED,
-                      maxWidth: 180,
-                      opacity: lit ? 1 : 0,
-                      transform: `translateY(${lit ? '0' : horizAnchor === 'center' && isUpper ? '4px' : '-4px'})`,
-                      transition: 'opacity 220ms ease, transform 220ms ease',
-                    }}
-                  >
-                    {pt.desc}
-                  </div>
-                </div>
-                <button
-                  aria-label={pt.label}
-                  onMouseEnter={() => { setHovered(i); activate(i); }}
-                  onMouseLeave={() => setHovered(-1)}
-                  onFocus={() => { setHovered(i); activate(i); }}
-                  onBlur={() => setHovered(-1)}
-                  onClick={() => activate(i)}
-                  style={{
-                    position: 'absolute',
-                    left: `${nxp.toFixed(2)}%`,
-                    top: `${nyp.toFixed(2)}%`,
-                    transform: 'translate(-50%, -50%)',
-                    width: 120,
-                    height: 90,
-                    background: 'transparent',
-                    border: 'none',
-                    padding: 0,
-                    cursor: 'pointer',
-                  }}
-                />
-              </div>
-            );
-          })}
+          </button>
         </div>
       </div>
+      <p style={{ fontSize: 14, color: MUTED, margin: '20px 0 0', textAlign: 'center' }}>
+        Нажми на <b>ШОУ</b>, чтобы перемешать блоки. Тапни блок — он загорится и учтётся в счётчике.
+      </p>
       <p style={{ fontSize: 18, color: MUTED, margin: '40px 0 0', maxWidth: 720 }}>
         Мы не ведём концерт по списку задач. Мы собираем систему, в которой тур начинает продаваться, двигаться и расти.
       </p>
