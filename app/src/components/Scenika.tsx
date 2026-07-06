@@ -21,7 +21,7 @@ export default function Scenika() {
   }, []);
 
   return (
-    <div style={{ fontFamily: "'Manrope', sans-serif", color: INK, background: PAPER }}>
+    <div style={{ fontFamily: "'Manrope', sans-serif", color: INK, background: PAPER, overflow: 'hidden' }}>
       <ScenikaNav />
       <ScenikaHero />
       <FirstCall />
@@ -468,7 +468,6 @@ function SecondCall() {
         color: INK,
         padding: `72px ${PAD_X}`,
         scrollMarginTop: 24,
-        overflow: 'hidden',
       }}
     >
       <div className="sc-mesh sc-mesh--light" aria-hidden>
