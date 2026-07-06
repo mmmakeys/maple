@@ -88,6 +88,75 @@ body {
   }
 }
 
+/* Hero mesh — very subtle drifting blobs to warm up the INK background */
+.sc-mesh {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.sc-mesh-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+.sc-mesh-a {
+  width: 60%;
+  height: 60%;
+  left: -10%;
+  top: -14%;
+  background: radial-gradient(circle at 40% 40%, rgba(163, 22, 33, 0.65), transparent 62%);
+  animation: sc-mesh-a 28s ease-in-out infinite alternate;
+}
+.sc-mesh-b {
+  width: 65%;
+  height: 65%;
+  right: -14%;
+  top: 6%;
+  background: radial-gradient(circle at 50% 50%, rgba(72, 32, 110, 0.6), transparent 62%);
+  animation: sc-mesh-b 34s ease-in-out infinite alternate;
+}
+.sc-mesh-c {
+  width: 55%;
+  height: 55%;
+  left: 20%;
+  bottom: -16%;
+  background: radial-gradient(circle at 50% 50%, rgba(40, 70, 140, 0.5), transparent 62%);
+  animation: sc-mesh-c 40s ease-in-out infinite alternate;
+}
+@keyframes sc-mesh-a {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(18%, 12%, 0) scale(1.15);
+  }
+}
+@keyframes sc-mesh-b {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(-14%, 18%, 0) scale(1.1);
+  }
+}
+@keyframes sc-mesh-c {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(10%, -16%, 0) scale(1.2);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sc-mesh-blob {
+    animation: none;
+  }
+}
+
 /* First-call curtains — wavy drapery folds + weighted leading edge (edge fades on closure) */
 .sc-curtain {
   position: absolute;

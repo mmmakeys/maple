@@ -106,6 +106,11 @@ function ScenikaHero() {
         color: PAPER,
       }}
     >
+      <div className="sc-mesh" aria-hidden>
+        <div className="sc-mesh-blob sc-mesh-a" />
+        <div className="sc-mesh-blob sc-mesh-b" />
+        <div className="sc-mesh-blob sc-mesh-c" />
+      </div>
       <div
         ref={beamRef}
         style={{
