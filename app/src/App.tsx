@@ -62,58 +62,7 @@ export default function App() {
 
   return (
     <div style={{ background: paper, color: ink850, overflowX: 'hidden' }}>
-      {/* nav */}
-      <div style={{ background: ink900, color: ink100 }}>
-        <div style={col('26px clamp(20px,4vw,56px)', { display: 'flex', alignItems: 'center', justifyContent: 'space-between' })}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
-            <svg viewBox="0 0 40 40" width="30" height="30" style={{ display: 'block' }} aria-label="Maple">
-              <path
-                d="M 37.80 14.47 C 38.73 17.75, 36.04 22.40, 33.85 25.78 C 31.66 29.15, 28.32 33.93, 24.68 34.72 C 21.03 35.51, 15.68 32.54, 11.96 30.50 C 8.25 28.46, 3.41 25.74, 2.37 22.49 C 1.32 19.24, 3.56 14.41, 5.70 10.99 C 7.85 7.57, 11.47 2.79, 15.24 1.98 C 19.00 1.17, 24.54 4.02, 28.30 6.10 C 32.06 8.18, 36.88 11.19, 37.80 14.47 Z"
-                fill={violet500}
-              />
-              <path
-                d="M 8.5 28.5 C 9.50 26.08, 12.42 15.17, 14.50 14.00 C 16.58 12.83, 18.33 22.42, 21.00 21.50 C 23.67 20.58, 28.92 10.67, 30.50 8.50"
-                fill="none"
-                stroke={ink900}
-                strokeWidth="4.8"
-                strokeLinejoin="round"
-                strokeLinecap="round"
-              />
-            </svg>
-            <span style={{ fontFamily: DISPLAY, fontSize: 20, fontWeight: 600, letterSpacing: '0.02em' }}>
-              МЭПЛ
-            </span>
-          </div>
-          <div className="mm-nav-links">
-            <a className="mm-nav-anchor" href="#services" style={{ color: ink400, textDecoration: 'none' }}>
-              Услуги
-            </a>
-            <a className="mm-nav-anchor" href="#cases" style={{ color: ink400, textDecoration: 'none' }}>
-              Кейсы
-            </a>
-            <a className="mm-nav-anchor" href="#team" style={{ color: ink400, textDecoration: 'none' }}>
-              Команда
-            </a>
-            <a
-              href="#"
-              onClick={openLead}
-              style={{
-                textDecoration: 'none',
-                color: ink900,
-                background: violet400,
-                padding: '11px 20px',
-                borderRadius: 8,
-                fontWeight: 800,
-                cursor: 'pointer',
-              }}
-            >
-              Обсудить проект
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* hero */}
+      {/* hero (nav overlays on top of the hero's background + corner glow) */}
       <div style={{ background: ink900, color: ink100, position: 'relative', overflow: 'hidden' }}>
         {/* full-bleed corner glow (relative to the band, so it hugs the viewport corner) */}
         <div
@@ -128,9 +77,59 @@ export default function App() {
             pointerEvents: 'none',
           }}
         />
+        {/* nav — absolute over the hero, no background of its own */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10, color: ink100 }}>
+          <div style={col('26px clamp(20px,4vw,56px)', { display: 'flex', alignItems: 'center', justifyContent: 'space-between' })}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
+              <svg viewBox="0 0 40 40" width="30" height="30" style={{ display: 'block' }} aria-label="Maple">
+                <path
+                  d="M 37.80 14.47 C 38.73 17.75, 36.04 22.40, 33.85 25.78 C 31.66 29.15, 28.32 33.93, 24.68 34.72 C 21.03 35.51, 15.68 32.54, 11.96 30.50 C 8.25 28.46, 3.41 25.74, 2.37 22.49 C 1.32 19.24, 3.56 14.41, 5.70 10.99 C 7.85 7.57, 11.47 2.79, 15.24 1.98 C 19.00 1.17, 24.54 4.02, 28.30 6.10 C 32.06 8.18, 36.88 11.19, 37.80 14.47 Z"
+                  fill={violet500}
+                />
+                <path
+                  d="M 8.5 28.5 C 9.50 26.08, 12.42 15.17, 14.50 14.00 C 16.58 12.83, 18.33 22.42, 21.00 21.50 C 23.67 20.58, 28.92 10.67, 30.50 8.50"
+                  fill="none"
+                  stroke={ink900}
+                  strokeWidth="4.8"
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                />
+              </svg>
+              <span style={{ fontFamily: DISPLAY, fontSize: 20, fontWeight: 600, letterSpacing: '0.02em' }}>
+                МЭПЛ
+              </span>
+            </div>
+            <div className="mm-nav-links">
+              <a className="mm-nav-anchor" href="#services" style={{ color: ink400, textDecoration: 'none' }}>
+                Услуги
+              </a>
+              <a className="mm-nav-anchor" href="#cases" style={{ color: ink400, textDecoration: 'none' }}>
+                Кейсы
+              </a>
+              <a className="mm-nav-anchor" href="#team" style={{ color: ink400, textDecoration: 'none' }}>
+                Команда
+              </a>
+              <a
+                href="#"
+                onClick={openLead}
+                style={{
+                  textDecoration: 'none',
+                  color: ink900,
+                  background: violet400,
+                  padding: '11px 20px',
+                  borderRadius: 8,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                }}
+              >
+                Обсудить проект
+              </a>
+            </div>
+          </div>
+        </div>
         <div
           className="mm-hero-band"
-          style={col('clamp(48px,7vw,78px) clamp(20px,4vw,56px) clamp(48px,6vw,70px)', { position: 'relative' })}
+          style={col('clamp(112px,10vw,140px) clamp(20px,4vw,56px) clamp(48px,6vw,70px)', { position: 'relative' })}
         >
           {/* leaf sits at the right edge of the content column — .mm-hero-leaf
               handles the mobile/tablet reflow (size, position, animation). */}
