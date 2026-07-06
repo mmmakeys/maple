@@ -5,7 +5,6 @@ const RED = '#A31621';
 const INK = '#111111';
 const PAPER = '#FFFFFF';
 const CREAM_LIGHT = '#F5F5F3';
-const CREAM_LINE = '#D8D5CE';
 const BORDER = '#E8E8E8';
 const BLACK = '#0C0C0C';
 const NEAR_BLACK = '#1C1C1C';
@@ -464,27 +463,24 @@ function SecondCall() {
   const focused = hovered >= 0 ? MECH_NODES[hovered] : null;
 
   return (
-    <div id="mechanism" style={{ background: '#F8F8F8', color: INK, padding: `120px ${PAD_X}`, scrollMarginTop: 24 }}>
+    <div id="mechanism" style={{ background: INK, color: PAPER, padding: `72px ${PAD_X}`, scrollMarginTop: 24 }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 24 }}>
         <div style={CALL_LABEL}>Второй звонок</div>
-        <div style={{ flex: 1, height: 1, background: CREAM_LINE }} />
+        <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.14)' }} />
       </div>
-      <h2 style={{ ...SECTION_H2, margin: '36px 0 0', maxWidth: 900 }}>Запускаем механизм полного зала</h2>
-      <p style={{ fontSize: 19, lineHeight: 1.65, color: MUTED, maxWidth: 720, margin: '28px 0 0' }}>
-        Пока артист готовит шоу, мы собираем всё, что должно сработать за кулисами. Продюсирование мероприятий «под ключ»: работа с артистами и их командами, маркетинг и продвижение, управление билетным столом.
-      </p>
-      <p style={{ fontSize: 19, lineHeight: 1.65, color: MUTED, maxWidth: 720, margin: '20px 0 0' }}>
-        Площадки, билеты, договоры, реклама, PR, медиа, райдеры, логистика — каждая часть должна включиться вовремя.
+      <h2 style={{ ...SECTION_H2, margin: '20px 0 0', maxWidth: 900 }}>Запускаем механизм полного зала</h2>
+      <p style={{ fontSize: 17, lineHeight: 1.55, color: MUTED_DARK, maxWidth: 720, margin: '18px 0 0' }}>
+        Площадки, билеты, договоры, реклама, PR, райдеры, логистика — каждая часть должна включиться вовремя. Собираем «под ключ», пока артист готовит шоу.
       </p>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 22, marginTop: 44, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginTop: 28, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <svg
             viewBox="0 0 100 100"
-            width="42"
-            height="42"
+            width="34"
+            height="34"
             fill="none"
-            stroke={INK}
+            stroke={PAPER}
             strokeWidth="6"
             strokeLinecap="round"
             style={{
@@ -493,20 +489,20 @@ function SecondCall() {
             }}
           >
             <circle cx="50" cy="50" r="26" />
-            <circle cx="50" cy="50" r="7" fill={INK} stroke="none" />
+            <circle cx="50" cy="50" r="7" fill={PAPER} stroke="none" />
             {gearTeeth}
           </svg>
           <svg
             viewBox="0 0 100 100"
-            width="30"
-            height="30"
+            width="24"
+            height="24"
             fill="none"
             stroke={RED}
             strokeWidth="6"
             strokeLinecap="round"
             style={{
               transformOrigin: '50% 50%',
-              marginLeft: -6,
+              marginLeft: -5,
               animation: assembled ? 'sc-gear-ccw 2.1s linear infinite' : undefined,
             }}
           >
@@ -515,20 +511,20 @@ function SecondCall() {
             {gearTeeth}
           </svg>
         </div>
-        <span style={{ fontSize: 16, color: assembled ? RED : '#8A8A8A', letterSpacing: '0.02em', fontWeight: assembled ? 700 : 400 }}>
+        <span style={{ fontSize: 15, color: assembled ? '#FF8093' : MUTED_DARK, letterSpacing: '0.02em', fontWeight: assembled ? 700 : 400 }}>
           {assembled ? 'Механизм запущен.' : 'Тапни любой блок — соберём механизм.'}
         </span>
       </div>
 
       <div
         style={{
-          marginTop: 40,
+          marginTop: 24,
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
           gridTemplateRows: 'repeat(3, 1fr)',
-          gap: 'clamp(10px, 1.4vw, 20px)',
+          gap: 'clamp(8px, 1.1vw, 16px)',
           width: '100%',
-          maxWidth: 560,
+          maxWidth: 460,
           aspectRatio: '1 / 1',
         }}
       >
@@ -627,29 +623,26 @@ function SecondCall() {
       <div
         aria-live="polite"
         style={{
-          marginTop: 22,
-          minHeight: 56,
-          maxWidth: 560,
+          marginTop: 18,
+          minHeight: 48,
+          maxWidth: 460,
           fontFamily: "'Manrope', sans-serif",
-          fontSize: 15,
-          lineHeight: 1.5,
-          color: MUTED,
+          fontSize: 14,
+          lineHeight: 1.45,
+          color: MUTED_DARK,
           transition: 'opacity 220ms ease',
-          opacity: focused || assembled ? 1 : 0.6,
+          opacity: focused || assembled ? 1 : 0.5,
         }}
       >
         {focused ? (
           <>
-            <div style={{ fontWeight: 800, color: INK, marginBottom: 2 }}>{focused.label}</div>
+            <div style={{ fontWeight: 800, color: PAPER, marginBottom: 2 }}>{focused.label}</div>
             <div>{focused.desc}</div>
           </>
         ) : assembled ? (
           <div>Тапни любой блок ещё раз — разберём в рандомное состояние.</div>
         ) : null}
       </div>
-      <p style={{ fontSize: 18, color: MUTED, margin: '40px 0 0', maxWidth: 720 }}>
-        Мы не ведём концерт по списку задач. Мы собираем систему, в которой тур начинает продаваться, двигаться и расти.
-      </p>
     </div>
   );
 }
