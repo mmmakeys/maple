@@ -920,3 +920,9 @@ a.mm-case-card:hover .mm-case-open {
     grid-template-columns: 1fr;
   }
 }
+
+/* An odd number of workstreams would leave the last card alone in a half-width
+   column; let it span the row instead. */
+.mm-case-build > .mm-case-build-item:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
