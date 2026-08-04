@@ -301,47 +301,91 @@ export default function CaseStory({ slug }: { slug: string }) {
               {story.loyalty.lead}
             </p>
 
+            {/* 1 — what was already running (muted: this is the "before") */}
+            <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: ink500, marginBottom: 16 }}>
+              Как было
+            </div>
             <div className="mm-case-tiers">
               {story.loyalty.tiers.map((t) => (
                 <div
                   key={t.name}
                   className="mm-case-tier"
                   style={{
-                    background: alpha('violet400', 0.09),
-                    border: `1px solid ${alpha('violet400', 0.28)}`,
+                    background: 'rgba(255,255,255,0.04)',
+                    border: '1px solid rgba(255,255,255,0.12)',
                     borderRadius: 16,
-                    padding: 'clamp(20px,2.6vw,26px)',
+                    padding: 'clamp(18px,2.4vw,24px)',
                   }}
                 >
-                  <div style={{ fontFamily: DISPLAY, fontSize: 16, fontWeight: 600, textTransform: 'uppercase', color: ink100, letterSpacing: '0.04em' }}>
+                  <div style={{ fontFamily: DISPLAY, fontSize: 15, fontWeight: 600, textTransform: 'uppercase', color: ink400, letterSpacing: '0.04em' }}>
                     {t.name}
                   </div>
-                  <div style={{ fontSize: 13.5, color: ink500, marginTop: 6 }}>{t.threshold}</div>
-                  <div style={{ fontFamily: DISPLAY, fontSize: 'clamp(32px,4vw,44px)', fontWeight: 600, color: violet400, lineHeight: 1, marginTop: 18 }}>
+                  <div style={{ fontSize: 13, color: ink500, marginTop: 6 }}>{t.threshold}</div>
+                  <div style={{ fontFamily: DISPLAY, fontSize: 'clamp(28px,3.4vw,38px)', fontWeight: 600, color: ink400, lineHeight: 1, marginTop: 16 }}>
                     {t.cashback}
                   </div>
-                  <div style={{ fontSize: 13, color: ink500, marginTop: 6 }}>кэшбэк баллами</div>
+                  <div style={{ fontSize: 12.5, color: ink500, marginTop: 6 }}>кэшбэк баллами</div>
                 </div>
               ))}
             </div>
+            <p style={{ fontSize: 14.5, color: ink500, margin: '16px 0 0', maxWidth: 640, lineHeight: 1.5 }}>
+              {story.loyalty.tiersNote}
+            </p>
 
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 'clamp(26px,3.4vw,36px)' }}>
-              {story.loyalty.rules.map((r) => (
-                <span
-                  key={r}
-                  style={{
-                    background: alpha('violet400', 0.13),
-                    border: `1px solid ${alpha('violet400', 0.3)}`,
-                    color: '#D9CEF0',
-                    borderRadius: 999,
-                    padding: '9px 16px',
-                    fontSize: 14,
-                    fontWeight: 600,
-                  }}
-                >
-                  {r}
-                </span>
-              ))}
+            {/* 2 — audit findings */}
+            <div style={{ marginTop: 'clamp(40px,5vw,60px)' }}>
+              <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: violet400, marginBottom: 18 }}>
+                Что показал аудит
+              </div>
+              <ul className="mm-case-found">
+                {story.loyalty.found.map((f) => (
+                  <li key={f} style={{ fontSize: 16, lineHeight: 1.55, color: ink400 }}>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* 3 — the proposed concept */}
+            <div
+              style={{
+                marginTop: 'clamp(40px,5vw,60px)',
+                background: alpha('violet500', 0.16),
+                border: `1px solid ${alpha('violet400', 0.34)}`,
+                borderRadius: 20,
+                padding: 'clamp(26px,3.4vw,40px)',
+              }}
+            >
+              <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: violet400, marginBottom: 12 }}>
+                Что предложили
+              </div>
+              <div style={{ fontFamily: DISPLAY, fontSize: 'clamp(26px,3.6vw,40px)', fontWeight: 600, textTransform: 'uppercase', color: ink100, lineHeight: 1.05 }}>
+                {story.loyalty.concept.name}
+              </div>
+              <p style={{ fontSize: 17, lineHeight: 1.6, color: ink400, margin: '14px 0 24px', maxWidth: 700 }}>
+                {story.loyalty.concept.lead}
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                {story.loyalty.concept.points.map((p) => (
+                  <span
+                    key={p}
+                    style={{
+                      background: alpha('violet400', 0.14),
+                      border: `1px solid ${alpha('violet400', 0.32)}`,
+                      color: '#D9CEF0',
+                      borderRadius: 999,
+                      padding: '9px 16px',
+                      fontSize: 14,
+                      fontWeight: 600,
+                    }}
+                  >
+                    {p}
+                  </span>
+                ))}
+              </div>
+              <p style={{ fontSize: 15.5, lineHeight: 1.6, color: ink500, margin: '24px 0 0', maxWidth: 760 }}>
+                {story.loyalty.effect}
+              </p>
             </div>
           </div>
         </div>
