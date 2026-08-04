@@ -332,34 +332,28 @@ export const caseStories: Record<string, CaseStory> = {
     },
     press: [
       {
-        outlet: 'РБК Петербург',
-        title: 'Павел Воля и Ляйсан Утяшева планируют открытие магазина в Петербурге',
-        date: '22 апреля 2023',
-        url: 'https://www.rbc.ru/spb_sz/22/04/2023/6442bd6b9a79476a270086b2',
-      },
-      {
-        outlet: 'Retail.ru',
-        title: 'Павел Воля и Ляйсан Утяшева расширяют сеть магазинов «Всёгазин»',
-        date: '2023',
-        url: 'https://www.retail.ru/rbc/pressreleases/pavel-volya-i-lyaysan-utyasheva-rasshiryayut-set-magazinov-vsyegazin/',
-      },
-      {
-        outlet: '78.ru',
-        title: 'Павел Воля и Ляйсан Утяшева откроют в Петербурге «Всёгазин»',
-        date: '23 апреля 2023',
-        url: 'https://78.ru/news/2023-04-23/pavel-volya-i-lyaisan-utyasheva-otkroyut-v-peterburge-vsegazin',
-      },
-      {
-        outlet: 'Телеканал «Санкт-Петербург»',
-        title: 'Павел Воля и Ляйсан Утяшева откроют в Петербурге магазин хозтоваров',
-        date: '22 апреля 2023',
-        url: 'https://tvspb.ru/news/2023/04/22/pavel-volya-i-lyajsan-utyasheva-otkroyut-v-peterburge-magazin-hoztovarov',
+        outlet: 'New Retail',
+        title: 'В ТРЦ «Афимолл Сити» откроется магазин, созданный при участии Павла Воли и Ляйсан Утяшевой',
+        date: '13 апреля 2023',
+        url: 'https://new-retail.ru/novosti/retail/v_trts_afimoll_siti_otkroetsya_magazin_sozdannyy_pri_uchastii_pavla_voli_i_lyaysan_utyashevoy/',
       },
       {
         outlet: 'Antenna Daily',
         title: 'Открытие магазина товаров для дома «Всёгазин»',
         date: '13 апреля 2023',
         url: 'https://antennadaily.ru/2023/04/13/vsegazin/',
+      },
+      {
+        outlet: 'Shoppers',
+        title: 'В «Афимолле» откроется магазин с товарами для дома и дачи Павла Воли',
+        date: '17 апреля 2023',
+        url: 'https://shoppers.media/news/5313_v-afimolle-otkroetsia-magazin-s-tovarami-dlia-doma-i-daci-pavla-voli',
+      },
+      {
+        outlet: 'Retail.ru',
+        title: 'Павел Воля и Ляйсан Утяшева расширяют сеть магазинов «Всёгазин»',
+        date: '2023',
+        url: 'https://www.retail.ru/rbc/pressreleases/pavel-volya-i-lyaysan-utyasheva-rasshiryayut-set-magazinov-vsyegazin/',
       },
       {
         outlet: 'Retail.ru',
