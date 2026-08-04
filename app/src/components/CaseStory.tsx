@@ -13,6 +13,7 @@ import {
   violet400,
   violet50,
   violet500,
+  violet700,
 } from '../tokens';
 import { caseStories } from '../cases';
 import { MapleNav, MapleFooter, chromeCol, chromePad } from './MapleChrome';
@@ -26,6 +27,11 @@ const heading: React.CSSProperties = {
   textTransform: 'uppercase',
   margin: 0,
 };
+
+// Metric values range from "3" to "ROI >100%" — step the display size down as
+// the string grows so long values don't wrap into the neighbouring column.
+const metricSize = (v: string): string =>
+  v.length > 11 ? 'clamp(26px,3.4vw,40px)' : v.length > 6 ? 'clamp(32px,4.6vw,54px)' : 'clamp(40px,6vw,72px)';
 
 const sectionTitle: React.CSSProperties = {
   ...heading,
@@ -99,7 +105,12 @@ export default function CaseStory({ slug }: { slug: string }) {
           style={{ ...chromeCol, padding: `clamp(28px,4vw,44px) ${chromePad} clamp(48px,6vw,72px)`, position: 'relative', zIndex: 1 }}
         >
           <div className="mm-case-hero-copy">
-            <span style={{ ...catChip }}>{story.category}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+              <span style={{ ...catChip }}>{story.category}</span>
+              {story.period && (
+                <span style={{ fontSize: 14, color: ink500, letterSpacing: '0.02em' }}>{story.period}</span>
+              )}
+            </div>
             <h1 style={{ ...heading, fontSize: 'clamp(38px,6.4vw,80px)', lineHeight: 0.96, margin: '22px 0 0' }}>
               {story.title.split('\n').map((line, i) => (
                 <span key={i} style={{ display: 'block', color: i === 0 ? ink100 : violet400 }}>
@@ -182,6 +193,127 @@ export default function CaseStory({ slug }: { slug: string }) {
         </div>
       </div>
 
+      {/* ── platform architecture ── */}
+      {story.stack && (
+        <div style={{ background: violet50 }}>
+          <div style={{ ...chromeCol, padding: `clamp(56px,7vw,84px) ${chromePad}` }}>
+            <h2 style={{ ...sectionTitle, marginBottom: 12 }}>
+              Как устроена <span style={{ color: violet500 }}>платформа</span>
+            </h2>
+            <p style={{ fontSize: 17, lineHeight: 1.55, color: ink700, margin: '0 0 clamp(28px,4vw,40px)', maxWidth: 620 }}>
+              Витрины, сервисы и учётный контур собирались параллельно и связывались через интеграционную шину.
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {story.stack.map((s, i) => (
+                <div key={s.layer}>
+                  <div
+                    className="mm-case-stack-row"
+                    style={{
+                      background: paper,
+                      borderRadius: 18,
+                      padding: 'clamp(20px,2.6vw,26px)',
+                      display: 'flex',
+                      gap: 'clamp(16px,3vw,32px)',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    <div style={{ minWidth: 150, flex: '0 0 auto' }}>
+                      <div style={{ fontFamily: DISPLAY, fontSize: 17, fontWeight: 600, textTransform: 'uppercase', color: ink850 }}>
+                        {s.layer}
+                      </div>
+                      <div style={{ fontSize: 13.5, color: ink600, marginTop: 4 }}>{s.note}</div>
+                    </div>
+                    <div className="mm-case-stack-items" style={{ display: 'flex', flexWrap: 'wrap', gap: 8, flex: 1 }}>
+                      {s.items.map((it) => (
+                        <span
+                          key={it}
+                          style={{
+                            background: violet50,
+                            border: `1px solid ${alpha('violet400', 0.4)}`,
+                            color: violet700,
+                            borderRadius: 10,
+                            padding: '10px 15px',
+                            fontSize: 14.5,
+                            fontWeight: 700,
+                          }}
+                        >
+                          {it}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  {i < story.stack!.length - 1 && (
+                    <div aria-hidden style={{ display: 'flex', justifyContent: 'center', padding: '2px 0' }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={violet400} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="4" x2="12" y2="19" />
+                        <polyline points="6 13 12 19 18 13" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* order lifecycle */}
+            {story.flow && (
+              <div style={{ marginTop: 'clamp(34px,4vw,48px)' }}>
+                <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: violet500, marginBottom: 16 }}>
+                  Жизненный цикл заказа
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
+                  {story.flow.steps.map((st, i) => (
+                    <span key={st} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                      <span
+                        style={{
+                          background: paper,
+                          border: `1px solid ${alpha('violet400', 0.45)}`,
+                          borderRadius: 999,
+                          padding: '9px 16px',
+                          fontSize: 14,
+                          fontWeight: 700,
+                          color: ink850,
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {st}
+                      </span>
+                      {i < story.flow!.steps.length - 1 && <span style={{ color: violet400, fontWeight: 800 }}>→</span>}
+                    </span>
+                  ))}
+                </div>
+                <p style={{ fontSize: 15, lineHeight: 1.55, color: ink600, margin: '16px 0 0', maxWidth: 720 }}>
+                  {story.flow.note}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── timeline ── */}
+      {story.phases && (
+        <div style={{ background: paper }}>
+          <div style={{ ...chromeCol, padding: `clamp(56px,7vw,84px) ${chromePad}` }}>
+            <h2 style={{ ...sectionTitle, marginBottom: 'clamp(28px,4vw,44px)' }}>
+              Как шёл <span style={{ color: violet500 }}>проект</span>
+            </h2>
+            <div className="mm-case-phases">
+              {story.phases.map((p) => (
+                <div key={p.t} className="mm-case-phase">
+                  <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase', color: violet500 }}>
+                    {p.when}
+                  </div>
+                  <div style={{ fontSize: 19, fontWeight: 800, lineHeight: 1.25, margin: '10px 0 8px' }}>{p.t}</div>
+                  <div style={{ fontSize: 15.5, lineHeight: 1.55, color: ink600 }}>{p.d}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── results (dark) ── */}
       <div style={{ background: ink900, color: ink100 }}>
         <div style={{ ...chromeCol, padding: `clamp(64px,8vw,96px) ${chromePad}` }}>
@@ -191,7 +323,7 @@ export default function CaseStory({ slug }: { slug: string }) {
           <div className="mm-case-results">
             {story.results.map((r) => (
               <div key={r.l} className="mm-case-result" style={{ borderTop: `2px solid ${alpha('violet400', 0.4)}`, paddingTop: 22 }}>
-                <div style={{ fontFamily: DISPLAY, fontSize: 'clamp(40px,6vw,72px)', fontWeight: 600, color: violet400, lineHeight: 0.95 }}>
+                <div style={{ fontFamily: DISPLAY, fontSize: metricSize(r.v), fontWeight: 600, color: violet400, lineHeight: 0.95 }}>
                   {r.v}
                 </div>
                 <div style={{ fontSize: 16, color: ink400, marginTop: 14, lineHeight: 1.4 }}>{r.l}</div>
@@ -224,6 +356,30 @@ export default function CaseStory({ slug }: { slug: string }) {
           </figure>
         </div>
       </div>
+
+      {/* ── gallery ── */}
+      {story.gallery && (
+        <div style={{ background: paper }}>
+          <div style={{ ...chromeCol, padding: `clamp(64px,8vw,96px) ${chromePad} clamp(20px,3vw,32px)` }}>
+            <h2 style={{ ...sectionTitle, marginBottom: 'clamp(28px,4vw,44px)' }}>
+              Как это <span style={{ color: violet500 }}>выглядело</span>
+            </h2>
+            <div className="mm-case-gallery">
+              {story.gallery.map((g) => (
+                <figure key={g.src} className="mm-case-shot" style={{ margin: 0 }}>
+                  <img
+                    src={g.src}
+                    alt={g.cap}
+                    loading="lazy"
+                    style={{ width: '100%', height: 'auto', display: 'block', borderRadius: 16, background: violet50 }}
+                  />
+                  <figcaption style={{ fontSize: 14.5, color: ink600, marginTop: 12, lineHeight: 1.45 }}>{g.cap}</figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── highlights ── */}
       <div style={{ background: paper }}>
@@ -265,9 +421,32 @@ export default function CaseStory({ slug }: { slug: string }) {
                     }}
                   />
                   <div style={{ fontFamily: DISPLAY, fontSize: 18, fontWeight: 200, margin: '16px 0 6px' }}>{m.name}</div>
-                  <div style={{ fontSize: 14, lineHeight: 1.45, color: ink500 }}>{m.role}</div>
+                  <div style={{ fontSize: 14, lineHeight: 1.45, color: ink500 }}>{story.roles?.[m.name] ?? m.role}</div>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── epilogue: what happened to the project ── */}
+      {story.epilogue && (
+        <div style={{ background: paper }}>
+          <div style={{ ...chromeCol, padding: `clamp(56px,7vw,84px) ${chromePad}` }}>
+            <div
+              style={{
+                background: violet50,
+                borderRadius: 20,
+                padding: 'clamp(28px,4vw,44px)',
+                maxWidth: 900,
+              }}
+            >
+              <div style={{ fontFamily: DISPLAY, fontSize: 'clamp(19px,2.4vw,24px)', fontWeight: 600, textTransform: 'uppercase', color: ink850, marginBottom: 14 }}>
+                {story.epilogue.t}
+              </div>
+              <p style={{ fontSize: 'clamp(16px,1.9vw,18px)', lineHeight: 1.65, color: ink700, margin: 0 }}>
+                {story.epilogue.d}
+              </p>
             </div>
           </div>
         </div>

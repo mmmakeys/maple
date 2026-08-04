@@ -660,7 +660,9 @@ html {
 .mm-case-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: 200px;
+  /* Rows grow past the 200px baseline so a card taller than its track (the
+     featured card, which spans one row on tablet) can't overlap the next. */
+  grid-auto-rows: minmax(200px, auto);
   gap: 20px;
 }
 .mm-case-card--featured {
@@ -706,6 +708,11 @@ a.mm-case-card:hover .mm-case-open {
   grid-template-columns: 1.1fr 0.9fr;
   align-items: center;
   gap: clamp(28px, 4vw, 56px);
+}
+/* Grid items default to min-width:auto, so a wide child (the aspect-ratio
+   cover) would push the column past the viewport. Pin them to 0. */
+.mm-case-hero > * {
+  min-width: 0;
 }
 .mm-case-hero-cover {
   aspect-ratio: 4 / 3;
@@ -768,6 +775,9 @@ a.mm-case-card:hover .mm-case-open {
   .mm-case-hero-cover {
     aspect-ratio: 16 / 9;
     order: -1;
+    /* min-height + aspect-ratio would demand ~460px of width; let the ratio
+       derive the height from the available width instead. */
+    min-height: 0;
   }
 }
 
@@ -798,5 +808,65 @@ a.mm-case-card:hover .mm-case-open {
   .mm-case-filter {
     font-size: 14px;
     padding: 10px 18px;
+  }
+}
+
+/* ---- case story: timeline phases ---- */
+.mm-case-phases {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(20px, 2.6vw, 30px);
+}
+.mm-case-phase {
+  border-top: 2px solid #EAE1FA;
+  padding-top: 20px;
+}
+
+/* ---- case story: gallery ---- */
+.mm-case-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(20px, 3vw, 32px);
+}
+/* first shot spans full width — it is the hero screenshot */
+.mm-case-gallery .mm-case-shot:first-child {
+  grid-column: 1 / -1;
+}
+/* Fixed ratios keep the grid even regardless of the source image's own
+   proportions, so swapping a placeholder for a real photo can't shift rows. */
+.mm-case-gallery .mm-case-shot img {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+.mm-case-gallery .mm-case-shot:first-child img {
+  aspect-ratio: 16 / 9;
+}
+
+@media (max-width: 1023px) {
+  .mm-case-phases {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .mm-case-phases,
+  .mm-case-gallery {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- case story: architecture stack ---- */
+/* Keep the chip cluster from being squeezed into a narrow column next to the
+   layer label — below this width it wraps onto its own line instead. */
+.mm-case-stack-items {
+  min-width: 260px;
+}
+@media (max-width: 640px) {
+  .mm-case-stack-row {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 14px !important;
+  }
+  .mm-case-stack-items {
+    min-width: 0;
   }
 }

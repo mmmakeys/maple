@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200" width="1600" height="1200" role="img" aria-label="Открытие магазина в Москве">
+  <rect width="1600" height="1200" fill="#F3EEFC"/>
+  <rect x="14" y="14" width="1572" height="1172" rx="16" fill="none" stroke="#A78BFA" stroke-width="2" stroke-dasharray="10 8" opacity="0.75"/>
+  <g transform="translate(800 504)" opacity="0.55">
+    <rect x="-34" y="-26" width="68" height="52" rx="7" fill="none" stroke="#8B5CF6" stroke-width="2.6"/>
+    <circle cx="-14" cy="-8" r="7" fill="#8B5CF6"/>
+    <path d="M -30 18 L -8 -4 L 6 10 L 17 1 L 30 18 Z" fill="#8B5CF6"/>
+  </g>
+  <text x="50%" y="584" text-anchor="middle" font-family="Manrope, sans-serif" font-size="44" font-weight="700" fill="#5B4A79">Открытие магазина в Москве</text>
+  <text x="50%" y="628" text-anchor="middle" font-family="Manrope, sans-serif" font-size="23" font-weight="600" letter-spacing="2.5" fill="#A78BFA">ЗАГЛУШКА — ЗАМЕНИТЬ ФОТО</text>
+</svg>
