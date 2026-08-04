@@ -312,8 +312,7 @@ export const caseStories: Record<string, CaseStory> = {
     film: {
       title: 'Рекламный ролик с авторской музыкой',
       note: 'Для бренда сняли имиджевый ролик с амбассадорами — Павлом Волей и Ляйсан Утяшевой. Музыку Павел написал специально для проекта: не лицензированный трек, а собственная тема «Всёгазина».',
-      // TODO: подставить ссылку на плеер, когда будет — тогда отрисуется iframe
-      embed: undefined,
+      embed: 'https://kinescope.io/embed/ktnynrGmVMJy5LHBCBTx81',
     },
     gallery: [
       { src: '/uploads/vsyogazin/store-msk-2.jpg', cap: 'Торговый зал магазина в Москве: посуда, товары для дома и хозтовары' },

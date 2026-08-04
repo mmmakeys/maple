@@ -412,7 +412,7 @@ export default function CaseStory({ slug }: { slug: string }) {
                 <iframe
                   src={story.film.embed}
                   title={story.film.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                  allow="autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer; clipboard-write; screen-wake-lock;"
                   allowFullScreen
                   style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0 }}
                 />
