@@ -395,25 +395,26 @@ export default function App() {
                 Раздел ещё пополняется — скоро тут будет больше
               </p>
             </div>
-            <span
-              aria-disabled="true"
+            <a
+              href="/cases"
               style={{
                 whiteSpace: 'nowrap',
-                background: violet50,
-                color: ink500,
+                textDecoration: 'none',
+                background: violet500,
+                color: paper,
                 fontWeight: 800,
                 fontSize: 15,
                 padding: '14px 24px',
                 borderRadius: 10,
-                cursor: 'not-allowed',
-                userSelect: 'none',
               }}
             >
               Все кейсы →
-            </span>
+            </a>
           </div>
           <div className="mm-cases-hero">
-            <div
+            <a
+              href="/cases/pavel-volya"
+              className="mm-case-card"
               style={{
                 background: violet500,
                 borderRadius: 20,
@@ -421,6 +422,7 @@ export default function App() {
                 color: paper,
                 display: 'flex',
                 flexDirection: 'column',
+                textDecoration: 'none',
               }}
             >
               <div
@@ -442,7 +444,7 @@ export default function App() {
                 </div>
                 <div style={{ fontSize: 16, color: '#EADFFB' }}>Тур по 40 городам — 38 солдаутов</div>
               </div>
-            </div>
+            </a>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               <div
                 style={{

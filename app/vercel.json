@@ -1,7 +1,4 @@
 {
-  "redirects": [
-    { "source": "/tempo", "destination": "/tempo/", "permanent": false }
-  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/" }
   ]

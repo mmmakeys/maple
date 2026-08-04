@@ -1,18 +1,24 @@
-import { StrictMode, Suspense, lazy } from 'react'
+import { StrictMode, Suspense, lazy, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 
 const Scenika = lazy(() => import('./components/Scenika.tsx'))
+const CasesIndex = lazy(() => import('./components/CasesIndex.tsx'))
+const CaseStory = lazy(() => import('./components/CaseStory.tsx'))
 
 const path = window.location.pathname.replace(/\/+$/, '') || '/'
-const Page = path === '/scenika' ? (
-  <Suspense fallback={null}>
-    <Scenika />
-  </Suspense>
-) : (
-  <App />
-)
+
+let Page: ReactNode
+if (path === '/scenika') {
+  Page = <Suspense fallback={null}><Scenika /></Suspense>
+} else if (path === '/cases') {
+  Page = <Suspense fallback={null}><CasesIndex /></Suspense>
+} else if (path.startsWith('/cases/')) {
+  Page = <Suspense fallback={null}><CaseStory slug={path.slice('/cases/'.length)} /></Suspense>
+} else {
+  Page = <App />
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
