@@ -926,3 +926,37 @@ a.mm-case-card:hover .mm-case-open {
 .mm-case-build > .mm-case-build-item:last-child:nth-child(odd) {
   grid-column: 1 / -1;
 }
+
+/* ---- case story: anchor nav ---- */
+.mm-case-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mm-case-toc-link {
+  text-decoration: none;
+  color: #56505f;
+  background: #f3eefc;
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.mm-case-toc-link:hover {
+  background: #8b5cf6;
+  color: #fff;
+}
+/* On phones the chips scroll sideways instead of stacking into a tall block. */
+@media (max-width: 640px) {
+  .mm-case-toc {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .mm-case-toc::-webkit-scrollbar {
+    display: none;
+  }
+}

@@ -76,6 +76,19 @@ export default function CaseStory({ slug }: { slug: string }) {
 
   const relevant = team.filter((m) => story.team.includes(m.name));
 
+  // Anchor nav — only lists sections this story actually renders.
+  const toc = [
+    { id: 'task', label: 'Задача', on: true },
+    { id: 'build', label: 'Что собрали', on: true },
+    { id: 'platform', label: 'Платформа', on: Boolean(story.stack) },
+    { id: 'timeline', label: 'Как шёл проект', on: Boolean(story.phases) },
+    { id: 'channels', label: 'Маркетплейсы', on: Boolean(story.channels) },
+    { id: 'results', label: 'Результаты', on: true },
+    { id: 'film', label: 'Ролик', on: Boolean(story.film) },
+    { id: 'press', label: 'СМИ', on: Boolean(story.press) },
+    { id: 'team', label: 'Команда', on: relevant.length > 0 },
+  ].filter((t) => t.on);
+
   return (
     <div style={{ background: paper, color: ink850, overflowX: 'hidden' }}>
       <MapleNav onLead={openLead} />
@@ -165,8 +178,23 @@ export default function CaseStory({ slug }: { slug: string }) {
         </div>
       </div>
 
+      {/* ── table of contents ── */}
+      {toc.length > 2 && (
+        <nav aria-label="Разделы кейса" style={{ background: paper, borderBottom: `1px solid ${violet50}` }}>
+          <div style={{ ...chromeCol, padding: `clamp(20px,2.6vw,26px) ${chromePad}` }}>
+            <div className="mm-case-toc">
+              {toc.map((t) => (
+                <a key={t.id} href={`#${t.id}`} className="mm-case-toc-link">
+                  {t.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        </nav>
+      )}
+
       {/* ── task ── */}
-      <div style={{ background: paper }}>
+      <div id="task" style={{ background: paper, scrollMarginTop: 20 }}>
         <div className="mm-case-split" style={{ ...chromeCol, padding: `clamp(64px,8vw,96px) ${chromePad} clamp(28px,4vw,40px)` }}>
           <h2 style={sectionTitle}>Задача</h2>
           <p style={{ fontSize: 'clamp(18px,2.1vw,22px)', lineHeight: 1.6, color: ink700, margin: 0 }}>{story.task}</p>
@@ -174,7 +202,7 @@ export default function CaseStory({ slug }: { slug: string }) {
       </div>
 
       {/* ── what we built ── */}
-      <div style={{ background: paper }}>
+      <div id="build" style={{ background: paper, scrollMarginTop: 20 }}>
         <div style={{ ...chromeCol, padding: `clamp(28px,4vw,40px) ${chromePad} clamp(56px,7vw,80px)` }}>
           <h2 style={{ ...sectionTitle, marginBottom: 'clamp(28px,4vw,44px)' }}>
             Что мы <span style={{ color: violet500 }}>собрали</span>
@@ -183,7 +211,7 @@ export default function CaseStory({ slug }: { slug: string }) {
             {story.build.map((b, i) => (
               <div key={b.t} className="mm-case-build-item" style={{ background: violet50, borderRadius: 18, padding: 'clamp(24px,3vw,32px)' }}>
                 <div style={{ fontFamily: DISPLAY, fontSize: 30, fontWeight: 600, color: violet500, lineHeight: 1, marginBottom: 18 }}>
-                  0{i + 1}
+                  {String(i + 1).padStart(2, '0')}
                 </div>
                 <div style={{ fontSize: 19, fontWeight: 800, lineHeight: 1.25, marginBottom: 10 }}>{b.t}</div>
                 <div style={{ fontSize: 15.5, lineHeight: 1.55, color: ink600 }}>{b.d}</div>
@@ -195,7 +223,7 @@ export default function CaseStory({ slug }: { slug: string }) {
 
       {/* ── platform architecture ── */}
       {story.stack && (
-        <div style={{ background: violet50 }}>
+        <div id="platform" style={{ background: violet50, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(56px,7vw,84px) ${chromePad}` }}>
             <h2 style={{ ...sectionTitle, marginBottom: 12 }}>
               Как устроена <span style={{ color: violet500 }}>платформа</span>
@@ -325,7 +353,7 @@ export default function CaseStory({ slug }: { slug: string }) {
 
       {/* ── timeline ── */}
       {story.phases && (
-        <div style={{ background: paper }}>
+        <div id="timeline" style={{ background: paper, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(56px,7vw,84px) ${chromePad}` }}>
             <h2 style={{ ...sectionTitle, marginBottom: 'clamp(28px,4vw,44px)' }}>
               Как шёл <span style={{ color: violet500 }}>проект</span>
@@ -347,7 +375,7 @@ export default function CaseStory({ slug }: { slug: string }) {
 
       {/* ── marketplace channels ── */}
       {story.channels && (
-        <div style={{ background: violet50 }}>
+        <div id="channels" style={{ background: violet50, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(56px,7vw,84px) ${chromePad}` }}>
             <h2 style={{ ...sectionTitle, marginBottom: 14 }}>{story.channels.title}</h2>
             <p style={{ fontSize: 17, lineHeight: 1.6, color: ink700, margin: '0 0 clamp(26px,3.4vw,36px)', maxWidth: 700 }}>
@@ -382,7 +410,7 @@ export default function CaseStory({ slug }: { slug: string }) {
       )}
 
       {/* ── results (dark) ── */}
-      <div style={{ background: ink900, color: ink100 }}>
+      <div id="results" style={{ background: ink900, color: ink100, scrollMarginTop: 20 }}>
         <div style={{ ...chromeCol, padding: `clamp(64px,8vw,96px) ${chromePad}` }}>
           <h2 style={{ ...sectionTitle, color: ink100, marginBottom: 'clamp(32px,4vw,48px)' }}>
             Результаты
@@ -426,7 +454,7 @@ export default function CaseStory({ slug }: { slug: string }) {
 
       {/* ── promo film ── */}
       {story.film && (
-        <div style={{ background: paper }}>
+        <div id="film" style={{ background: paper, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(64px,8vw,96px) ${chromePad} 0` }}>
             <h2 style={{ ...sectionTitle, marginBottom: 14 }}>
               Ролик и <span style={{ color: violet500 }}>своя музыка</span>
@@ -522,7 +550,7 @@ export default function CaseStory({ slug }: { slug: string }) {
 
       {/* ── press coverage ── */}
       {story.press && (
-        <div style={{ background: violet50 }}>
+        <div id="press" style={{ background: violet50, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(60px,7vw,88px) ${chromePad}` }}>
             <h2 style={{ ...sectionTitle, marginBottom: 14 }}>
               СМИ о <span style={{ color: violet500 }}>проекте</span>
@@ -567,7 +595,7 @@ export default function CaseStory({ slug }: { slug: string }) {
 
       {/* ── team on the project ── */}
       {relevant.length > 0 && (
-        <div style={{ background: ink900, color: ink100 }}>
+        <div id="team" style={{ background: ink900, color: ink100, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(60px,7vw,88px) ${chromePad}` }}>
             <h2 style={{ ...sectionTitle, color: ink100, marginBottom: 'clamp(28px,4vw,42px)' }}>
               Кто вёл проект
