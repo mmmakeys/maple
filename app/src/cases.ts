@@ -356,10 +356,10 @@ export const caseStories: Record<string, CaseStory> = {
         url: 'https://www.retail.ru/rbc/pressreleases/pavel-volya-i-lyaysan-utyasheva-rasshiryayut-set-magazinov-vsyegazin/',
       },
       {
-        outlet: 'Retail.ru',
-        title: 'Шоумен Павел Воля зарегистрирует товарный знак «Всёгазин»',
-        date: '5 июня 2023',
-        url: 'https://www.retail.ru/news/shoumen-pavel-volya-zaregistriruet-tovarnyy-znak-vsyegazin-5-iyunya-2023-229354/',
+        outlet: 'РБК Петербург',
+        title: 'Павел Воля и Ляйсан Утяшева планируют открытие магазина в Петербурге',
+        date: '22 апреля 2023',
+        url: 'https://www.rbc.ru/spb_sz/22/04/2023/6442bd6b9a79476a270086b2',
       },
     ],
     film: {
