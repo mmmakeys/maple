@@ -292,6 +292,61 @@ export default function CaseStory({ slug }: { slug: string }) {
         </div>
       )}
 
+      {/* ── loyalty program ── */}
+      {story.loyalty && (
+        <div style={{ background: ink900, color: ink100 }}>
+          <div style={{ ...chromeCol, padding: `clamp(56px,7vw,84px) ${chromePad}` }}>
+            <h2 style={{ ...sectionTitle, color: ink100, marginBottom: 14 }}>{story.loyalty.title}</h2>
+            <p style={{ fontSize: 17, lineHeight: 1.6, color: ink400, margin: '0 0 clamp(28px,4vw,40px)', maxWidth: 700 }}>
+              {story.loyalty.lead}
+            </p>
+
+            <div className="mm-case-tiers">
+              {story.loyalty.tiers.map((t) => (
+                <div
+                  key={t.name}
+                  className="mm-case-tier"
+                  style={{
+                    background: alpha('violet400', 0.09),
+                    border: `1px solid ${alpha('violet400', 0.28)}`,
+                    borderRadius: 16,
+                    padding: 'clamp(20px,2.6vw,26px)',
+                  }}
+                >
+                  <div style={{ fontFamily: DISPLAY, fontSize: 16, fontWeight: 600, textTransform: 'uppercase', color: ink100, letterSpacing: '0.04em' }}>
+                    {t.name}
+                  </div>
+                  <div style={{ fontSize: 13.5, color: ink500, marginTop: 6 }}>{t.threshold}</div>
+                  <div style={{ fontFamily: DISPLAY, fontSize: 'clamp(32px,4vw,44px)', fontWeight: 600, color: violet400, lineHeight: 1, marginTop: 18 }}>
+                    {t.cashback}
+                  </div>
+                  <div style={{ fontSize: 13, color: ink500, marginTop: 6 }}>кэшбэк баллами</div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 'clamp(26px,3.4vw,36px)' }}>
+              {story.loyalty.rules.map((r) => (
+                <span
+                  key={r}
+                  style={{
+                    background: alpha('violet400', 0.13),
+                    border: `1px solid ${alpha('violet400', 0.3)}`,
+                    color: '#D9CEF0',
+                    borderRadius: 999,
+                    padding: '9px 16px',
+                    fontSize: 14,
+                    fontWeight: 600,
+                  }}
+                >
+                  {r}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── timeline ── */}
       {story.phases && (
         <div style={{ background: paper }}>

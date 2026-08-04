@@ -92,6 +92,14 @@ export type CaseStack = { layer: string; note: string; items: string[] };
 export type CaseFlow = { steps: string[]; note: string };
 /** delivery timeline rows */
 export type CasePhase = { when: string; t: string; d: string };
+/** loyalty program tiers + mechanics */
+export type CaseTier = { name: string; threshold: string; cashback: string };
+export type CaseLoyalty = {
+  title: string;
+  lead: string;
+  tiers: CaseTier[];
+  rules: string[];
+};
 
 export type CaseStory = {
   slug: string;
@@ -118,6 +126,8 @@ export type CaseStory = {
   flow?: CaseFlow;
   /** optional delivery timeline */
   phases?: CasePhase[];
+  /** optional loyalty-program block */
+  loyalty?: CaseLoyalty;
   /** qualitative wins */
   highlights: CaseHighlight[];
   /** pull-quote */
@@ -202,7 +212,7 @@ export const caseStories: Record<string, CaseStory> = {
     title: 'Всёгазин.\nМагазин для дома с нуля',
     lead: 'Новый бренд товаров для дома, быта, дачи и уюта внутри крупного российского холдинга: собственная товарная матрица, интернет-магазин и мобильное приложение с доставкой по всей России, розница, маркетинг и коммуникации. Амбассадоры проекта — Павел Воля и Ляйсан Утяшева.',
     cover: '/uploads/vsyogazin/site-home.svg',
-    tags: ['E-commerce', 'Продукт и IT', 'Перфоманс-маркетинг', 'SMM', 'PR', 'Розница'],
+    tags: ['E-commerce', 'Продукт и IT', 'Лояльность', 'Перфоманс-маркетинг', 'SMM', 'PR', 'Розница'],
     facts: [
       { v: '< 6 мес', l: 'от нуля до работающего e-com' },
       { v: '11', l: 'систем в связке' },
@@ -227,6 +237,10 @@ export const caseStories: Record<string, CaseStory> = {
       {
         t: 'Перфоманс-маркетинг и веб-аналитика',
         d: 'Запуски в Яндекс Директе и ВК, работа с CPA-сетями и другими площадками, закупка трафика в YouTube-шоу. Настроили веб-аналитику и сквозной учёт, чтобы решения принимались по данным, — и вывели рекламу на окупаемость ROI выше 100%.',
+      },
+      {
+        t: 'Омниканальная программа лояльности',
+        d: 'Участвовали в создании и внедрении единой программы для розницы и онлайна: уровни и кэшбэк, начисление и списание баллов, сгорание, возвраты, виртуальная карта и сценарии регистрации. Отдельно провели аудит действующей программы и собрали концепцию следующей версии.',
       },
       {
         t: 'SMM-отдел и контент инхаус',
@@ -290,6 +304,24 @@ export const caseStories: Record<string, CaseStory> = {
         d: 'Наращивание аудитории и продаж, работа над окупаемостью рекламы и ассортиментом.',
       },
     ],
+    loyalty: {
+      title: 'Омниканальная программа лояльности',
+      lead: 'Единая программа для розницы и интернет-магазина: баллы, накопленные на кассе, тратятся онлайн — и наоборот. Процессинг на Loymax, виртуальная карта в приложении, Apple Wallet и Google Pay, идентификация по номеру телефона.',
+      tiers: [
+        { name: 'Серебро', threshold: 'до 50 000 ₽', cashback: '5%' },
+        { name: 'Золото', threshold: '50–100 тыс ₽', cashback: '10%' },
+        { name: 'Платина', threshold: 'от 100 000 ₽', cashback: '15%' },
+        { name: 'VIP', threshold: 'постоянная скидка', cashback: '20%' },
+      ],
+      rules: [
+        '1 балл = 1 рубль',
+        'До 50% суммы покупки баллами',
+        'Единый баланс: розница ↔ онлайн',
+        'Виртуальная карта и QR в приложении',
+        'Приветственные баллы и бонус в день рождения',
+        'Реферальная механика и баллы за целевые действия',
+      ],
+    },
     gallery: [
       { src: '/uploads/vsyogazin/site-home.svg', cap: 'Главная страница интернет-магазина' },
       { src: '/uploads/vsyogazin/site-catalog.svg', cap: 'Каталог и карточка товара' },

@@ -870,3 +870,20 @@ a.mm-case-card:hover .mm-case-open {
     min-width: 0;
   }
 }
+
+/* ---- case story: loyalty tiers ---- */
+.mm-case-tiers {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(14px, 1.8vw, 20px);
+}
+@media (max-width: 1023px) {
+  .mm-case-tiers {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .mm-case-tiers {
+    grid-template-columns: 1fr;
+  }
+}
