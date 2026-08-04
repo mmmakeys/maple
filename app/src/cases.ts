@@ -88,6 +88,8 @@ export type CaseShot = { src: string; cap: string };
 
 /** platform architecture, rendered as a layered diagram */
 export type CaseStack = { layer: string; note: string; items: string[] };
+/** credit for a partner who delivered part of the work */
+export type CasePartner = { note: string; name: string; logo: string; url: string };
 /** order lifecycle chips */
 export type CaseFlow = { steps: string[]; note: string };
 /** delivery timeline rows */
@@ -117,6 +119,8 @@ export type CaseStory = {
   gallery?: CaseShot[];
   /** optional platform architecture diagram */
   stack?: CaseStack[];
+  /** optional partner credit shown under the architecture diagram */
+  stackPartner?: CasePartner;
   /** optional order lifecycle strip */
   flow?: CaseFlow;
   /** optional delivery timeline */
@@ -273,6 +277,12 @@ export const caseStories: Record<string, CaseStory> = {
         items: ['1С', 'Интеграционная шина', 'WMS и транспортные компании'],
       },
     ],
+    stackPartner: {
+      note: 'Платформу разрабатывали совместно с командой разработки',
+      name: 'Диджитех',
+      logo: '/uploads/partners/digitech.svg',
+      url: 'https://digitech.ru',
+    },
     flow: {
       steps: ['Новый', 'Подтверждён', 'Передан на сборку', 'Собран', 'В доставке', 'Выкуплен'],
       note: 'Отдельно описали ветки частичного выкупа, невыкупа, полного и частичного возврата, а также отмены на каждом шаге — всё это синхронизировалось с WMS и транспортными компаниями.',

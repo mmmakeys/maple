@@ -256,6 +256,37 @@ export default function CaseStory({ slug }: { slug: string }) {
               ))}
             </div>
 
+            {/* partner credit */}
+            {story.stackPartner && (
+              <a
+                href={story.stackPartner.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mm-case-partner"
+                style={{
+                  marginTop: 20,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'clamp(12px,2vw,20px)',
+                  flexWrap: 'wrap',
+                  textDecoration: 'none',
+                  color: ink600,
+                  background: paper,
+                  border: `1px solid ${alpha('violet400', 0.3)}`,
+                  borderRadius: 14,
+                  padding: '16px clamp(18px,2.4vw,24px)',
+                }}
+              >
+                <span style={{ fontSize: 15, lineHeight: 1.45 }}>{story.stackPartner.note}</span>
+                <img
+                  src={story.stackPartner.logo}
+                  alt={story.stackPartner.name}
+                  loading="lazy"
+                  style={{ height: 24, width: 'auto', display: 'block' }}
+                />
+              </a>
+            )}
+
             {/* order lifecycle */}
             {story.flow && (
               <div style={{ marginTop: 'clamp(34px,4vw,48px)' }}>
