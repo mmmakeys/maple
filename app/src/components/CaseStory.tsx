@@ -292,105 +292,6 @@ export default function CaseStory({ slug }: { slug: string }) {
         </div>
       )}
 
-      {/* ── loyalty program ── */}
-      {story.loyalty && (
-        <div style={{ background: ink900, color: ink100 }}>
-          <div style={{ ...chromeCol, padding: `clamp(56px,7vw,84px) ${chromePad}` }}>
-            <h2 style={{ ...sectionTitle, color: ink100, marginBottom: 14 }}>{story.loyalty.title}</h2>
-            <p style={{ fontSize: 17, lineHeight: 1.6, color: ink400, margin: '0 0 clamp(28px,4vw,40px)', maxWidth: 700 }}>
-              {story.loyalty.lead}
-            </p>
-
-            {/* 1 — what was already running (muted: this is the "before") */}
-            <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: ink500, marginBottom: 16 }}>
-              Как было
-            </div>
-            <div className="mm-case-tiers">
-              {story.loyalty.tiers.map((t) => (
-                <div
-                  key={t.name}
-                  className="mm-case-tier"
-                  style={{
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.12)',
-                    borderRadius: 16,
-                    padding: 'clamp(18px,2.4vw,24px)',
-                  }}
-                >
-                  <div style={{ fontFamily: DISPLAY, fontSize: 15, fontWeight: 600, textTransform: 'uppercase', color: ink400, letterSpacing: '0.04em' }}>
-                    {t.name}
-                  </div>
-                  <div style={{ fontSize: 13, color: ink500, marginTop: 6 }}>{t.threshold}</div>
-                  <div style={{ fontFamily: DISPLAY, fontSize: 'clamp(28px,3.4vw,38px)', fontWeight: 600, color: ink400, lineHeight: 1, marginTop: 16 }}>
-                    {t.cashback}
-                  </div>
-                  <div style={{ fontSize: 12.5, color: ink500, marginTop: 6 }}>кэшбэк баллами</div>
-                </div>
-              ))}
-            </div>
-            <p style={{ fontSize: 14.5, color: ink500, margin: '16px 0 0', maxWidth: 640, lineHeight: 1.5 }}>
-              {story.loyalty.tiersNote}
-            </p>
-
-            {/* 2 — audit findings */}
-            <div style={{ marginTop: 'clamp(40px,5vw,60px)' }}>
-              <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: violet400, marginBottom: 18 }}>
-                Что показал аудит
-              </div>
-              <ul className="mm-case-found">
-                {story.loyalty.found.map((f) => (
-                  <li key={f} style={{ fontSize: 16, lineHeight: 1.55, color: ink400 }}>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* 3 — the proposed concept */}
-            <div
-              style={{
-                marginTop: 'clamp(40px,5vw,60px)',
-                background: alpha('violet500', 0.16),
-                border: `1px solid ${alpha('violet400', 0.34)}`,
-                borderRadius: 20,
-                padding: 'clamp(26px,3.4vw,40px)',
-              }}
-            >
-              <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: violet400, marginBottom: 12 }}>
-                Что предложили
-              </div>
-              <div style={{ fontFamily: DISPLAY, fontSize: 'clamp(26px,3.6vw,40px)', fontWeight: 600, textTransform: 'uppercase', color: ink100, lineHeight: 1.05 }}>
-                {story.loyalty.concept.name}
-              </div>
-              <p style={{ fontSize: 17, lineHeight: 1.6, color: ink400, margin: '14px 0 24px', maxWidth: 700 }}>
-                {story.loyalty.concept.lead}
-              </p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-                {story.loyalty.concept.points.map((p) => (
-                  <span
-                    key={p}
-                    style={{
-                      background: alpha('violet400', 0.14),
-                      border: `1px solid ${alpha('violet400', 0.32)}`,
-                      color: '#D9CEF0',
-                      borderRadius: 999,
-                      padding: '9px 16px',
-                      fontSize: 14,
-                      fontWeight: 600,
-                    }}
-                  >
-                    {p}
-                  </span>
-                ))}
-              </div>
-              <p style={{ fontSize: 15.5, lineHeight: 1.6, color: ink500, margin: '24px 0 0', maxWidth: 760 }}>
-                {story.loyalty.effect}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* ── timeline ── */}
       {story.phases && (
         <div style={{ background: paper }}>
@@ -455,6 +356,61 @@ export default function CaseStory({ slug }: { slug: string }) {
           </figure>
         </div>
       </div>
+
+      {/* ── promo film ── */}
+      {story.film && (
+        <div style={{ background: paper }}>
+          <div style={{ ...chromeCol, padding: `clamp(64px,8vw,96px) ${chromePad} 0` }}>
+            <h2 style={{ ...sectionTitle, marginBottom: 14 }}>
+              Ролик и <span style={{ color: violet500 }}>своя музыка</span>
+            </h2>
+            <p style={{ fontSize: 17, lineHeight: 1.6, color: ink700, margin: '0 0 clamp(24px,3vw,34px)', maxWidth: 680 }}>
+              {story.film.note}
+            </p>
+            {story.film.embed ? (
+              <div
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  aspectRatio: '16 / 9',
+                  borderRadius: 20,
+                  overflow: 'hidden',
+                  background: ink900,
+                }}
+              >
+                <iframe
+                  src={story.film.embed}
+                  title={story.film.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                  allowFullScreen
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0 }}
+                />
+              </div>
+            ) : (
+              <div
+                style={{
+                  width: '100%',
+                  aspectRatio: '16 / 9',
+                  borderRadius: 20,
+                  background: story.film.poster ? `url('${story.film.poster}') center/cover` : violet50,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'column',
+                  gap: 14,
+                  color: violet700,
+                }}
+              >
+                <svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke={violet500} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="9.5" />
+                  <polygon points="10 8.5 16 12 10 15.5" fill={violet500} stroke="none" />
+                </svg>
+                <span style={{ fontSize: 15, fontWeight: 700 }}>{story.film.title}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ── gallery ── */}
       {story.gallery && (
