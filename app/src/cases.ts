@@ -97,6 +97,10 @@ export type CasePhase = { when: string; t: string; d: string };
 /** promo film block. `embed` is a player URL (YouTube/VK/Rutube/Kinescope);
  *  until one is supplied the block renders its poster and caption only. */
 export type CaseFilm = { title: string; note: string; embed?: string; poster?: string };
+/** additional sales channels, shown as a logo strip */
+export type CaseChannels = { title: string; note: string; items: { name: string; logo: string }[] };
+/** earned media coverage */
+export type CasePress = { outlet: string; title: string; date: string; url: string };
 
 export type CaseStory = {
   slug: string;
@@ -127,6 +131,10 @@ export type CaseStory = {
   phases?: CasePhase[];
   /** optional promo film */
   film?: CaseFilm;
+  /** optional marketplace channel strip */
+  channels?: CaseChannels;
+  /** optional press coverage list */
+  press?: CasePress[];
   /** qualitative wins */
   highlights: CaseHighlight[];
   /** pull-quote */
@@ -250,6 +258,10 @@ export const caseStories: Record<string, CaseStory> = {
         d: 'Павел Воля и Ляйсан Утяшева как амбассадоры бренда: системная поддержка проекта в их соцсетях и координация коммуникаций. Работа с блогерами велась «в белую» — с маркировкой ЕРИД и учётом размещений.',
       },
       {
+        t: 'Маркетплейсы как второй канал',
+        d: 'Не ограничились собственным сайтом: завели часть ассортимента на Ozon, Wildberries и Мегамаркет. Настроили поставки, карточки и контент под требования площадок — бренд начал продаваться там, где покупатель уже искал товары для дома.',
+      },
+      {
         t: 'Розница и чековое промо',
         d: 'Помогали открывать розничную сеть: два магазина в Москве и один в Пензе. Запустили чековое промо, объединившее офлайн и онлайн: покупатели регистрировали чеки и участвовали в розыгрыше — от мелких призов до смартфона и поездки на отдых.',
       },
@@ -309,6 +321,53 @@ export const caseStories: Record<string, CaseStory> = {
         d: 'Наращивание аудитории и продаж, работа над окупаемостью рекламы и ассортиментом.',
       },
     ],
+    channels: {
+      title: 'Вышли на маркетплейсы',
+      note: 'Собственный интернет-магазин закрывал не весь спрос, поэтому расширили e-com-канал: наладили поставки части ассортимента на крупнейшие площадки страны. Бренд стал доступен там, где покупатель уже искал товары для дома.',
+      items: [
+        { name: 'Ozon', logo: '/uploads/partners/ozon.svg' },
+        { name: 'Wildberries', logo: '/uploads/partners/wildberries.svg' },
+        { name: 'Мегамаркет', logo: '/uploads/partners/megamarket.png' },
+      ],
+    },
+    press: [
+      {
+        outlet: 'РБК Петербург',
+        title: 'Павел Воля и Ляйсан Утяшева планируют открытие магазина в Петербурге',
+        date: '22 апреля 2023',
+        url: 'https://www.rbc.ru/spb_sz/22/04/2023/6442bd6b9a79476a270086b2',
+      },
+      {
+        outlet: 'Retail.ru',
+        title: 'Павел Воля и Ляйсан Утяшева расширяют сеть магазинов «Всёгазин»',
+        date: '2023',
+        url: 'https://www.retail.ru/rbc/pressreleases/pavel-volya-i-lyaysan-utyasheva-rasshiryayut-set-magazinov-vsyegazin/',
+      },
+      {
+        outlet: '78.ru',
+        title: 'Павел Воля и Ляйсан Утяшева откроют в Петербурге «Всёгазин»',
+        date: '23 апреля 2023',
+        url: 'https://78.ru/news/2023-04-23/pavel-volya-i-lyaisan-utyasheva-otkroyut-v-peterburge-vsegazin',
+      },
+      {
+        outlet: 'Телеканал «Санкт-Петербург»',
+        title: 'Павел Воля и Ляйсан Утяшева откроют в Петербурге магазин хозтоваров',
+        date: '22 апреля 2023',
+        url: 'https://tvspb.ru/news/2023/04/22/pavel-volya-i-lyajsan-utyasheva-otkroyut-v-peterburge-magazin-hoztovarov',
+      },
+      {
+        outlet: 'Antenna Daily',
+        title: 'Открытие магазина товаров для дома «Всёгазин»',
+        date: '13 апреля 2023',
+        url: 'https://antennadaily.ru/2023/04/13/vsegazin/',
+      },
+      {
+        outlet: 'Retail.ru',
+        title: 'Шоумен Павел Воля зарегистрирует товарный знак «Всёгазин»',
+        date: '5 июня 2023',
+        url: 'https://www.retail.ru/news/shoumen-pavel-volya-zaregistriruet-tovarnyy-znak-vsyegazin-5-iyunya-2023-229354/',
+      },
+    ],
     film: {
       title: 'Рекламный ролик с авторской музыкой',
       note: 'Для бренда сняли имиджевый ролик с амбассадорами — Павлом Волей и Ляйсан Утяшевой. Музыку Павел написал специально для проекта: не лицензированный трек, а собственная тема «Всёгазина».',
@@ -322,6 +381,10 @@ export const caseStories: Record<string, CaseStory> = {
       { src: '/uploads/vsyogazin/promo-checks.svg', cap: 'Чековое промо: розыгрыш призов' },
     ],
     highlights: [
+      {
+        t: 'Открытия, которые заметили СМИ',
+        d: 'PR-сопровождение запусков дало волну публикаций в федеральных и городских медиа — от РБК и профильного Retail.ru до телеканалов. Об открытиях магазинов писали без закупки размещений: работал сам инфоповод и выстроенные отношения с редакциями.',
+      },
       {
         t: 'Бренд с федеральными амбассадорами',
         d: 'Павел Воля и Ляйсан Утяшева поддерживали проект в своих соцсетях. Это не разовая интеграция, а выстроенная коммуникация: сценарии, координация и синхронизация с SMM и продажами.',

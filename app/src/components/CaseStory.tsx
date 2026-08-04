@@ -345,6 +345,42 @@ export default function CaseStory({ slug }: { slug: string }) {
         </div>
       )}
 
+      {/* ── marketplace channels ── */}
+      {story.channels && (
+        <div style={{ background: violet50 }}>
+          <div style={{ ...chromeCol, padding: `clamp(56px,7vw,84px) ${chromePad}` }}>
+            <h2 style={{ ...sectionTitle, marginBottom: 14 }}>{story.channels.title}</h2>
+            <p style={{ fontSize: 17, lineHeight: 1.6, color: ink700, margin: '0 0 clamp(26px,3.4vw,36px)', maxWidth: 700 }}>
+              {story.channels.note}
+            </p>
+            <div className="mm-case-channels">
+              {story.channels.items.map((m) => (
+                <div
+                  key={m.name}
+                  className="mm-case-channel"
+                  style={{
+                    background: paper,
+                    borderRadius: 16,
+                    padding: 'clamp(22px,3vw,30px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: 92,
+                  }}
+                >
+                  <img
+                    src={m.logo}
+                    alt={m.name}
+                    loading="lazy"
+                    style={{ maxWidth: '100%', maxHeight: 30, width: 'auto', height: 'auto', display: 'block' }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── results (dark) ── */}
       <div style={{ background: ink900, color: ink100 }}>
         <div style={{ ...chromeCol, padding: `clamp(64px,8vw,96px) ${chromePad}` }}>
@@ -483,6 +519,51 @@ export default function CaseStory({ slug }: { slug: string }) {
           </div>
         </div>
       </div>
+
+      {/* ── press coverage ── */}
+      {story.press && (
+        <div style={{ background: violet50 }}>
+          <div style={{ ...chromeCol, padding: `clamp(60px,7vw,88px) ${chromePad}` }}>
+            <h2 style={{ ...sectionTitle, marginBottom: 14 }}>
+              СМИ о <span style={{ color: violet500 }}>проекте</span>
+            </h2>
+            <p style={{ fontSize: 17, lineHeight: 1.6, color: ink700, margin: '0 0 clamp(26px,3.4vw,36px)', maxWidth: 660 }}>
+              Публикации об открытии магазинов и развитии сети — результат PR-работы над проектом.
+            </p>
+            <div className="mm-case-press">
+              {story.press.map((p) => (
+                <a
+                  key={p.url}
+                  href={p.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mm-case-press-item"
+                  style={{
+                    background: paper,
+                    borderRadius: 16,
+                    padding: 'clamp(20px,2.6vw,26px)',
+                    textDecoration: 'none',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 10,
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12 }}>
+                    <span style={{ fontSize: 12.5, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: violet500 }}>
+                      {p.outlet}
+                    </span>
+                    <span style={{ fontSize: 12.5, color: ink600, whiteSpace: 'nowrap' }}>{p.date}</span>
+                  </div>
+                  <span style={{ fontSize: 16.5, fontWeight: 700, lineHeight: 1.35, color: ink850 }}>{p.title}</span>
+                  <span className="mm-case-press-go" style={{ fontSize: 14, fontWeight: 700, color: violet500, marginTop: 'auto' }}>
+                    Читать →
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── team on the project ── */}
       {relevant.length > 0 && (
