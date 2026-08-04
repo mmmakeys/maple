@@ -210,7 +210,7 @@ export const caseStories: Record<string, CaseStory> = {
     period: 'Осень 2022 — весна 2024',
     title: 'Всёгазин.\nМагазин для дома с нуля',
     lead: 'Новый бренд товаров для дома, быта, дачи и уюта внутри крупного российского холдинга: собственная товарная матрица, интернет-магазин и мобильное приложение с доставкой по всей России, розница, маркетинг и коммуникации. Амбассадоры проекта — Павел Воля и Ляйсан Утяшева.',
-    cover: '/uploads/vsyogazin/site-home.svg',
+    cover: '/uploads/vsyogazin/store-msk-1.jpg',
     tags: ['E-commerce', 'Продукт и IT', 'Лояльность', 'Перфоманс-маркетинг', 'SMM', 'PR', 'Розница'],
     facts: [
       { v: '< 6 мес', l: 'от нуля до работающего e-com' },
@@ -316,9 +316,9 @@ export const caseStories: Record<string, CaseStory> = {
       embed: undefined,
     },
     gallery: [
+      { src: '/uploads/vsyogazin/store-msk-2.jpg', cap: 'Торговый зал магазина в Москве: посуда, товары для дома и хозтовары' },
       { src: '/uploads/vsyogazin/site-home.svg', cap: 'Главная страница интернет-магазина' },
       { src: '/uploads/vsyogazin/site-catalog.svg', cap: 'Каталог и карточка товара' },
-      { src: '/uploads/vsyogazin/store-msk.svg', cap: 'Открытие розничного магазина в Москве' },
       { src: '/uploads/vsyogazin/store-penza.svg', cap: 'Магазин в Пензе' },
       { src: '/uploads/vsyogazin/promo-checks.svg', cap: 'Чековое промо: розыгрыш призов' },
     ],
