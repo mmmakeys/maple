@@ -180,8 +180,8 @@ export default function CaseStory({ slug }: { slug: string }) {
 
       {/* ── task ── */}
       <div id="task" style={{ background: paper, scrollMarginTop: 20 }}>
-        <div className="mm-case-split" style={{ ...chromeCol, padding: `clamp(64px,8vw,96px) ${chromePad} clamp(28px,4vw,40px)` }}>
-          <h2 style={sectionTitle}>Задача</h2>
+        <div style={{ ...chromeCol, padding: `clamp(64px,8vw,96px) ${chromePad} clamp(28px,4vw,40px)` }}>
+          <h2 style={{ ...sectionTitle, marginBottom: 18 }}>Задача</h2>
           <p style={{ fontSize: 'clamp(18px,2.1vw,22px)', lineHeight: 1.6, color: ink700, margin: 0 }}>{story.task}</p>
         </div>
       </div>
@@ -210,7 +210,7 @@ export default function CaseStory({ slug }: { slug: string }) {
       {story.stack && (
         <div id="platform" style={{ background: violet50, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(56px,7vw,84px) ${chromePad}` }}>
-            <h2 style={{ ...sectionTitle, marginBottom: 12 }}>
+            <h2 style={{ ...sectionTitle, marginBottom: 14 }}>
               Как устроена <span style={{ color: violet500 }}>платформа</span>
             </h2>
             <p style={{ fontSize: 17, lineHeight: 1.55, color: ink700, margin: '0 0 clamp(28px,4vw,40px)', maxWidth: 620 }}>
@@ -440,7 +440,7 @@ export default function CaseStory({ slug }: { slug: string }) {
       {/* ── promo film ── */}
       {story.film && (
         <div id="film" style={{ background: paper, scrollMarginTop: 20 }}>
-          <div style={{ ...chromeCol, padding: `clamp(64px,8vw,96px) ${chromePad} 0` }}>
+          <div style={{ ...chromeCol, padding: `clamp(64px,8vw,96px) ${chromePad} clamp(56px,7vw,80px)` }}>
             <h2 style={{ ...sectionTitle, marginBottom: 14 }}>
               Ролик и <span style={{ color: violet500 }}>своя музыка</span>
             </h2>
@@ -495,7 +495,7 @@ export default function CaseStory({ slug }: { slug: string }) {
       {/* ── gallery ── */}
       {story.gallery && (
         <div style={{ background: paper }}>
-          <div style={{ ...chromeCol, padding: `clamp(64px,8vw,96px) ${chromePad} clamp(20px,3vw,32px)` }}>
+          <div style={{ ...chromeCol, padding: `clamp(56px,7vw,80px) ${chromePad} clamp(56px,7vw,80px)` }}>
             <h2 style={{ ...sectionTitle, marginBottom: 'clamp(28px,4vw,44px)' }}>
               Как это <span style={{ color: violet500 }}>выглядело</span>
             </h2>
