@@ -79,6 +79,7 @@ export default function CaseStory({ slug }: { slug: string }) {
   // Anchor nav — only lists sections this story actually renders.
   const toc = [
     { id: 'task', label: 'Задача', on: true },
+    { id: 'shift', label: 'Точка А → Б', on: Boolean(story.shift) },
     { id: 'build', label: 'Что собрали', on: true },
     { id: 'platform', label: 'Платформа', on: Boolean(story.stack) },
     { id: 'timeline', label: 'Как шёл проект', on: Boolean(story.phases) },
@@ -207,6 +208,35 @@ export default function CaseStory({ slug }: { slug: string }) {
         </div>
       </div>
 
+      {/* ── point A → point B ── */}
+      {story.shift && (
+        <div id="shift" style={{ background: paper, scrollMarginTop: 20 }}>
+          <div style={{ ...chromeCol, padding: `clamp(28px,4vw,40px) ${chromePad} clamp(56px,7vw,80px)` }}>
+            <h2 style={{ ...sectionTitle, marginBottom: 'clamp(24px,3.4vw,34px)' }}>
+              Точка А → <span style={{ color: violet500 }}>точка Б</span>
+            </h2>
+            <div className="mm-case-shift">
+              <div className="mm-case-shift-labels" aria-hidden>
+                <span>{story.shift.fromLabel}</span>
+                <span>{story.shift.toLabel}</span>
+              </div>
+              {story.shift.rows.map((r) => (
+                <div key={r.to} className="mm-case-shift-row">
+                  <div className="mm-case-shift-from">{r.from}</div>
+                  <div className="mm-case-shift-arrow" aria-hidden>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={violet500} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="4" y1="12" x2="19" y2="12" />
+                      <polyline points="13 6 19 12 13 18" />
+                    </svg>
+                  </div>
+                  <div className="mm-case-shift-to">{r.to}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── what we built ── */}
       <div id="build" style={{ background: paper, scrollMarginTop: 20 }}>
         <div style={{ ...chromeCol, padding: `clamp(28px,4vw,40px) ${chromePad} clamp(56px,7vw,80px)` }}>
@@ -216,11 +246,21 @@ export default function CaseStory({ slug }: { slug: string }) {
           <div className="mm-case-build">
             {story.build.map((b, i) => (
               <div key={b.t} className="mm-case-build-item" style={{ background: violet50, borderRadius: 18, padding: 'clamp(24px,3vw,32px)' }}>
-                <div style={{ fontFamily: DISPLAY, fontSize: 30, fontWeight: 600, color: violet500, lineHeight: 1, marginBottom: 18 }}>
-                  {String(i + 1).padStart(2, '0')}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 18 }}>
+                  <span style={{ fontFamily: DISPLAY, fontSize: 30, fontWeight: 600, color: violet500, lineHeight: 1 }}>
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  {b.kind && <span className="mm-case-kind">{b.kind}</span>}
                 </div>
                 <div style={{ fontSize: 19, fontWeight: 800, lineHeight: 1.25, marginBottom: 10 }}>{b.t}</div>
                 <div style={{ fontSize: 15.5, lineHeight: 1.55, color: ink600 }}>{b.d}</div>
+                {b.was && b.now && (
+                  <div className="mm-case-delta">
+                    <span className="mm-case-delta-was">{b.was}</span>
+                    <span className="mm-case-delta-arrow" aria-hidden>→</span>
+                    <span className="mm-case-delta-now">{b.now}</span>
+                  </div>
+                )}
               </div>
             ))}
           </div>

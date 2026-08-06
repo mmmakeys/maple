@@ -1012,3 +1012,99 @@ a.mm-case-card:hover .mm-case-open {
     font-size: 15.5px;
   }
 }
+
+/* ---- case story: contribution label on a workstream ---- */
+.mm-case-kind {
+  display: inline-block;
+  background: #8b5cf6;
+  color: #fff;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.25;
+}
+
+/* ---- case story: before → after inside a workstream ---- */
+.mm-case-delta {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(139, 92, 246, 0.22);
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+.mm-case-delta-was {
+  color: #6b6577;
+}
+.mm-case-delta-arrow {
+  color: #8b5cf6;
+  font-weight: 800;
+}
+.mm-case-delta-now {
+  color: #181226;
+  font-weight: 700;
+}
+
+/* ---- case story: point A → point B ---- */
+.mm-case-shift-labels {
+  display: grid;
+  grid-template-columns: 1fr 44px 1fr;
+  gap: clamp(12px, 2vw, 22px);
+  margin-bottom: 12px;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6b6577;
+}
+.mm-case-shift-labels span:last-child {
+  grid-column: 3;
+  color: #8b5cf6;
+}
+.mm-case-shift-row {
+  display: grid;
+  grid-template-columns: 1fr 44px 1fr;
+  gap: clamp(12px, 2vw, 22px);
+  align-items: center;
+  padding: 14px 0;
+  border-top: 1px solid #eae1fa;
+}
+.mm-case-shift-from,
+.mm-case-shift-to {
+  font-size: clamp(15px, 1.8vw, 17px);
+  line-height: 1.45;
+}
+.mm-case-shift-from {
+  color: #6b6577;
+}
+.mm-case-shift-to {
+  color: #181226;
+  font-weight: 700;
+}
+.mm-case-shift-arrow {
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 700px) {
+  /* Stack the pair vertically; the arrow rotates to point down. */
+  .mm-case-shift-labels {
+    display: none;
+  }
+  .mm-case-shift-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 16px 0;
+  }
+  .mm-case-shift-arrow {
+    justify-content: flex-start;
+    transform: rotate(90deg);
+    transform-origin: 10px 10px;
+  }
+}
