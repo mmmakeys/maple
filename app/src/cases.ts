@@ -101,6 +101,9 @@ export type CaseFilm = { title: string; note: string; embed?: string; poster?: s
 export type CaseChannels = { title: string; note: string; items: { name: string; logo: string }[] };
 /** earned media coverage */
 export type CasePress = { outlet: string; title: string; date: string; url: string };
+/** who from the team stood where on this project — rendered with avatars
+ *  under the task statement. `name` must match a member in data.ts. */
+export type CaseTaskRole = { name: string; short: string; role: string };
 
 export type CaseStory = {
   slug: string;
@@ -115,6 +118,8 @@ export type CaseStory = {
   /** headline stat strip in the hero */
   facts: CaseMetric[];
   task: string;
+  /** optional avatar row closing the task statement */
+  taskRoles?: CaseTaskRole[];
   /** what the agency assembled — the full-cycle workstreams */
   build: CaseBlock[];
   /** big result grid */
@@ -227,7 +232,11 @@ export const caseStories: Record<string, CaseStory> = {
       { v: '3', l: 'розничных магазина' },
     ],
     task:
-      'Запустить с нуля новое розничное и онлайн-направление внутри большого российского холдинга. Задача стояла шире сайта — собрать бизнес целиком: продуктовую линейку, интернет-магазин с доставкой по всей стране, розничные точки, маркетинг, коммуникации и команду. Мы вошли в проект как часть команды заказчика: Максим — продукт-оунер на стадии разработки и затем e-com-директор, Нелли — руководитель PR и SMM.',
+      'Запустить с нуля новое розничное и онлайн-направление внутри большого российского холдинга. Задача стояла шире сайта — собрать бизнес целиком: продуктовую линейку, интернет-магазин с доставкой по всей стране, розничные точки, маркетинг, коммуникации и команду. Мы вошли в проект как часть команды заказчика:',
+    taskRoles: [
+      { name: 'Максим Зотов', short: 'Максим', role: 'продукт-оунер на разработке, затем e-com-директор' },
+      { name: 'Нелли Суконникова', short: 'Нелли', role: 'руководитель PR и SMM' },
+    ],
     build: [
       {
         t: 'Продукт: сайт и мобильное приложение',

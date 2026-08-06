@@ -183,6 +183,27 @@ export default function CaseStory({ slug }: { slug: string }) {
         <div style={{ ...chromeCol, padding: `clamp(64px,8vw,96px) ${chromePad} clamp(28px,4vw,40px)` }}>
           <h2 style={{ ...sectionTitle, marginBottom: 18 }}>Задача</h2>
           <p style={{ fontSize: 'clamp(18px,2.1vw,22px)', lineHeight: 1.6, color: ink700, margin: 0 }}>{story.task}</p>
+          {story.taskRoles && (
+            <div className="mm-case-task-roles">
+              {story.taskRoles.map((r) => {
+                const m = team.find((t) => t.name === r.name);
+                return (
+                  <span key={r.name} className="mm-case-task-role">
+                    <span
+                      className="mm-case-task-avatar"
+                      role="img"
+                      aria-label={r.name}
+                      style={m ? { backgroundImage: `url('${m.photo}')` } : undefined}
+                    />
+                    <span>
+                      <b style={{ color: ink850, fontWeight: 800 }}>{r.short}</b>
+                      <span style={{ color: ink600 }}> — {r.role}</span>
+                    </span>
+                  </span>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 

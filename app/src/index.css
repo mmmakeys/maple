@@ -977,3 +977,38 @@ a.mm-case-card:hover .mm-case-open {
     display: none;
   }
 }
+
+/* ---- case story: named roles under the task statement ---- */
+.mm-case-task-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px clamp(20px, 3vw, 36px);
+  margin-top: clamp(20px, 2.6vw, 28px);
+}
+.mm-case-task-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  line-height: 1.4;
+}
+.mm-case-task-avatar {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #eae1fa;
+  background-size: cover;
+  /* Portraits are framed head-and-shoulders, so bias the crop upward. */
+  background-position: center 12%;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px #eae1fa;
+}
+@media (max-width: 640px) {
+  .mm-case-task-roles {
+    flex-direction: column;
+    gap: 14px;
+  }
+  .mm-case-task-role {
+    font-size: 15.5px;
+  }
+}
