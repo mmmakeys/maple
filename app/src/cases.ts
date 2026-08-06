@@ -233,7 +233,7 @@ export const caseStories: Record<string, CaseStory> = {
   vsegazin: {
     slug: 'vsegazin',
     category: 'E-commerce · полный цикл',
-    period: 'Осень 2022 — весна 2024',
+    period: '2022 — 2024',
     title: 'Всёгазин',
     lead: 'Новый бренд товаров для дома и быта внутри крупного российского холдинга: интернет-магазин, мобильное приложение и розница. Амбассадоры — Павел Воля и Ляйсан Утяшева.',
     cover: '/uploads/vsegazin/store-0477.jpg',
