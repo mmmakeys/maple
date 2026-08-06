@@ -93,21 +93,14 @@ export default function CaseStory({ slug }: { slug: string }) {
     <div style={{ background: paper, color: ink850, overflowX: 'hidden' }}>
       <MapleNav onLead={openLead} />
 
-      {/* ── hero ── */}
+      {/* ── hero — the cover fills the band, text sits on a scrim over it ── */}
       <div style={{ background: ink900, color: ink100, position: 'relative', overflow: 'hidden' }}>
         <div
           aria-hidden
-          style={{
-            position: 'absolute',
-            right: -140,
-            top: -180,
-            width: 560,
-            height: 560,
-            borderRadius: '50%',
-            background: `radial-gradient(circle, ${alpha('violet500', 0.5)}, ${alpha('violet500', 0)} 70%)`,
-            pointerEvents: 'none',
-          }}
+          className="mm-case-hero-photo"
+          style={{ backgroundImage: `url('${story.cover}')` }}
         />
+        <div aria-hidden className="mm-case-hero-scrim" />
         <div style={{ ...chromeCol, padding: `clamp(26px,4vw,40px) ${chromePad} 0`, position: 'relative', zIndex: 1 }}>
           <a href="/cases" className="mm-case-back" style={{ color: ink400, textDecoration: 'none', fontSize: 15, fontWeight: 600 }}>
             ← Все кейсы
@@ -115,37 +108,38 @@ export default function CaseStory({ slug }: { slug: string }) {
         </div>
         <div
           className="mm-case-hero"
-          style={{ ...chromeCol, padding: `clamp(28px,4vw,44px) ${chromePad} clamp(48px,6vw,72px)`, position: 'relative', zIndex: 1 }}
+          style={{ ...chromeCol, padding: `clamp(40px,7vw,86px) ${chromePad} clamp(44px,6vw,64px)`, position: 'relative', zIndex: 1 }}
         >
           <div className="mm-case-hero-copy">
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
               <span style={{ ...catChip }}>{story.category}</span>
               {story.period && (
-                <span style={{ fontSize: 14, color: ink500, letterSpacing: '0.02em' }}>{story.period}</span>
+                <span style={{ fontSize: 14, color: ink400, letterSpacing: '0.02em' }}>{story.period}</span>
               )}
             </div>
-            <h1 style={{ ...heading, fontSize: 'clamp(38px,6.4vw,80px)', lineHeight: 0.96, margin: '22px 0 0' }}>
+            <h1 style={{ ...heading, fontSize: 'clamp(44px,7.6vw,104px)', lineHeight: 0.94, margin: '20px 0 0' }}>
               {story.title.split('\n').map((line, i) => (
                 <span key={i} style={{ display: 'block', color: i === 0 ? ink100 : violet400 }}>
                   {line}
                 </span>
               ))}
             </h1>
-            <p style={{ fontSize: 'clamp(17px,2vw,20px)', lineHeight: 1.55, color: ink400, margin: '24px 0 0', maxWidth: 560 }}>
+            <p style={{ fontSize: 'clamp(17px,1.9vw,19px)', lineHeight: 1.55, color: ink400, margin: '20px 0 0', maxWidth: 500 }}>
               {story.lead}
             </p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 26 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 24, maxWidth: 560 }}>
               {story.tags.map((t) => (
                 <span
                   key={t}
                   style={{
-                    background: alpha('violet400', 0.14),
-                    border: `1px solid ${alpha('violet400', 0.32)}`,
-                    color: '#D9CEF0',
+                    background: 'rgba(255,255,255,0.1)',
+                    border: '1px solid rgba(255,255,255,0.22)',
+                    color: '#E4DCF3',
                     borderRadius: 999,
                     padding: '7px 14px',
                     fontSize: 13,
                     fontWeight: 600,
+                    backdropFilter: 'blur(6px)',
                   }}
                 >
                   {t}
@@ -153,15 +147,6 @@ export default function CaseStory({ slug }: { slug: string }) {
               ))}
             </div>
           </div>
-          <div
-            className="mm-case-hero-cover"
-            style={{
-              backgroundImage: `url('${story.cover}')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              borderRadius: 22,
-            }}
-          />
         </div>
         {/* fact strip */}
         <div style={{ ...chromeCol, padding: `0 ${chromePad} clamp(52px,6vw,72px)`, position: 'relative', zIndex: 1 }}>
@@ -593,6 +578,22 @@ export default function CaseStory({ slug }: { slug: string }) {
         </div>
       )}
 
+      {/* ── epilogue: what happened to the project ── */}
+      {story.epilogue && (
+        <div style={{ background: paper }}>
+          <div style={{ ...chromeCol, padding: `clamp(40px,5vw,60px) ${chromePad}` }}>
+            <div style={{ borderTop: `1px solid ${violet50}`, paddingTop: 'clamp(24px,3vw,32px)', maxWidth: 760 }}>
+              <div style={{ fontSize: 12.5, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: ink600, marginBottom: 12 }}>
+                {story.epilogue.t}
+              </div>
+              <p style={{ fontSize: 15.5, lineHeight: 1.65, color: ink600, margin: 0 }}>
+                {story.epilogue.d}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── team on the project ── */}
       {relevant.length > 0 && (
         <div id="team" style={{ background: ink900, color: ink100, scrollMarginTop: 20 }}>
@@ -619,29 +620,6 @@ export default function CaseStory({ slug }: { slug: string }) {
                   <div style={{ fontSize: 14, lineHeight: 1.45, color: ink500 }}>{story.roles?.[m.name] ?? m.role}</div>
                 </div>
               ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── epilogue: what happened to the project ── */}
-      {story.epilogue && (
-        <div style={{ background: paper }}>
-          <div style={{ ...chromeCol, padding: `clamp(56px,7vw,84px) ${chromePad}` }}>
-            <div
-              style={{
-                background: violet50,
-                borderRadius: 20,
-                padding: 'clamp(28px,4vw,44px)',
-                maxWidth: 900,
-              }}
-            >
-              <div style={{ fontFamily: DISPLAY, fontSize: 'clamp(19px,2.4vw,24px)', fontWeight: 600, textTransform: 'uppercase', color: ink850, marginBottom: 14 }}>
-                {story.epilogue.t}
-              </div>
-              <p style={{ fontSize: 'clamp(16px,1.9vw,18px)', lineHeight: 1.65, color: ink700, margin: 0 }}>
-                {story.epilogue.d}
-              </p>
             </div>
           </div>
         </div>

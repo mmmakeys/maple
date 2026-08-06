@@ -703,21 +703,38 @@ a.mm-case-card:hover .mm-case-open {
 .mm-case-back:hover {
   transform: translateX(-3px);
 }
-.mm-case-hero {
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  align-items: center;
-  gap: clamp(28px, 4vw, 56px);
+/* The cover fills the whole hero band; copy sits on a scrim over it. */
+.mm-case-hero-photo {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
 }
-/* Grid items default to min-width:auto, so a wide child (the aspect-ratio
-   cover) would push the column past the viewport. Pin them to 0. */
-.mm-case-hero > * {
-  min-width: 0;
+.mm-case-hero-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Dark on the copy side, clearing toward the right so the photo reads;
+     plus a bottom fade so the fact strip lands on solid ink. */
+  background:
+    linear-gradient(
+      90deg,
+      rgba(22, 16, 32, 0.97) 0%,
+      rgba(22, 16, 32, 0.93) 34%,
+      rgba(22, 16, 32, 0.66) 55%,
+      rgba(22, 16, 32, 0.22) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(22, 16, 32, 0.7) 0%,
+      rgba(22, 16, 32, 0.14) 26%,
+      rgba(22, 16, 32, 0.8) 78%,
+      rgba(22, 16, 32, 1) 100%
+    );
 }
-.mm-case-hero-cover {
-  aspect-ratio: 4 / 3;
-  width: 100%;
-  min-height: 260px;
+.mm-case-hero-copy {
+  max-width: 620px;
 }
 
 /* ---- fact strip ---- */
@@ -769,15 +786,15 @@ a.mm-case-card:hover .mm-case-open {
   .mm-case-card--featured .mm-case-cover {
     min-height: 280px;
   }
-  .mm-case-hero {
-    grid-template-columns: 1fr;
-  }
-  .mm-case-hero-cover {
-    aspect-ratio: 16 / 9;
-    order: -1;
-    /* min-height + aspect-ratio would demand ~460px of width; let the ratio
-       derive the height from the available width instead. */
-    min-height: 0;
+  /* Narrow screens put copy over the full width, so the scrim goes uniform. */
+  .mm-case-hero-scrim {
+    background: linear-gradient(
+      180deg,
+      rgba(22, 16, 32, 0.86) 0%,
+      rgba(22, 16, 32, 0.9) 45%,
+      rgba(22, 16, 32, 0.97) 82%,
+      rgba(22, 16, 32, 1) 100%
+    );
   }
 }
 
