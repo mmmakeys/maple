@@ -236,7 +236,7 @@ export const caseStories: Record<string, CaseStory> = {
     period: 'Осень 2022 — весна 2024',
     title: 'Всёгазин',
     lead: 'Новый бренд товаров для дома и быта внутри крупного российского холдинга: интернет-магазин, мобильное приложение и розница. Амбассадоры — Павел Воля и Ляйсан Утяшева.',
-    cover: '/uploads/vsegazin/store-msk-1.jpg',
+    cover: '/uploads/vsegazin/store-0477.jpg',
     tags: ['Стратегия', 'E-commerce', 'Продукт и IT', 'Перфоманс-маркетинг', 'CRM и лояльность', 'SMM', 'PR', 'Розница'],
     facts: [
       { v: '< 6 мес', l: 'от нуля до работающего e-com' },
@@ -359,12 +359,12 @@ export const caseStories: Record<string, CaseStory> = {
     },
     phases: [
       {
-        when: 'Осень 2022 — январь 2023',
+        when: 'Вторая половина 2022',
         t: 'Подготовка и продукт',
         d: 'Концепция магазина, товарная матрица собственной марки, требования к платформе и план запуска.',
       },
       {
-        when: 'Февраль — май 2023',
+        when: 'Первая половина 2023',
         t: 'Разработка и запуск',
         d: 'Параллельная сборка 11 систем: PIM, Search, OMS, клиентский сервис, Loymax, CMS, фронтенд сайта, мобильное приложение, интеграции с 1С и SEO.',
       },
@@ -426,11 +426,14 @@ export const caseStories: Record<string, CaseStory> = {
       embed: 'https://kinescope.io/embed/ktnynrGmVMJy5LHBCBTx81',
     },
     gallery: [
-      { src: '/uploads/vsegazin/store-msk-2.jpg', cap: 'Торговый зал магазина в Москве: посуда, товары для дома и хозтовары' },
-      { src: '/uploads/vsegazin/site-home.svg', cap: 'Главная страница интернет-магазина' },
-      { src: '/uploads/vsegazin/site-catalog.svg', cap: 'Каталог и карточка товара' },
-      { src: '/uploads/vsegazin/store-penza.svg', cap: 'Магазин в Пензе' },
-      { src: '/uploads/vsegazin/promo-checks.svg', cap: 'Чековое промо: розыгрыш призов' },
+      { src: '/uploads/vsegazin/store-0476.jpg', cap: 'Вход в магазин: неон «Всё для всех» и сезонная выкладка' },
+      { src: '/uploads/vsegazin/store-0479.jpg', cap: 'Посуда, товары для дома и хозтовары' },
+      { src: '/uploads/vsegazin/store-0471.jpg', cap: 'Зона косметики и ароматов' },
+      { src: '/uploads/vsegazin/store-0473.jpg', cap: 'Стеллажи с текстилем и товарами для дома' },
+      { src: '/uploads/vsegazin/store-0481.jpg', cap: 'Текстиль, свечи и мелочи для уюта' },
+      { src: '/uploads/vsegazin/store-0470.jpg', cap: 'Витрина с посудой и текстилем' },
+      { src: '/uploads/vsegazin/store-0468.jpg', cap: 'Подиум с электроникой и стена с мелочами' },
+      { src: '/uploads/vsegazin/store-0477.jpg', cap: 'Торговый зал: от посуды до товаров для дачи' },
     ],
     highlights: [
       {
@@ -459,7 +462,7 @@ export const caseStories: Record<string, CaseStory> = {
       },
     ],
     quote: {
-      text: 'Полтора года всей командой строили бизнес: продукт, магазин, доставку, розницу и людей — и довели его до реальных продаж.',
+      text: 'Полтора года большой командой строили бизнес: продукт, магазин, доставку, розницу и людей — и довели его до реальных продаж.',
       author: 'Команда МЭПЛ',
     },
     epilogue: {

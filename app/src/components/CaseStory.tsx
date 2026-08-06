@@ -42,6 +42,8 @@ const sectionTitle: React.CSSProperties = {
 export default function CaseStory({ slug }: { slug: string }) {
   const story = caseStories[slug];
   const [leadOpen, setLeadOpen] = useState(false);
+  // Index of the gallery shot open in the lightbox, or null when closed.
+  const [shot, setShot] = useState<number | null>(null);
 
   useEffect(() => {
     if (story) document.title = `${story.title.replace(/\n/g, ' ')} — кейс МЭПЛ`;
@@ -52,6 +54,24 @@ export default function CaseStory({ slug }: { slug: string }) {
     e.preventDefault();
     setLeadOpen(true);
   };
+
+  const shots = story?.gallery ?? [];
+  useEffect(() => {
+    if (shot === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShot(null);
+      if (e.key === 'ArrowRight') setShot((i) => (i === null ? i : (i + 1) % shots.length));
+      if (e.key === 'ArrowLeft') setShot((i) => (i === null ? i : (i - 1 + shots.length) % shots.length));
+    };
+    window.addEventListener('keydown', onKey);
+    // Keep the page behind the overlay from scrolling away under it.
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [shot, shots.length]);
 
   // The platform block ships collapsed. Jumping to it from the anchor nav (or
   // a shared #platform link) should reveal it rather than land on a closed lid.
@@ -581,24 +601,27 @@ export default function CaseStory({ slug }: { slug: string }) {
         </div>
       )}
 
-      {/* ── gallery ── */}
+      {/* ── gallery: collage, click opens the lightbox ── */}
       {story.gallery && (
-        <div style={{ background: paper }}>
+        <div id="gallery" style={{ background: paper, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(56px,7vw,80px) ${chromePad} clamp(56px,7vw,80px)` }}>
-            <h2 style={{ ...sectionTitle, marginBottom: 'clamp(28px,4vw,44px)' }}>
+            <h2 style={{ ...sectionTitle, marginBottom: 14 }}>
               Как это <span style={{ color: violet500 }}>выглядело</span>
             </h2>
-            <div className="mm-case-gallery">
-              {story.gallery.map((g) => (
-                <figure key={g.src} className="mm-case-shot" style={{ margin: 0 }}>
-                  <img
-                    src={g.src}
-                    alt={g.cap}
-                    loading="lazy"
-                    style={{ width: '100%', height: 'auto', display: 'block', borderRadius: 16, background: violet50 }}
-                  />
-                  <figcaption style={{ fontSize: 14.5, color: ink600, marginTop: 12, lineHeight: 1.45 }}>{g.cap}</figcaption>
-                </figure>
+            <p style={{ fontSize: 16, lineHeight: 1.55, color: ink600, margin: '0 0 clamp(24px,3vw,32px)' }}>
+              Нажмите на любой кадр, чтобы рассмотреть.
+            </p>
+            <div className="mm-case-collage">
+              {story.gallery.map((g, i) => (
+                <button
+                  key={g.src}
+                  type="button"
+                  className="mm-case-tile"
+                  onClick={() => setShot(i)}
+                  aria-label={`Открыть фото: ${g.cap}`}
+                >
+                  <img src={g.src} alt={g.cap} loading="lazy" />
+                </button>
               ))}
             </div>
           </div>
@@ -775,6 +798,43 @@ export default function CaseStory({ slug }: { slug: string }) {
       </div>
 
       <MapleFooter />
+
+      {shot !== null && shots[shot] && (
+        <div
+          className="mm-case-lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Просмотр фотографии"
+          onClick={() => setShot(null)}
+        >
+          <button type="button" className="mm-case-lb-close" onClick={() => setShot(null)} aria-label="Закрыть">
+            ✕
+          </button>
+          <button
+            type="button"
+            className="mm-case-lb-nav mm-case-lb-prev"
+            onClick={(e) => { e.stopPropagation(); setShot((i) => (i === null ? i : (i - 1 + shots.length) % shots.length)); }}
+            aria-label="Предыдущее фото"
+          >
+            ‹
+          </button>
+          <figure className="mm-case-lb-figure" onClick={(e) => e.stopPropagation()}>
+            <img src={shots[shot].src} alt={shots[shot].cap} />
+            <figcaption>
+              <span>{shots[shot].cap}</span>
+              <span className="mm-case-lb-count">{shot + 1} / {shots.length}</span>
+            </figcaption>
+          </figure>
+          <button
+            type="button"
+            className="mm-case-lb-nav mm-case-lb-next"
+            onClick={(e) => { e.stopPropagation(); setShot((i) => (i === null ? i : (i + 1) % shots.length)); }}
+            aria-label="Следующее фото"
+          >
+            ›
+          </button>
+        </div>
+      )}
 
       {leadOpen && (
         <Suspense fallback={null}>
