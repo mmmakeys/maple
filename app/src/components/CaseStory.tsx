@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { DISPLAY, team } from '../data';
 import {
   alpha,
@@ -52,6 +52,20 @@ export default function CaseStory({ slug }: { slug: string }) {
     e.preventDefault();
     setLeadOpen(true);
   };
+
+  // The platform block ships collapsed. Jumping to it from the anchor nav (or
+  // a shared #platform link) should reveal it rather than land on a closed lid.
+  const platformRef = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    const openIfTargeted = () => {
+      if (window.location.hash === '#platform' && platformRef.current) {
+        platformRef.current.open = true;
+      }
+    };
+    openIfTargeted();
+    window.addEventListener('hashchange', openIfTargeted);
+    return () => window.removeEventListener('hashchange', openIfTargeted);
+  }, []);
 
   if (!story) {
     return (
@@ -271,12 +285,24 @@ export default function CaseStory({ slug }: { slug: string }) {
       {story.stack && (
         <div id="platform" style={{ background: violet50, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(56px,7vw,84px) ${chromePad}` }}>
-            <h2 style={{ ...sectionTitle, marginBottom: 14 }}>
-              Как устроена <span style={{ color: violet500 }}>платформа</span>
-            </h2>
-            <p style={{ fontSize: 17, lineHeight: 1.55, color: ink700, margin: '0 0 clamp(28px,4vw,40px)', maxWidth: 620 }}>
-              Витрины, сервисы и учётный контур собирались параллельно и связывались через интеграционную шину.
-            </p>
+            {/* Technical detail — folded away by default; the anchor nav opens it. */}
+            <details ref={platformRef} className="mm-case-spoiler">
+              <summary className="mm-case-spoiler-head">
+                <span>
+                  <h2 style={{ ...sectionTitle, marginBottom: 14 }}>
+                    Как устроена <span style={{ color: violet500 }}>платформа</span>
+                  </h2>
+                  <span style={{ display: 'block', fontSize: 17, lineHeight: 1.55, color: ink700, maxWidth: 620 }}>
+                    Витрины, сервисы и учётный контур собирались параллельно и связывались через интеграционную шину.
+                  </span>
+                </span>
+                <span className="mm-case-spoiler-toggle">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </span>
+              </summary>
+              <div className="mm-case-spoiler-body">
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {story.stack.map((s, i) => (
@@ -393,6 +419,8 @@ export default function CaseStory({ slug }: { slug: string }) {
                 </p>
               </div>
             )}
+              </div>
+            </details>
           </div>
         </div>
       )}

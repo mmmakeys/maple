@@ -1108,3 +1108,65 @@ a.mm-case-card:hover .mm-case-open {
     transform-origin: 10px 10px;
   }
 }
+
+/* ---- case story: collapsible technical block ---- */
+.mm-case-spoiler-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: clamp(16px, 3vw, 32px);
+  cursor: pointer;
+  list-style: none;
+}
+/* Safari still paints the default disclosure triangle without this. */
+.mm-case-spoiler-head::-webkit-details-marker {
+  display: none;
+}
+.mm-case-spoiler-head:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 6px;
+  border-radius: 8px;
+}
+.mm-case-spoiler-toggle {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  background: #fff;
+  color: #5b4a79;
+  border: 1px solid rgba(167, 139, 250, 0.45);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 4px;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.mm-case-spoiler-toggle::before {
+  content: 'Показать схему';
+}
+.mm-case-spoiler[open] .mm-case-spoiler-toggle::before {
+  content: 'Свернуть';
+}
+.mm-case-spoiler-toggle svg {
+  transition: transform 0.22s ease;
+}
+.mm-case-spoiler[open] .mm-case-spoiler-toggle svg {
+  transform: rotate(180deg);
+}
+.mm-case-spoiler-head:hover .mm-case-spoiler-toggle {
+  background: #8b5cf6;
+  color: #fff;
+  border-color: #8b5cf6;
+}
+.mm-case-spoiler-body {
+  padding-top: clamp(28px, 4vw, 40px);
+}
+
+@media (max-width: 640px) {
+  .mm-case-spoiler-head {
+    flex-direction: column;
+    gap: 18px;
+  }
+}
