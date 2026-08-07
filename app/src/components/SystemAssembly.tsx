@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { typo } from '../typo';
 import { DISPLAY, services } from '../data';
 import { alpha, ink500, paper, violet400, violet500 } from '../tokens';
 
@@ -60,7 +61,7 @@ export default function SystemAssembly() {
     const status = document.createElement('p');
     status.style.cssText = `font-family:${disp};font-size:22px;font-weight:200;text-align:center;color:${violet400};margin:40px 0 0;transition:opacity .6s ease;opacity:.9;`;
     status.textContent =
-      'Нажмите «Собрать систему» — и направления соберутся в одну систему';
+      typo('Нажмите «Собрать систему» — и направления соберутся в одну систему');
 
     mount.appendChild(ctl);
     mount.appendChild(stageWrap);
@@ -450,7 +451,7 @@ export default function SystemAssembly() {
               btn.disabled = false;
               btn.style.opacity = '1';
               btn.style.cursor = 'pointer';
-              status.textContent = 'Если это не помогает росту, то мы это не делаем';
+              status.textContent = typo('Если это не помогает росту, то мы это не делаем');
               sparkBurst(26);
               timers.push(setTimeout(() => sparkBurst(18), 900));
               timers.push(
@@ -473,7 +474,7 @@ export default function SystemAssembly() {
       btn.style.opacity = '.65';
       btn.style.cursor = 'default';
       status.style.opacity = '1';
-      status.textContent = 'Соединяем направления в одну систему…';
+      status.textContent = typo('Соединяем направления в одну систему…');
       // Ring appears immediately so lines look like they originate from it.
       showOutlineRing(stage, true);
       runAssemble();
@@ -490,7 +491,7 @@ export default function SystemAssembly() {
       }
       setProgress(0);
       btnLabel.textContent = 'Собрать систему';
-      status.textContent = 'Нажмите «Собрать систему» — и направления соберутся в одну систему';
+      status.textContent = typo('Нажмите «Собрать систему» — и направления соберутся в одну систему');
     };
 
     btn.addEventListener('click', () => {

@@ -1,4 +1,5 @@
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import { typo } from '../typo';
 import { DISPLAY, team } from '../data';
 import {
   alpha,
@@ -94,13 +95,13 @@ export default function CaseStory({ slug }: { slug: string }) {
         <div style={{ ...chromeCol, padding: `clamp(80px,12vw,140px) ${chromePad}`, textAlign: 'center' }}>
           <h1 style={{ ...heading, fontSize: 'clamp(32px,6vw,60px)' }}>Кейс не найден</h1>
           <p style={{ fontSize: 18, color: ink600, margin: '18px 0 30px' }}>
-            Возможно, он ещё в работе. Посмотрите остальные проекты.
+            {typo("Возможно, он ещё в работе. Посмотрите остальные проекты.")}
           </p>
           <a
             href="/cases"
             style={{ textDecoration: 'none', background: violet500, color: paper, fontWeight: 800, fontSize: 16, padding: '16px 30px', borderRadius: 10 }}
           >
-            Все кейсы →
+            {typo("Все кейсы →")}
           </a>
         </div>
         <MapleFooter />
@@ -113,10 +114,10 @@ export default function CaseStory({ slug }: { slug: string }) {
   // Anchor nav — only lists sections this story actually renders.
   const toc = [
     { id: 'task', label: 'Задача', on: true },
-    { id: 'shift', label: 'Точка А → Б', on: Boolean(story.shift) },
-    { id: 'build', label: 'Что собрали', on: true },
+    { id: 'shift', label: typo('Точка А → Б'), on: Boolean(story.shift) },
+    { id: 'build', label: typo('Что собрали'), on: true },
     { id: 'platform', label: 'Платформа', on: Boolean(story.stack) },
-    { id: 'timeline', label: 'Как шёл проект', on: Boolean(story.phases) },
+    { id: 'timeline', label: typo('Как шёл проект'), on: Boolean(story.phases) },
     { id: 'channels', label: 'Маркетплейсы', on: Boolean(story.channels) },
     { id: 'results', label: 'Результаты', on: true },
     { id: 'film', label: 'Ролик', on: Boolean(story.film) },
@@ -138,7 +139,7 @@ export default function CaseStory({ slug }: { slug: string }) {
         <div aria-hidden className="mm-case-hero-scrim" />
         <div style={{ ...chromeCol, padding: `clamp(26px,4vw,40px) ${chromePad} 0`, position: 'relative', zIndex: 1 }}>
           <a href="/cases" className="mm-case-back" style={{ color: ink400, textDecoration: 'none', fontSize: 15, fontWeight: 600 }}>
-            ← Все кейсы
+            {typo("← Все кейсы")}
           </a>
         </div>
         <div
@@ -247,7 +248,7 @@ export default function CaseStory({ slug }: { slug: string }) {
         <div id="shift" style={{ background: paper, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(28px,4vw,40px) ${chromePad} clamp(56px,7vw,80px)` }}>
             <h2 style={{ ...sectionTitle, marginBottom: 'clamp(24px,3.4vw,34px)' }}>
-              Точка А → <span style={{ color: violet500 }}>точка Б</span>
+              {typo("Точка А → ")}<span style={{ color: violet500 }}>точка Б</span>
             </h2>
             <div className="mm-case-shift">
               <div className="mm-case-shift-labels" aria-hidden>
@@ -275,7 +276,7 @@ export default function CaseStory({ slug }: { slug: string }) {
       <div id="build" style={{ background: paper, scrollMarginTop: 20 }}>
         <div style={{ ...chromeCol, padding: `clamp(28px,4vw,40px) ${chromePad} clamp(56px,7vw,80px)` }}>
           <h2 style={{ ...sectionTitle, marginBottom: 'clamp(28px,4vw,44px)' }}>
-            Что мы <span style={{ color: violet500 }}>собрали</span>
+            {typo("Что мы ")}<span style={{ color: violet500 }}>собрали</span>
           </h2>
           <div className="mm-case-build">
             {story.build.map((b, i) => (
@@ -310,10 +311,10 @@ export default function CaseStory({ slug }: { slug: string }) {
               <summary className="mm-case-spoiler-head">
                 <span>
                   <h2 style={{ ...sectionTitle, marginBottom: 14 }}>
-                    Как устроена <span style={{ color: violet500 }}>платформа</span>
+                    {typo("Как устроена ")}<span style={{ color: violet500 }}>платформа</span>
                   </h2>
                   <span style={{ display: 'block', fontSize: 17, lineHeight: 1.55, color: ink700, maxWidth: 620 }}>
-                    Витрины, сервисы и учётный контур собирались параллельно и связывались через интеграционную шину.
+                    {typo("Витрины, сервисы и учётный контур собирались параллельно и связывались через интеграционную шину.")}
                   </span>
                 </span>
                 <span className="mm-case-spoiler-toggle">
@@ -450,7 +451,7 @@ export default function CaseStory({ slug }: { slug: string }) {
         <div id="timeline" style={{ background: paper, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(56px,7vw,84px) ${chromePad}` }}>
             <h2 style={{ ...sectionTitle, marginBottom: 'clamp(28px,4vw,44px)' }}>
-              Как шёл <span style={{ color: violet500 }}>проект</span>
+              {typo("Как шёл ")}<span style={{ color: violet500 }}>проект</span>
             </h2>
             <div className="mm-case-phases">
               {story.phases.map((p) => (
@@ -606,10 +607,10 @@ export default function CaseStory({ slug }: { slug: string }) {
         <div id="gallery" style={{ background: paper, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(56px,7vw,80px) ${chromePad} clamp(56px,7vw,80px)` }}>
             <h2 style={{ ...sectionTitle, marginBottom: 14 }}>
-              Как это <span style={{ color: violet500 }}>выглядело</span>
+              {typo("Как это ")}<span style={{ color: violet500 }}>выглядело</span>
             </h2>
             <p style={{ fontSize: 16, lineHeight: 1.55, color: ink600, margin: '0 0 clamp(24px,3vw,32px)' }}>
-              Нажмите на любой кадр, чтобы рассмотреть.
+              {typo("Нажмите на любой кадр, чтобы рассмотреть.")}
             </p>
             <div className="mm-case-collage">
               {story.gallery.map((g, i) => (
@@ -653,7 +654,7 @@ export default function CaseStory({ slug }: { slug: string }) {
               СМИ о <span style={{ color: violet500 }}>проекте</span>
             </h2>
             <p style={{ fontSize: 17, lineHeight: 1.6, color: ink700, margin: '0 0 clamp(26px,3.4vw,36px)', maxWidth: 660 }}>
-              Публикации об открытии магазинов и развитии сети — результат PR-работы над проектом.
+              {typo("Публикации об открытии магазинов и развитии сети — результат PR-работы над проектом.")}
             </p>
             <div className="mm-case-press">
               {story.press.map((p) => (
@@ -773,7 +774,7 @@ export default function CaseStory({ slug }: { slug: string }) {
               <span style={{ color: violet400 }}>результат?</span>
             </h2>
             <p style={{ fontSize: 18, lineHeight: 1.55, color: ink400, margin: 0, maxWidth: 560 }}>
-              Расскажите о задаче — соберём систему под ваш проект и доведём до роста.
+              {typo("Расскажите о задаче — соберём систему под ваш проект и доведём до роста.")}
             </p>
           </div>
           <a

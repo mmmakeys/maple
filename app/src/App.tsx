@@ -1,4 +1,5 @@
 import { lazy, Suspense, useState } from 'react';
+import { typo } from './typo';
 import { DISPLAY, marqueeText, whyCards, roles, team, type Member } from './data';
 import {
   alpha,
@@ -183,7 +184,7 @@ export default function App() {
                   fontWeight: 500,
                 }}
               >
-                Агентство, которое делает. Собираем диджитал в одно целое и доводим до роста.
+                {typo("Агентство, которое делает. Собираем диджитал в одно целое и доводим до роста.")}
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
                 <a
@@ -257,13 +258,12 @@ export default function App() {
       <div style={{ background: paper }}>
         <div style={col('84px clamp(20px,4vw,56px)')}>
           <h2 style={{ ...heading, fontSize: 'clamp(32px, 5vw, 48px)', lineHeight: 1.0, margin: '0 0 14px' }}>
-            Почему с нами
+            {typo("Почему с нами")}
             <br />
             легко?
           </h2>
           <p style={{ fontSize: 19, lineHeight: 1.55, color: ink700, maxWidth: 560, margin: '0 0 46px' }}>
-            Потому что делаем так, чтобы всё работало. По умолчанию будем креативными. Если нужно — будем простыми
-            и эффективными.
+            {typo("Потому что делаем так, чтобы всё работало. По умолчанию будем креативными. Если нужно — будем простыми и эффективными.")}
           </p>
           <div className="mm-why-grid">
             {whyCards.map((c) => (
@@ -361,7 +361,7 @@ export default function App() {
                 <br />в <span style={{ color: violet400 }}>одно целое</span>
               </h2>
               <p style={{ fontSize: 19, lineHeight: 1.55, color: ink400, margin: '22px 0 0' }}>
-                Мы не продаём отдельные услуги. Мы собираем систему под задачу и доводим её до результата.
+                {typo("Мы не продаём отдельные услуги. Мы собираем систему под задачу и доводим её до результата.")}
               </p>
             </div>
             <SystemAssembly />
@@ -373,7 +373,7 @@ export default function App() {
       <div style={{ background: paper }}>
         <div style={col('0 clamp(20px,4vw,56px) 90px')}>
           <h2 style={{ ...heading, fontSize: 'clamp(32px, 5vw, 48px)', margin: '0 0 48px' }}>
-            Как это
+            {typo("Как это")}
             <br />
             происходит
           </h2>
@@ -387,12 +387,12 @@ export default function App() {
           <div style={{ display: 'flex', alignItems: 'end', justifyContent: 'space-between', gap: 20, marginBottom: 40, flexWrap: 'wrap' }}>
             <div>
               <h2 style={{ ...heading, fontSize: 'clamp(32px, 5.2vw, 50px)', margin: 0 }}>
-                Что мы уже
+                {typo("Что мы уже")}
                 <br />
                 сделали
               </h2>
               <p style={{ fontSize: 14, color: ink600, margin: '14px 0 0', letterSpacing: '0.01em' }}>
-                Раздел ещё пополняется — скоро тут будет больше
+                {typo("Раздел ещё пополняется — скоро тут будет больше")}
               </p>
             </div>
             <a
@@ -408,7 +408,7 @@ export default function App() {
                 borderRadius: 10,
               }}
             >
-              Все кейсы →
+              {typo("Все кейсы →")}
             </a>
           </div>
           <div className="mm-cases-hero">
@@ -442,7 +442,7 @@ export default function App() {
                 <div style={{ fontFamily: DISPLAY, fontSize: 28, fontWeight: 200, margin: '12px 0 8px', lineHeight: 1.05 }}>
                   Павел Воля. Большой стендап
                 </div>
-                <div style={{ fontSize: 16, color: '#EADFFB' }}>Тур по 40 городам — 38 солдаутов</div>
+                <div style={{ fontSize: 16, color: '#EADFFB' }}>{typo("Тур по 40 городам — 38 солдаутов")}</div>
               </div>
             </a>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -461,7 +461,7 @@ export default function App() {
                   PR
                 </span>
                 <div style={{ fontFamily: DISPLAY, fontSize: 22, fontWeight: 200, lineHeight: 1.2 }}>
-                  Три награды в «Книге рекордов России» · 2025
+                  {typo("Три награды в «Книге рекордов России» · 2025")}
                 </div>
               </div>
               <div
@@ -499,7 +499,7 @@ export default function App() {
                 Туры
               </span>
               <div style={{ fontFamily: DISPLAY, fontSize: 22, fontWeight: 200, lineHeight: 1.2, marginTop: 10 }}>
-                Спектакли Егора Дружинина · 3 города
+                {typo("Спектакли Егора Дружинина · 3 города")}
               </div>
             </div>
           </div>
@@ -516,8 +516,7 @@ export default function App() {
               <span style={{ color: violet400 }}>БОЛЬШАЯ ВОВЛЕЧЕННОСТЬ</span>
             </h2>
             <p style={{ fontSize: 19, lineHeight: 1.55, color: ink400, maxWidth: 600, margin: '22px 0 0' }}>
-              Мы не раздутое агентство. Над проектами работают люди, которые принимают решения, а не передают задачи
-              по цепочке.
+              {typo("Мы не раздутое агентство. Над проектами работают люди, которые принимают решения, а не передают задачи по цепочке.")}
             </p>
           </div>
           <div className="mm-team-grid">
@@ -707,12 +706,12 @@ export default function App() {
               Готовы начать?
             </span>
             <h2 style={{ ...heading, fontSize: 'clamp(32px, 5vw, 56px)', lineHeight: 1.02, marginBottom: 18 }}>
-              Расскажите о задаче —
+              {typo("Расскажите о задаче —")}
               <br />
-              <span style={{ color: violet400 }}>соберём в одно целое</span>
+              <span style={{ color: violet400 }}>{typo("соберём в одно целое")}</span>
             </h2>
             <p style={{ fontSize: 18, lineHeight: 1.55, color: ink400, margin: 0, maxWidth: 560 }}>
-              Обсудим цели, покажем как решаем и предложим вариант под ваш бизнес.
+              {typo("Обсудим цели, покажем как решаем и предложим вариант под ваш бизнес.")}
             </p>
           </div>
           <a
@@ -781,7 +780,7 @@ export default function App() {
               полного цикла
             </h3>
             <p style={{ fontSize: 19, color: 'rgba(255,255,255,0.68)', margin: 0 }}>
-              Концерты, туры, шоу. 3 звонка до солдаута.
+              {typo("Концерты, туры, шоу. 3 звонка до солдаута.")}
             </p>
           </div>
           <a
@@ -798,7 +797,7 @@ export default function App() {
               boxShadow: '0 12px 40px rgba(163,22,33,0.36), inset 0 1px 0 rgba(255,255,255,0.18)',
             }}
           >
-            Перейти на Сценику →
+            {typo("Перейти на Сценику →")}
           </a>
         </div>
       </div>
@@ -807,7 +806,7 @@ export default function App() {
       <div style={{ background: ink850, color: 'rgba(244,240,251,0.6)' }}>
         <div className="mm-footer-row" style={col('32px clamp(20px,4vw,56px)')}>
           <span style={{ fontFamily: DISPLAY, fontSize: 16, color: ink100, fontWeight: 200 }}>МЭПЛ</span>
-          <span>© 2026 · Растим проекты, а не отчёты</span>
+          <span>{typo("© 2026 · Растим проекты, а не отчёты")}</span>
         </div>
       </div>
 

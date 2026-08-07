@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { typo } from '../typo';
 
 const DISPLAY = "'Onest', sans-serif";
 const RED = '#A31621';
@@ -149,10 +150,10 @@ function ScenikaHero() {
           marginTop: 28,
         }}
       >
-        3 звонка до солдаута
+        {typo("3 звонка до солдаута")}
       </div>
       <p style={{ fontSize: 19, lineHeight: 1.6, color: MUTED_DARK, maxWidth: 520, margin: '32px 0 0' }}>
-        Концертное агентство полного цикла. Полностью организуем концертные туры — от первой идеи до полного зала.
+        {typo("Концертное агентство полного цикла. Полностью организуем концертные туры — от первой идеи до полного зала.")}
       </p>
       <div style={{ marginTop: 48 }}>
         <a
@@ -196,7 +197,7 @@ const SECTION_H2: React.CSSProperties = {
 };
 
 const FIRST_QUESTIONS = [
-  'В какие города действительно стоит ехать?',
+  typo('В какие города действительно стоит ехать?'),
   'Какая площадка соберёт максимум зрителей?',
   'Сколько должен стоить билет?',
   'Когда лучше объявить тур?',
@@ -350,18 +351,18 @@ function FirstCall() {
       <div style={{ position: 'relative', zIndex: 1 }}>
       <div style={CALL_LABEL}>Первый звонок</div>
       <h2 style={{ ...SECTION_H2, margin: '36px 0 0', maxWidth: 900 }}>
-        До сцены начинается главное
+        {typo("До сцены начинается главное")}
       </h2>
       <div className="sc-first-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, marginTop: 64, alignItems: 'start' }}>
         <div>
           <p style={{ fontSize: 19, lineHeight: 1.65, color: MUTED_DEEP, margin: 0 }}>
-            Полный зал не появляется сам. Мы начинаем с вопросов, которые редко задают:
+            {typo("Полный зал не появляется сам. Мы начинаем с вопросов, которые редко задают:")}
           </p>
           <div style={{ marginTop: 36 }}>
             <QuestionTyper />
           </div>
           <p style={{ fontSize: 19, lineHeight: 1.65, color: MUTED_DEEP, margin: '36px 0 0' }}>
-            Мы строим тур ещё до того, как появляются афиши.
+            {typo("Мы строим тур ещё до того, как появляются афиши.")}
           </p>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -395,14 +396,14 @@ function FirstCall() {
 }
 
 const MECH_NODES: Array<{ label: string; desc: string; icon: string }> = [
-  { label: 'Площадки', desc: 'Выбираем города, даты и залы под реальный спрос', icon: 'M4 20V10L12 4L20 10V20H4Z M9 20V15H15V20' },
-  { label: 'Билеты', desc: 'Заводим билетный стол и контролируем продажи', icon: 'M3 8H21V16H3Z M9 8V10 M9 12V14 M14 8V10 M14 12V14' },
-  { label: 'Договоры', desc: 'Закрываем юридический и финансовый контур', icon: 'M6 4H14L18 8V20H6Z M14 4V8H18 M9 12H15 M9 15H13' },
-  { label: 'Реклама', desc: 'Запускаем digital, наружку и локальные кампании', icon: 'M3 12L15 6V18Z M15 10V14 M18 8V16' },
-  { label: 'PR и медиа', desc: 'Подключаем СМИ, радио и инфопартнёров', icon: 'M9 4H15V13H9Z M6 12A6 6 0 0018 12 M12 18V21' },
-  { label: 'Райдеры', desc: 'Собираем технические и бытовые требования', icon: 'M6 5H18V20H6Z M10 3H14V6H10Z M9 11H15 M9 14H14' },
-  { label: 'Логистика', desc: 'Планируем перемещения, тайминги и сопровождение', icon: 'M2 8H13V16H2Z M13 12H17L20 15V16H13Z M6 20A2 2 0 106 16 A2 2 0 106 20 Z M18 20A2 2 0 1018 16 A2 2 0 1018 20 Z' },
-  { label: 'Турменеджмент', desc: 'Контролируем день события и работу на площадке', icon: 'M12 3A6 6 0 0118 9C18 13 12 21 12 21C12 21 6 13 6 9A6 6 0 0112 3Z M12 7A2 2 0 1012 11 A2 2 0 1012 7 Z' },
+  { label: 'Площадки', desc: typo('Выбираем города, даты и залы под реальный спрос'), icon: 'M4 20V10L12 4L20 10V20H4Z M9 20V15H15V20' },
+  { label: 'Билеты', desc: typo('Заводим билетный стол и контролируем продажи'), icon: 'M3 8H21V16H3Z M9 8V10 M9 12V14 M14 8V10 M14 12V14' },
+  { label: 'Договоры', desc: typo('Закрываем юридический и финансовый контур'), icon: 'M6 4H14L18 8V20H6Z M14 4V8H18 M9 12H15 M9 15H13' },
+  { label: 'Реклама', desc: typo('Запускаем digital, наружку и локальные кампании'), icon: 'M3 12L15 6V18Z M15 10V14 M18 8V16' },
+  { label: typo('PR и медиа'), desc: typo('Подключаем СМИ, радио и инфопартнёров'), icon: 'M9 4H15V13H9Z M6 12A6 6 0 0018 12 M12 18V21' },
+  { label: 'Райдеры', desc: typo('Собираем технические и бытовые требования'), icon: 'M6 5H18V20H6Z M10 3H14V6H10Z M9 11H15 M9 14H14' },
+  { label: 'Логистика', desc: typo('Планируем перемещения, тайминги и сопровождение'), icon: 'M2 8H13V16H2Z M13 12H17L20 15V16H13Z M6 20A2 2 0 106 16 A2 2 0 106 20 Z M18 20A2 2 0 1018 16 A2 2 0 1018 20 Z' },
+  { label: 'Турменеджмент', desc: typo('Контролируем день события и работу на площадке'), icon: 'M12 3A6 6 0 0118 9C18 13 12 21 12 21C12 21 6 13 6 9A6 6 0 0112 3Z M12 7A2 2 0 1012 11 A2 2 0 1012 7 Z' },
 ];
 
 // 8 grid slots around the centre (row-major, centre skipped).
@@ -478,7 +479,7 @@ function SecondCall() {
       <div style={{ ...CALL_LABEL, color: PAPER }}>Второй звонок</div>
       <h2 style={{ ...SECTION_H2, margin: '20px 0 0', maxWidth: 900, color: PAPER }}>Запускаем механизм полного зала</h2>
       <p style={{ fontSize: 17, lineHeight: 1.55, color: 'rgba(255,255,255,0.78)', maxWidth: 720, margin: '18px 0 0' }}>
-        Площадки, билеты, договоры, реклама, PR, райдеры, логистика — каждая часть должна включиться вовремя. Собираем «под ключ», пока артист готовит шоу.
+        {typo("Площадки, билеты, договоры, реклама, PR, райдеры, логистика — каждая часть должна включиться вовремя. Собираем «под ключ», пока артист готовит шоу.")}
       </p>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginTop: 28, flexWrap: 'wrap' }}>
@@ -520,7 +521,7 @@ function SecondCall() {
           </svg>
         </div>
         <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.82)', letterSpacing: '0.02em', fontWeight: assembled ? 700 : 400 }}>
-          {assembled ? 'Механизм запущен.' : 'Тапни любой блок — соберём механизм.'}
+          {assembled ? 'Механизм запущен.' : typo('Тапни любой блок — соберём механизм.')}
         </span>
       </div>
 
@@ -842,7 +843,7 @@ function ThirdCall() {
   const texts = [
     { label: 'Двери закрываются.',       appear: [0.02, 0.10] as const, settle: [0.12, 0.20] as const, settleTop: 30 },
     { label: 'Зал заполнен.',            appear: [0.22, 0.30] as const, settle: [0.32, 0.40] as const, settleTop: 37 },
-    { label: 'Артист выходит на сцену.', appear: [0.42, 0.50] as const, settle: [0.52, 0.60] as const, settleTop: 44 },
+    { label: typo('Артист выходит на сцену.'), appear: [0.42, 0.50] as const, settle: [0.52, 0.60] as const, settleTop: 44 },
   ];
 
   const soldOutAppear = easeOut(range(progress, 0.62, 0.74));
@@ -962,7 +963,7 @@ function ThirdCall() {
             pointerEvents: 'none',
           }}
         >
-          Это единственная часть работы, которую видит зритель. Всё остальное уже произошло.
+          {typo("Это единственная часть работы, которую видит зритель. Всё остальное уже произошло.")}
         </p>
       </div>
     </div>
@@ -982,10 +983,10 @@ function AfterConcert() {
   return (
     <div style={{ background: NEAR_BLACK, color: '#F5F5F3', padding: `120px ${PAD_X}` }}>
       <h2 style={{ ...SECTION_H2, fontSize: 'clamp(28px, 4.4vw, 64px)', lineHeight: 1.08, maxWidth: 880 }}>
-        Пока зритель смотрит шоу, мы продолжаем работать
+        {typo("Пока зритель смотрит шоу, мы продолжаем работать")}
       </h2>
       <p style={{ fontSize: 19, color: MUTED_DARK, margin: '28px 0 0' }}>
-        Концерт не заканчивается аплодисментами. После него начинается:
+        {typo("Концерт не заканчивается аплодисментами. После него начинается:")}
       </p>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 44, maxWidth: 900 }}>
         {items.map((it) => (
@@ -1011,8 +1012,8 @@ function Cases() {
   const rows = [
     { name: 'Павел Воля', meta: 'организация туров' },
     { name: 'Ляйсан Утяшева', meta: 'Bolero, Carmen P.S.' },
-    { name: 'Егор Дружинин', meta: 'театральные постановки и мюзиклы' },
-    { name: 'Nelson, Максим Свобода, Кристина Кошелева', meta: 'и многие другие' },
+    { name: 'Егор Дружинин', meta: typo('театральные постановки и мюзиклы') },
+    { name: 'Nelson, Максим Свобода, Кристина Кошелева', meta: typo('и многие другие') },
   ];
   return (
     <div id="cases" style={{ padding: `120px ${PAD_X}`, scrollMarginTop: 24 }}>
@@ -1049,7 +1050,7 @@ function Numbers() {
     { value: 50, suffix: '+', label: 'городов' },
     { value: 3000000, suffix: '+', label: 'зрителей' },
     { value: 400000, suffix: '+', label: 'проданных билетов' },
-    { value: 23000, suffix: '', label: 'зрителей на одной площадке' },
+    { value: 23000, suffix: '', label: typo('зрителей на одной площадке') },
     { value: 95, suffix: '%', label: 'средняя заполняемость', hi: true },
   ];
 
@@ -1117,15 +1118,15 @@ function Numbers() {
 function WhyStay() {
   return (
     <div style={{ background: CREAM_LIGHT, padding: `120px ${PAD_X}` }}>
-      <h2 style={{ ...SECTION_H2, maxWidth: 920 }}>Почему артисты остаются с нами</h2>
+      <h2 style={{ ...SECTION_H2, maxWidth: 920 }}>{typo("Почему артисты остаются с нами")}</h2>
       <div className="sc-why-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, marginTop: 56, alignItems: 'start' }}>
         <p style={{ fontSize: 20, lineHeight: 1.65, color: MUTED_DEEP, margin: 0 }}>
-          Не потому что мы делаем концерты. Потому что мы снимаем с них всё, кроме сцены.
+          {typo("Не потому что мы делаем концерты. Потому что мы снимаем с них всё, кроме сцены.")}
         </p>
         <div>
-          <p style={{ fontSize: 17, color: '#777', margin: '0 0 20px' }}>Мы не просим артиста думать:</p>
+          <p style={{ fontSize: 17, color: '#777', margin: '0 0 20px' }}>{typo("Мы не просим артиста думать:")}</p>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {['о билетах', 'о договорах', 'о рекламе', 'о райдере'].map((t, i, arr) => (
+            {[typo('о билетах'), typo('о договорах'), typo('о рекламе'), typo('о райдере')].map((t, i, arr) => (
               <div
                 key={t}
                 style={{
@@ -1142,7 +1143,7 @@ function WhyStay() {
             ))}
           </div>
           <p style={{ fontSize: 20, fontWeight: 800, color: INK, margin: '28px 0 0' }}>
-            Мы просим только выйти на сцену.
+            {typo("Мы просим только выйти на сцену.")}
           </p>
         </div>
       </div>
@@ -1163,7 +1164,7 @@ function FinalCta() {
       >
         Давайте соберём следующий полный зал
       </h2>
-      <p style={{ fontSize: 19, color: MUTED_DARK, margin: '32px 0 0' }}>Расскажите о вашем шоу.</p>
+      <p style={{ fontSize: 19, color: MUTED_DARK, margin: '32px 0 0' }}>{typo("Расскажите о вашем шоу.")}</p>
       <div style={{ marginTop: 48 }}>
         <a
           href="mailto:hello@scenika.ru"

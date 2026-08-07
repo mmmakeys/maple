@@ -1,3 +1,4 @@
+import { deepTypo } from './typo';
 /**
  * Cases catalog + long-form case stories.
  *
@@ -37,7 +38,7 @@ export type CaseCard = {
   href?: string;
 };
 
-export const caseCards: CaseCard[] = [
+const caseCardsSrc: CaseCard[] = [
   {
     slug: 'pavel-volya',
     category: 'Концерты',
@@ -165,7 +166,7 @@ export type CaseStory = {
   roles?: Record<string, string>;
 };
 
-export const caseStories: Record<string, CaseStory> = {
+const caseStoriesSrc: Record<string, CaseStory> = {
   'pavel-volya': {
     slug: 'pavel-volya',
     category: 'Концерты · полный цикл',
@@ -477,3 +478,7 @@ export const caseStories: Record<string, CaseStory> = {
     },
   },
 };
+
+// ─── типографика применяется один раз при импорте ───
+export const caseCards = deepTypo(caseCardsSrc);
+export const caseStories = deepTypo(caseStoriesSrc);

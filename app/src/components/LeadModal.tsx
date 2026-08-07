@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { typo } from '../typo';
 import { DISPLAY, budgetOpts } from '../data';
 import {
   alpha,
@@ -212,7 +213,7 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
               Заявка отправлена
             </div>
             <p style={{ fontSize: 16, lineHeight: 1.55, color: ink600, margin: '0 auto', maxWidth: 380 }}>
-              Свяжемся с вами в ближайшее время и предложим индивидуальное решение.
+              {typo("Свяжемся с вами в ближайшее время и предложим индивидуальное решение.")}
             </p>
             <button
               onClick={onClose}

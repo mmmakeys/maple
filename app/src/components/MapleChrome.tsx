@@ -5,6 +5,7 @@
  */
 import { DISPLAY } from '../data';
 import { ink100, ink400, ink850, ink900, paper, violet400, violet500 } from '../tokens';
+import { typo } from '../typo';
 
 const mark = (
   <svg viewBox="0 0 40 40" width="30" height="30" style={{ display: 'block' }} aria-label="Maple">
@@ -89,7 +90,7 @@ export function MapleFooter() {
         <a href="/" style={{ fontFamily: DISPLAY, fontSize: 16, color: ink100, fontWeight: 200, textDecoration: 'none' }}>
           МЭПЛ
         </a>
-        <span>© 2026 · Растим проекты, а не отчёты</span>
+        <span>{typo("© 2026 · Растим проекты, а не отчёты")}</span>
       </div>
     </div>
   );

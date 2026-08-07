@@ -1,3 +1,4 @@
+import { deepTypo } from './typo';
 export type CV = {
   about: string;
   exp: string[];
@@ -15,10 +16,10 @@ export type Member = {
 
 export const DISPLAY = "var(--mm-display, 'Manrope')";
 
-export const marqueeText =
+const marqueeTextSrc =
   'МАРКЕТИНГ ✦ E-COMMERCE ✦ КОНТЕНТ & SMM ✦ ДИЗАЙН ✦ PR ✦ АВТОМАТИЗАЦИЯ';
 
-export const whyCards = [
+const whyCardsSrc = [
   {
     n: '01',
     t: 'Без отчётов ради отчётов',
@@ -50,7 +51,7 @@ export const whyCards = [
   },
 ];
 
-export const services = [
+const servicesSrc = [
   {
     n: '01',
     t: 'Маркетинг и рост',
@@ -83,7 +84,7 @@ export const services = [
   },
 ];
 
-export const processSteps = [
+const processStepsSrc = [
   {
     t: 'Разбираемся',
     d: 'Смотрим на бизнес, цифры и окружающую реальность',
@@ -110,7 +111,7 @@ export const processSteps = [
   },
 ];
 
-export const roles = [
+const rolesSrc = [
   'бизнес-анализ',
   'автоматизация',
   'аналитика',
@@ -124,7 +125,7 @@ export const roles = [
   'стратегия развития',
 ];
 
-export const team: Member[] = [
+const teamSrc: Member[] = [
   {
     name: 'Михаил Томчук',
     role: 'Стратегия развития продукта, финансы',
@@ -227,9 +228,18 @@ export const team: Member[] = [
   },
 ];
 
-export const budgetOpts = [
+const budgetOptsSrc = [
   'до 300 000 ₽',
   '300–700 тыс ₽',
   '700 тыс – 1,5 млн ₽',
   'более 1,5 млн ₽',
 ];
+
+// ─── типографика применяется один раз при импорте ───
+export const marqueeText = deepTypo(marqueeTextSrc);
+export const whyCards = deepTypo(whyCardsSrc);
+export const services = deepTypo(servicesSrc);
+export const processSteps = deepTypo(processStepsSrc);
+export const roles = deepTypo(rolesSrc);
+export const team = deepTypo(teamSrc);
+export const budgetOpts = deepTypo(budgetOptsSrc);

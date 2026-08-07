@@ -1,4 +1,5 @@
 import { Suspense, lazy, useEffect, useMemo, useState } from 'react';
+import { typo } from '../typo';
 import { DISPLAY } from '../data';
 import {
   alpha,
@@ -81,13 +82,12 @@ export default function CasesIndex() {
             Портфолио
           </span>
           <h1 style={{ ...heading, fontSize: 'clamp(44px, 8vw, 92px)', lineHeight: 0.94 }}>
-            Что мы уже
+            {typo("Что мы уже")}
             <br />
             <span style={{ color: violet400 }}>сделали</span>
           </h1>
           <p style={{ fontSize: 'clamp(17px,2vw,20px)', lineHeight: 1.55, color: ink400, maxWidth: 560, margin: '24px 0 0' }}>
-            Проекты, где маркетинг, PR, продажи и продакшн собраны в одну систему и доведены до результата. Раздел
-            пополняется — здесь только то, что уже случилось.
+            {typo("Проекты, где маркетинг, PR, продажи и продакшн собраны в одну систему и доведены до результата. Раздел пополняется — здесь только то, что уже случилось.")}
           </p>
         </div>
       </div>
@@ -141,7 +141,7 @@ export default function CasesIndex() {
                 Скоро тут будет больше
               </div>
               <p style={{ fontSize: 16, color: ink600, margin: '10px 0 0', maxWidth: 460, lineHeight: 1.5 }}>
-                Готовим к публикации ещё несколько проектов. Хотите оказаться среди них?
+                {typo("Готовим к публикации ещё несколько проектов. Хотите оказаться среди них?")}
               </p>
             </div>
             <a
