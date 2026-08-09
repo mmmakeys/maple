@@ -30,15 +30,24 @@ const heading: React.CSSProperties = {
   margin: 0,
 };
 
-// Metric values range from "3" to "ROI >100%" — step the display size down as
-// the string grows so long values don't wrap into the neighbouring column.
-const metricSize = (v: string): string =>
-  v.length > 11 ? 'clamp(26px,3.4vw,40px)' : v.length > 6 ? 'clamp(32px,4.6vw,54px)' : 'clamp(40px,6vw,72px)';
+// Все метрики набираются одним кеглем. Подгонять размер под длину строки
+// нельзя: тогда иерархия начинает сообщать длину значения вместо его веса,
+// и самая короткая цифра выглядит самой важной.
+const METRIC_SIZE = 'clamp(34px,4.6vw,56px)';
 
 const sectionTitle: React.CSSProperties = {
   ...heading,
-  fontSize: 'clamp(26px,4vw,40px)',
+  fontSize: 'clamp(28px,4.6vw,46px)',
   lineHeight: 1.02,
+};
+
+// Вспомогательные разделы — доказательства и приложения к аргументу.
+// Отдельная ступень нужна, чтобы «Результаты» и «СМИ о проекте» не выглядели
+// одинаково важными: иначе при скролле непонятно, где закончилась одна тема.
+const sectionTitleSm: React.CSSProperties = {
+  ...heading,
+  fontSize: 'clamp(21px,2.9vw,30px)',
+  lineHeight: 1.05,
 };
 
 export default function CaseStory({ slug }: { slug: string }) {
@@ -57,21 +66,51 @@ export default function CaseStory({ slug }: { slug: string }) {
     setLeadOpen(true);
   };
 
+  // Какой раздел сейчас на экране. Оглавление липкое, поэтому подсветка —
+  // единственный индикатор положения на странице длиной в полтора десятка экранов.
+  const [activeId, setActiveId] = useState<string | null>(null);
+
   const shots = story?.gallery ?? [];
+  const lightboxRef = useRef<HTMLDivElement>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
   useEffect(() => {
     if (shot === null) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setShot(null);
       if (e.key === 'ArrowRight') setShot((i) => (i === null ? i : (i + 1) % shots.length));
       if (e.key === 'ArrowLeft') setShot((i) => (i === null ? i : (i - 1 + shots.length) % shots.length));
+      if (e.key !== 'Tab') return;
+      // Замыкаем табуляцию внутри оверлея: без этого aria-modal="true" врёт
+      // скринридеру, а пользователь клавиатуры уезжает читать скрытую страницу.
+      const focusable = lightboxRef.current?.querySelectorAll<HTMLElement>('button, [href]');
+      if (!focusable || focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener('keydown', onKey);
     // Keep the page behind the overlay from scrolling away under it.
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    // Фон убираем из дерева доступности и из порядка табуляции.
+    // Глушим именно контент, а не #root: оверлей лежит внутри того же корня
+    // и от inert на корне выключился бы вместе с фоном.
+    const shielded = [...document.querySelectorAll('header, main, footer')];
+    shielded.forEach((n) => n.setAttribute('inert', ''));
+    openerRef.current = document.activeElement as HTMLElement | null;
+    lightboxRef.current?.querySelector<HTMLElement>('button')?.focus();
     return () => {
       window.removeEventListener('keydown', onKey);
       document.body.style.overflow = prev;
+      shielded.forEach((n) => n.removeAttribute('inert'));
+      // Возвращаем фокус на плитку, с которой открыли, а не в начало страницы.
+      openerRef.current?.focus();
     };
   }, [shot, shots.length]);
 
@@ -86,13 +125,25 @@ export default function CaseStory({ slug }: { slug: string }) {
     };
     openIfTargeted();
     window.addEventListener('hashchange', openIfTargeted);
-    return () => window.removeEventListener('hashchange', openIfTargeted);
+    // Повторный клик по чипу «Платформа» не меняет хеш, поэтому hashchange
+    // молчит — и пользователь, свернувший блок вручную, прокручивается к
+    // закрытой крышке. Слушаем сам клик по ссылке.
+    const onAnchorClick = (e: MouseEvent) => {
+      const link = (e.target as HTMLElement | null)?.closest?.('a[href="#platform"]');
+      if (link && platformRef.current) platformRef.current.open = true;
+    };
+    document.addEventListener('click', onAnchorClick);
+    return () => {
+      window.removeEventListener('hashchange', openIfTargeted);
+      document.removeEventListener('click', onAnchorClick);
+    };
   }, []);
 
   if (!story) {
     return (
       <div style={{ background: paper, color: ink850, minHeight: '100vh' }}>
         <MapleNav onLead={openLead} />
+        <main>
         <div style={{ ...chromeCol, padding: `clamp(80px,12vw,140px) ${chromePad}`, textAlign: 'center' }}>
           <h1 style={{ ...heading, fontSize: 'clamp(32px,6vw,60px)' }}>Кейс не найден</h1>
           <p style={{ fontSize: 18, color: ink600, margin: '18px 0 30px' }}>
@@ -105,12 +156,15 @@ export default function CaseStory({ slug }: { slug: string }) {
             {typo("Все кейсы ")}<span className="mm-arrow" aria-hidden>→</span>
           </a>
         </div>
-        <MapleFooter />
+        </main>
+      <MapleFooter />
       </div>
     );
   }
 
-  const relevant = team.filter((m) => story.team.includes(m.name));
+  const relevant = story.team
+    .map((name) => team.find((m) => m.name === name))
+    .filter((m): m is (typeof team)[number] => Boolean(m));
 
   // Anchor nav — only lists sections this story actually renders.
   const toc = [
@@ -126,9 +180,30 @@ export default function CaseStory({ slug }: { slug: string }) {
     { id: 'team', label: 'Команда', on: relevant.length > 0 },
   ].filter((t) => t.on);
 
+  const tocIds = toc.map((t) => t.id).join(',');
+  useEffect(() => {
+    const ids = tocIds ? tocIds.split(',') : [];
+    const nodes = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+    if (nodes.length === 0) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting);
+        if (visible.length === 0) return;
+        // Верхняя из видимых секций и есть та, которую читают.
+        const top = visible.reduce((a, b) => (a.boundingClientRect.top < b.boundingClientRect.top ? a : b));
+        setActiveId(top.target.id);
+      },
+      { rootMargin: '-20% 0px -70% 0px', threshold: 0 },
+    );
+    nodes.forEach((n) => io.observe(n));
+    return () => io.disconnect();
+  }, [tocIds]);
+
+
   return (
     <div style={{ background: paper, color: ink850, overflowX: 'hidden' }}>
       <MapleNav onLead={openLead} />
+      <main>
 
       {/* ── hero — the cover fills the band, text sits on a scrim over it ── */}
       <div style={{ background: ink900, color: ink100, position: 'relative', overflow: 'hidden' }}>
@@ -139,7 +214,19 @@ export default function CaseStory({ slug }: { slug: string }) {
         />
         <div aria-hidden className="mm-case-hero-scrim" />
         <div style={{ ...chromeCol, padding: `clamp(26px,4vw,40px) ${chromePad} 0`, position: 'relative', zIndex: 1 }}>
-          <a href="/cases" className="mm-case-back" style={{ color: ink400, textDecoration: 'none', fontSize: 15, fontWeight: 600 }}>
+          <a
+            href="/cases"
+            className="mm-case-back"
+            style={{
+              color: ink400,
+              textDecoration: 'none',
+              fontSize: 15,
+              fontWeight: 600,
+              display: 'inline-flex',
+              alignItems: 'center',
+              minHeight: 44,
+            }}
+          >
             {typo("← Все кейсы")}
           </a>
         </div>
@@ -176,7 +263,6 @@ export default function CaseStory({ slug }: { slug: string }) {
                     padding: '7px 14px',
                     fontSize: 13,
                     fontWeight: 600,
-                    backdropFilter: 'blur(6px)',
                   }}
                 >
                   {t}
@@ -202,11 +288,25 @@ export default function CaseStory({ slug }: { slug: string }) {
 
       {/* ── table of contents ── */}
       {toc.length > 2 && (
-        <nav aria-label="Разделы кейса" style={{ background: paper, borderBottom: `1px solid ${violet50}` }}>
+        <nav
+          aria-label="Разделы кейса"
+          style={{
+            background: paper,
+            borderBottom: `1px solid ${violet50}`,
+            position: 'sticky',
+            top: 0,
+            zIndex: 20,
+          }}
+        >
           <div style={{ ...chromeCol, padding: `clamp(20px,2.6vw,26px) ${chromePad}` }}>
             <div className="mm-case-toc">
               {toc.map((t) => (
-                <a key={t.id} href={`#${t.id}`} className="mm-case-toc-link">
+                <a
+                  key={t.id}
+                  href={`#${t.id}`}
+                  className="mm-case-toc-link"
+                  aria-current={activeId === t.id ? 'true' : undefined}
+                >
                   {t.label}
                 </a>
               ))}
@@ -216,7 +316,7 @@ export default function CaseStory({ slug }: { slug: string }) {
       )}
 
       {/* ── task ── */}
-      <div id="task" style={{ background: paper, scrollMarginTop: 20 }}>
+      <section id="task" style={{ background: paper, scrollMarginTop: 20 }}>
         <div style={{ ...chromeCol, padding: `clamp(64px,8vw,96px) ${chromePad} clamp(28px,4vw,40px)` }}>
           <h2 style={{ ...sectionTitle, marginBottom: 18 }}>Задача</h2>
           <p style={{ fontSize: 'clamp(18px,2.1vw,22px)', lineHeight: 1.6, color: ink700, margin: 0 }}>{story.task}</p>
@@ -242,13 +342,13 @@ export default function CaseStory({ slug }: { slug: string }) {
             </div>
           )}
         </div>
-      </div>
+      </section>
 
       {/* ── point A → point B ── */}
       {story.shift && (
-        <div id="shift" style={{ background: paper, scrollMarginTop: 20 }}>
+        <section id="shift" style={{ background: paper, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(28px,4vw,40px) ${chromePad} clamp(56px,7vw,80px)` }}>
-            <h2 style={{ ...sectionTitle, marginBottom: 'clamp(24px,3.4vw,34px)' }}>
+            <h2 style={{ ...sectionTitleSm, marginBottom: 'clamp(24px,3.4vw,34px)' }}>
               {typo("Точка А → ")}<span style={{ color: violet500 }}>точка Б</span>
             </h2>
             <div className="mm-case-shift">
@@ -270,24 +370,23 @@ export default function CaseStory({ slug }: { slug: string }) {
               ))}
             </div>
           </div>
-        </div>
+        </section>
       )}
 
       {/* ── what we built ── */}
-      <div id="build" style={{ background: paper, scrollMarginTop: 20 }}>
+      <section id="build" style={{ background: paper, scrollMarginTop: 20 }}>
         <div style={{ ...chromeCol, padding: `clamp(28px,4vw,40px) ${chromePad} clamp(56px,7vw,80px)` }}>
           <h2 style={{ ...sectionTitle, marginBottom: 'clamp(28px,4vw,44px)' }}>
             {typo("Что мы ")}<span style={{ color: violet500 }}>собрали</span>
           </h2>
           <div className="mm-case-build">
-            {story.build.map((b, i) => (
+            {story.build.map((b) => (
               <div key={b.t} className="mm-case-build-item" style={{ background: violet50, borderRadius: 18, padding: 'clamp(24px,3vw,32px)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 18 }}>
-                  <span style={{ fontFamily: DISPLAY, fontSize: 30, fontWeight: 600, color: violet500, lineHeight: 1 }}>
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  {b.kind && <span className="mm-case-kind">{b.kind}</span>}
-                </div>
+                {b.kind && (
+                  <div style={{ marginBottom: 16 }}>
+                    <span className="mm-case-kind">{b.kind}</span>
+                  </div>
+                )}
                 <div style={{ fontSize: 19, fontWeight: 800, lineHeight: 1.25, marginBottom: 10 }}>{b.t}</div>
                 <div style={{ fontSize: 15.5, lineHeight: 1.55, color: ink600 }}>{b.d}</div>
                 {b.was && b.now && (
@@ -301,17 +400,17 @@ export default function CaseStory({ slug }: { slug: string }) {
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
       {/* ── platform architecture ── */}
       {story.stack && (
-        <div id="platform" style={{ background: violet50, scrollMarginTop: 20 }}>
+        <section id="platform" style={{ background: violet50, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(56px,7vw,84px) ${chromePad}` }}>
             {/* Technical detail — folded away by default; the anchor nav opens it. */}
             <details ref={platformRef} className="mm-case-spoiler">
               <summary className="mm-case-spoiler-head">
                 <span>
-                  <h2 style={{ ...sectionTitle, marginBottom: 14 }}>
+                  <h2 style={{ ...sectionTitleSm, marginBottom: 14 }}>
                     {typo("Как устроена ")}<span style={{ color: violet500 }}>платформа</span>
                   </h2>
                   <span style={{ display: 'block', fontSize: 17, lineHeight: 1.55, color: ink700, maxWidth: 620 }}>
@@ -412,7 +511,7 @@ export default function CaseStory({ slug }: { slug: string }) {
             {/* order lifecycle */}
             {story.flow && (
               <div style={{ marginTop: 'clamp(34px,4vw,48px)' }}>
-                <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: violet600, marginBottom: 16 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: '0.01em', color: violet600, marginBottom: 16 }}>
                   Жизненный цикл заказа
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
@@ -444,20 +543,20 @@ export default function CaseStory({ slug }: { slug: string }) {
               </div>
             </details>
           </div>
-        </div>
+        </section>
       )}
 
       {/* ── timeline ── */}
       {story.phases && (
-        <div id="timeline" style={{ background: paper, scrollMarginTop: 20 }}>
+        <section id="timeline" style={{ background: paper, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(56px,7vw,84px) ${chromePad}` }}>
-            <h2 style={{ ...sectionTitle, marginBottom: 'clamp(28px,4vw,44px)' }}>
+            <h2 style={{ ...sectionTitleSm, marginBottom: 'clamp(28px,4vw,44px)' }}>
               {typo("Как шёл ")}<span style={{ color: violet500 }}>проект</span>
             </h2>
             <div className="mm-case-phases">
               {story.phases.map((p) => (
                 <div key={p.t} className="mm-case-phase">
-                  <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase', color: violet600 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: '0.01em', color: violet600 }}>
                     {p.when}
                   </div>
                   <div style={{ fontSize: 19, fontWeight: 800, lineHeight: 1.25, margin: '10px 0 8px' }}>{p.t}</div>
@@ -466,14 +565,14 @@ export default function CaseStory({ slug }: { slug: string }) {
               ))}
             </div>
           </div>
-        </div>
+        </section>
       )}
 
       {/* ── marketplace channels ── */}
       {story.channels && (
-        <div id="channels" style={{ background: violet50, scrollMarginTop: 20 }}>
+        <section id="channels" style={{ background: violet50, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(56px,7vw,84px) ${chromePad}` }}>
-            <h2 style={{ ...sectionTitle, marginBottom: 14 }}>{story.channels.title}</h2>
+            <h2 style={{ ...sectionTitleSm, marginBottom: 14 }}>{story.channels.title}</h2>
             <p style={{ fontSize: 17, lineHeight: 1.6, color: ink700, margin: '0 0 clamp(26px,3.4vw,36px)', maxWidth: 700 }}>
               {story.channels.note}
             </p>
@@ -502,11 +601,11 @@ export default function CaseStory({ slug }: { slug: string }) {
               ))}
             </div>
           </div>
-        </div>
+        </section>
       )}
 
       {/* ── results (dark) ── */}
-      <div id="results" style={{ background: ink900, color: ink100, scrollMarginTop: 20 }}>
+      <section id="results" style={{ background: ink900, color: ink100, scrollMarginTop: 20 }}>
         <div style={{ ...chromeCol, padding: `clamp(64px,8vw,96px) ${chromePad}` }}>
           <h2 style={{ ...sectionTitle, color: ink100, marginBottom: 'clamp(32px,4vw,48px)' }}>
             Результаты
@@ -514,13 +613,19 @@ export default function CaseStory({ slug }: { slug: string }) {
           <div className="mm-case-results">
             {story.results.map((r) => (
               <div key={r.l} className="mm-case-result" style={{ borderTop: `2px solid ${alpha('violet400', 0.4)}`, paddingTop: 22 }}>
-                <div style={{ fontFamily: DISPLAY, fontSize: metricSize(r.v), fontWeight: 600, color: violet400, lineHeight: 0.95 }}>
+                <div style={{ fontFamily: DISPLAY, fontSize: METRIC_SIZE, fontWeight: 600, color: violet400, lineHeight: 0.95 }}>
                   {r.v}
                 </div>
                 <div style={{ fontSize: 16, color: ink400, marginTop: 14, lineHeight: 1.4 }}>{r.l}</div>
               </div>
             ))}
           </div>
+
+          {story.resultsNote && (
+            <p style={{ fontSize: 15, color: ink500, margin: 'clamp(24px,3vw,32px) 0 0', maxWidth: 620 }}>
+              {typo(story.resultsNote)}
+            </p>
+          )}
 
           {/* pull quote */}
           <figure style={{ marginTop: 'clamp(48px,6vw,72px)', maxWidth: 860, marginInline: 0 }}>
@@ -546,13 +651,30 @@ export default function CaseStory({ slug }: { slug: string }) {
             </figcaption>
           </figure>
         </div>
-      </div>
+      </section>
+
+      {/* ── epilogue: чем закончился проект ──
+           Стоит сразу после результатов, а не перед призывом в самом низу:
+           «магазины закрыты» через два экрана от «хотите так же» создаёт
+           ровно тот вопрос, которого стоит избегать. */}
+      {story.epilogue && (
+        <div style={{ background: paper }}>
+          <div style={{ ...chromeCol, padding: `clamp(56px,7vw,80px) ${chromePad}` }}>
+            <h2 style={{ ...sectionTitle, marginBottom: 'clamp(18px,2.4vw,24px)' }}>
+              {typo(story.epilogue.t)}
+            </h2>
+            <p style={{ fontSize: 17.5, lineHeight: 1.6, color: ink700, margin: 0, maxWidth: 760 }}>
+              {typo(story.epilogue.d)}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* ── promo film ── */}
       {story.film && (
-        <div id="film" style={{ background: paper, scrollMarginTop: 20 }}>
+        <section id="film" style={{ background: paper, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(64px,8vw,96px) ${chromePad} clamp(56px,7vw,80px)` }}>
-            <h2 style={{ ...sectionTitle, marginBottom: 14 }}>
+            <h2 style={{ ...sectionTitleSm, marginBottom: 14 }}>
               Ролик и <span style={{ color: violet500 }}>своя музыка</span>
             </h2>
             <p style={{ fontSize: 17, lineHeight: 1.6, color: ink700, margin: '0 0 clamp(24px,3vw,34px)', maxWidth: 680 }}>
@@ -600,14 +722,14 @@ export default function CaseStory({ slug }: { slug: string }) {
               </div>
             )}
           </div>
-        </div>
+        </section>
       )}
 
       {/* ── gallery: collage, click opens the lightbox ── */}
       {story.gallery && (
-        <div id="gallery" style={{ background: paper, scrollMarginTop: 20 }}>
+        <section id="gallery" style={{ background: paper, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(56px,7vw,80px) ${chromePad} clamp(56px,7vw,80px)` }}>
-            <h2 style={{ ...sectionTitle, marginBottom: 14 }}>
+            <h2 style={{ ...sectionTitleSm, marginBottom: 14 }}>
               {typo("Как это ")}<span style={{ color: violet500 }}>выглядело</span>
             </h2>
             <p style={{ fontSize: 16, lineHeight: 1.55, color: ink600, margin: '0 0 clamp(24px,3vw,32px)' }}>
@@ -627,31 +749,35 @@ export default function CaseStory({ slug }: { slug: string }) {
               ))}
             </div>
           </div>
+        </section>
+      )}
+
+      {/* ── highlights ──
+           Секция опциональна: когда работа уже описана в build, пересказ тех же
+           фактов другими словами читается как объём вместо содержания. */}
+      {story.highlights && (
+        <div style={{ background: paper }}>
+          <div style={{ ...chromeCol, padding: `clamp(64px,8vw,96px) ${chromePad}` }}>
+            <h2 style={{ ...sectionTitleSm, marginBottom: 'clamp(32px,4vw,48px)' }}>
+              {typo("Моменты, которыми ")}<span style={{ color: violet500 }}>гордимся</span>
+            </h2>
+            <div className="mm-case-highlights">
+              {story.highlights.map((h) => (
+                <div key={h.t} className="mm-case-highlight" style={{ borderTop: `2px solid ${violet50}`, paddingTop: 22 }}>
+                  <div style={{ fontSize: 20, fontWeight: 800, lineHeight: 1.25, marginBottom: 10 }}>{h.t}</div>
+                  <div style={{ fontSize: 16, lineHeight: 1.6, color: ink700 }}>{h.d}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
-      {/* ── highlights ── */}
-      <div style={{ background: paper }}>
-        <div style={{ ...chromeCol, padding: `clamp(64px,8vw,96px) ${chromePad}` }}>
-          <h2 style={{ ...sectionTitle, marginBottom: 'clamp(32px,4vw,48px)' }}>
-            Моменты, которыми <span style={{ color: violet500 }}>гордимся</span>
-          </h2>
-          <div className="mm-case-highlights">
-            {story.highlights.map((h) => (
-              <div key={h.t} className="mm-case-highlight" style={{ borderTop: `2px solid ${violet50}`, paddingTop: 22 }}>
-                <div style={{ fontSize: 20, fontWeight: 800, lineHeight: 1.25, marginBottom: 10 }}>{h.t}</div>
-                <div style={{ fontSize: 16, lineHeight: 1.6, color: ink700 }}>{h.d}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* ── press coverage ── */}
       {story.press && (
-        <div id="press" style={{ background: violet50, scrollMarginTop: 20 }}>
+        <section id="press" style={{ background: violet50, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(60px,7vw,88px) ${chromePad}` }}>
-            <h2 style={{ ...sectionTitle, marginBottom: 14 }}>
+            <h2 style={{ ...sectionTitleSm, marginBottom: 14 }}>
               СМИ о <span style={{ color: violet500 }}>проекте</span>
             </h2>
             <p style={{ fontSize: 17, lineHeight: 1.6, color: ink700, margin: '0 0 clamp(26px,3.4vw,36px)', maxWidth: 660 }}>
@@ -676,7 +802,7 @@ export default function CaseStory({ slug }: { slug: string }) {
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12 }}>
-                    <span style={{ fontSize: 12.5, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: violet600 }}>
+                    <span style={{ fontSize: 13.5, fontWeight: 700, letterSpacing: '0.01em', color: violet600 }}>
                       {p.outlet}
                     </span>
                     <span style={{ fontSize: 12.5, color: ink600, whiteSpace: 'nowrap' }}>{p.date}</span>
@@ -689,28 +815,12 @@ export default function CaseStory({ slug }: { slug: string }) {
               ))}
             </div>
           </div>
-        </div>
-      )}
-
-      {/* ── epilogue: what happened to the project ── */}
-      {story.epilogue && (
-        <div style={{ background: paper }}>
-          <div style={{ ...chromeCol, padding: `clamp(40px,5vw,60px) ${chromePad}` }}>
-            <div style={{ borderTop: `1px solid ${violet50}`, paddingTop: 'clamp(24px,3vw,32px)', maxWidth: 760 }}>
-              <div style={{ fontSize: 12.5, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: ink600, marginBottom: 12 }}>
-                {story.epilogue.t}
-              </div>
-              <p style={{ fontSize: 15.5, lineHeight: 1.65, color: ink600, margin: 0 }}>
-                {story.epilogue.d}
-              </p>
-            </div>
-          </div>
-        </div>
+        </section>
       )}
 
       {/* ── team on the project ── */}
       {relevant.length > 0 && (
-        <div id="team" style={{ background: ink900, color: ink100, scrollMarginTop: 20 }}>
+        <section id="team" style={{ background: ink900, color: ink100, scrollMarginTop: 20 }}>
           <div style={{ ...chromeCol, padding: `clamp(60px,7vw,88px) ${chromePad}` }}>
             <h2 style={{ ...sectionTitle, color: ink100, marginBottom: 'clamp(28px,4vw,42px)' }}>
               Кто вёл проект
@@ -736,7 +846,7 @@ export default function CaseStory({ slug }: { slug: string }) {
               ))}
             </div>
           </div>
-        </div>
+        </section>
       )}
 
       {/* ── CTA ── */}
@@ -770,9 +880,9 @@ export default function CaseStory({ slug }: { slug: string }) {
         >
           <div style={{ maxWidth: 720 }}>
             <h2 style={{ ...heading, fontSize: 'clamp(30px,5vw,52px)', lineHeight: 1.02, marginBottom: 18 }}>
-              Хотите такой же
+              {typo("Соберём такое же ")}
               <br />
-              <span style={{ color: violet400 }}>результат?</span>
+              <span style={{ color: violet400 }}>{typo("под вашу задачу")}</span>
             </h2>
             <p style={{ fontSize: 18, lineHeight: 1.55, color: ink400, margin: 0, maxWidth: 560 }}>
               {typo("Расскажите о задаче — соберём систему под ваш проект и доведём до роста.")}
@@ -799,10 +909,12 @@ export default function CaseStory({ slug }: { slug: string }) {
         </div>
       </div>
 
+      </main>
       <MapleFooter />
 
       {shot !== null && shots[shot] && (
         <div
+          ref={lightboxRef}
           className="mm-case-lightbox"
           role="dialog"
           aria-modal="true"
@@ -849,10 +961,9 @@ export default function CaseStory({ slug }: { slug: string }) {
 
 const catChip: React.CSSProperties = {
   display: 'inline-block',
-  fontSize: 13,
-  fontWeight: 400,
-  letterSpacing: '0.14em',
-  textTransform: 'uppercase',
+  fontSize: 13.5,
+  fontWeight: 500,
+  letterSpacing: '0.01em',
   color: violet400,
   border: `1px solid ${violet400}`,
   padding: '8px 16px',

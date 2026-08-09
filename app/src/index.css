@@ -356,7 +356,11 @@ html {
   font-weight: 600;
 }
 .mm-nav-links .mm-nav-anchor {
-  display: inline;
+  /* Тач-цель: ссылка в 19px по высоте промахивается пальцем. Визуальный
+     размер текста не меняем, растим только область нажатия. */
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 
 /* Kicker → title → copy-row live in a flex column with a single fluid gap,
@@ -895,24 +899,9 @@ html {
 }
 
 /* ---- case story: gallery ---- */
-.mm-case-gallery {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: clamp(20px, 3vw, 32px);
-}
 /* first shot spans full width — it is the hero screenshot */
-.mm-case-gallery .mm-case-shot:first-child {
-  grid-column: 1 / -1;
-}
 /* Fixed ratios keep the grid even regardless of the source image's own
    proportions, so swapping a placeholder for a real photo can't shift rows. */
-.mm-case-gallery .mm-case-shot img {
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-}
-.mm-case-gallery .mm-case-shot:first-child img {
-  aspect-ratio: 16 / 9;
-}
 
 @media (max-width: 1023px) {
   .mm-case-phases {
@@ -920,8 +909,7 @@ html {
   }
 }
 @media (max-width: 640px) {
-  .mm-case-phases,
-  .mm-case-gallery {
+  .mm-case-phases {
     grid-template-columns: 1fr;
   }
 }
@@ -1019,11 +1007,20 @@ html {
   color: #56505f;
   background: #f3eefc;
   border-radius: 999px;
-  padding: 9px 16px;
+  padding: 12px 18px;
   font-size: 14px;
   font-weight: 700;
   white-space: nowrap;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
   transition: background 0.18s ease, color 0.18s ease;
+}
+/* Текущий раздел. На странице в полтора десятка экранов это единственный
+   индикатор положения — без него липкое оглавление бесполезно. */
+.mm-case-toc-link[aria-current='true'] {
+  background: var(--violet-600);
+  color: #fff;
 }
 @media (hover: hover) and (pointer: fine) {
   .mm-case-toc-link:hover {
@@ -1039,6 +1036,11 @@ html {
     overflow-x: auto;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
+    /* Скроллбар скрыт намеренно, поэтому обрыв у правого края должен читаться
+       сам: без маски видно 3 чипа из 10 и ничто не намекает, что есть ещё. */
+    -webkit-mask-image: linear-gradient(90deg, #000 84%, transparent 100%);
+    mask-image: linear-gradient(90deg, #000 84%, transparent 100%);
+    padding-right: 24px;
   }
   .mm-case-toc::-webkit-scrollbar {
     display: none;
@@ -1087,10 +1089,9 @@ html {
   color: #fff;
   border-radius: 999px;
   padding: 5px 12px;
-  font-size: 11.5px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   line-height: 1.25;
 }
 
@@ -1124,10 +1125,9 @@ html {
   grid-template-columns: 1fr 44px 1fr;
   gap: clamp(12px, 2vw, 22px);
   margin-bottom: 12px;
-  font-size: 12.5px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   color: #6b6577;
 }
 .mm-case-shift-labels span:last-child {
@@ -1435,6 +1435,14 @@ html {
    помогают понять, что произошло, и остаются. Уезжает именно перемещение —
    оно и вызывает укачивание, особенно на scroll-driven секциях. */
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .mm-case-tile:hover,
+  .mm-case-partner:hover,
+  .mm-case-toc-link:hover {
+    transform: none;
+  }
   .mm-case-card,
   .mm-case-cover,
   .mm-case-tile img,

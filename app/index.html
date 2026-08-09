@@ -28,7 +28,11 @@
         font-family: 'Russo One', 'Manrope', sans-serif;
         transition: opacity .3s cubic-bezier(0.23, 1, 0.32, 1);
       }
+      /* Прелоадер уезжает, но три его анимации продолжают крутиться в фоне:
+         Web Animations API их не останавливает, а элемент до удаления из DOM
+         живёт ещё треть секунды. Гасим явно. */
       #mm-loader.mm-loader--out { opacity: 0; pointer-events: none; }
+      #mm-loader.mm-loader--out * { animation: none !important; }
       .mm-loader__glow {
         position: absolute;
         width: 480px;

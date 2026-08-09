@@ -35,7 +35,7 @@ const col: React.CSSProperties = {
 
 export function MapleNav({ onLead }: { onLead: (e: React.MouseEvent) => void }) {
   return (
-    <div style={{ background: ink900, color: ink100 }}>
+    <header style={{ background: ink900, color: ink100 }}>
       <div
         style={{
           ...col,
@@ -45,7 +45,7 @@ export function MapleNav({ onLead }: { onLead: (e: React.MouseEvent) => void }) 
           justifyContent: 'space-between',
         }}
       >
-        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 11, textDecoration: 'none', color: ink100 }}>
+        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 11, textDecoration: 'none', color: ink100, minHeight: 44 }}>
           {mark}
           <span style={{ fontFamily: DISPLAY, fontSize: 20, fontWeight: 600, letterSpacing: '0.02em' }}>МЭПЛ</span>
         </a>
@@ -66,33 +66,48 @@ export function MapleNav({ onLead }: { onLead: (e: React.MouseEvent) => void }) 
               textDecoration: 'none',
               color: ink900,
               background: violet400,
-              padding: '11px 20px',
+              padding: '13px 20px',
               borderRadius: 8,
               fontWeight: 800,
               cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              minHeight: 44,
             }}
           >
             Обсудить проект
           </a>
         </div>
       </div>
-    </div>
+    </header>
   );
 }
 
 export function MapleFooter() {
   return (
-    <div style={{ background: ink850, color: 'rgba(244,240,251,0.6)' }}>
+    <footer style={{ background: ink850, color: 'rgba(244,240,251,0.6)' }}>
       <div
         className="mm-footer-row"
         style={{ ...col, padding: '32px clamp(20px,4vw,56px)' }}
       >
-        <a href="/" style={{ fontFamily: DISPLAY, fontSize: 16, color: ink100, fontWeight: 200, textDecoration: 'none' }}>
+        <a
+          href="/"
+          style={{
+            fontFamily: DISPLAY,
+            fontSize: 16,
+            color: ink100,
+            fontWeight: 200,
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            minHeight: 44,
+          }}
+        >
           МЭПЛ
         </a>
         <span>{typo("© 2026 · Растим проекты, а не отчёты")}</span>
       </div>
-    </div>
+    </footer>
   );
 }
 

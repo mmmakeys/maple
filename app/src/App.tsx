@@ -430,7 +430,7 @@ export default function App() {
                 style={{
                   flex: 1,
                   minHeight: 230,
-                  backgroundImage: "url('/uploads/pavel-event.png')",
+                  backgroundImage: "url('/uploads/pavel-event.webp')",
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                   position: 'relative',
