@@ -101,7 +101,7 @@ export default function CaseStory({ slug }: { slug: string }) {
             href="/cases"
             style={{ textDecoration: 'none', background: violet500, color: paper, fontWeight: 800, fontSize: 16, padding: '16px 30px', borderRadius: 10 }}
           >
-            {typo("Все кейсы →")}
+            {typo("Все кейсы ")}<span className="mm-arrow" aria-hidden>→</span>
           </a>
         </div>
         <MapleFooter />
@@ -682,7 +682,7 @@ export default function CaseStory({ slug }: { slug: string }) {
                   </div>
                   <span style={{ fontSize: 16.5, fontWeight: 700, lineHeight: 1.35, color: ink850 }}>{p.title}</span>
                   <span className="mm-case-press-go" style={{ fontSize: 14, fontWeight: 700, color: violet500, marginTop: 'auto' }}>
-                    Читать →
+                    Читать <span className="mm-arrow" aria-hidden>→</span>
                   </span>
                 </a>
               ))}
@@ -793,7 +793,7 @@ export default function CaseStory({ slug }: { slug: string }) {
               boxShadow: `0 12px 40px ${alpha('violet500', 0.36)}, inset 0 1px 0 rgba(255,255,255,0.18)`,
             }}
           >
-            Обсудить проект →
+            Обсудить проект <span className="mm-arrow" aria-hidden>→</span>
           </a>
         </div>
       </div>

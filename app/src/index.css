@@ -12,7 +12,45 @@ body {
 /* ---- design display font stack (Russo One) ---- */
 :root {
   --mm-display: 'Russo One', sans-serif;
+
+  /* Встроенные CSS-кривые слишком вялые: при той же длительности движение
+     читается медленнее, потому что почти не разгоняется на старте — а именно
+     первые кадры пользователь и отслеживает. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
+
+/* ---- отклик на нажатие ----
+   :where() держит нулевую специфичность, поэтому собственные правила
+   компонентов перекрывают базовый переход без !important. */
+:where(button, a[href], summary, [role='button']) {
+  transition: transform 160ms var(--ease-out);
+}
+button:active,
+a[href]:active,
+summary:active,
+[role='button']:active {
+  transform: scale(0.97);
+}
+/* карточки уже подняты ховером — нажатие сохраняет подъём и лишь поджимает */
+a.mm-case-card:active {
+  transform: translateY(-4px) scale(0.985);
+}
+a.mm-case-back:active {
+  transform: translateX(-3px) scale(0.97);
+}
+
+/* стрелка уезжает вперёд у ссылок-переходов */
+.mm-arrow {
+  display: inline-block;
+  transition: transform 200ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  a:hover .mm-arrow {
+    transform: translateX(5px);
+  }
+}
+
 
 /* infinite marquee: 8 copies -> shift exactly 1/8 */
 @keyframes mm-marquee {
@@ -650,11 +688,14 @@ html {
   letter-spacing: 0.01em;
   padding: 12px 22px;
   border-radius: 999px;
-  transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+  transition: transform 0.15s var(--ease-out), background 0.2s ease, color 0.2s ease;
 }
-.mm-case-filter:hover {
-  transform: translateY(-1px);
+@media (hover: hover) and (pointer: fine) {
+  .mm-case-filter:hover {
+    transform: translateY(-1px);
+  }
 }
+
 
 /* ---- bento grid ---- */
 .mm-case-grid {
@@ -672,37 +713,48 @@ html {
 
 /* card interaction — lift + cover zoom on hover, only for linked cards */
 .mm-case-card {
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  transition: transform 0.22s var(--ease-out), box-shadow 0.22s var(--ease-out);
   will-change: transform;
 }
-a.mm-case-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 18px 44px rgba(22, 16, 32, 0.16);
+@media (hover: hover) and (pointer: fine) {
+  a.mm-case-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 44px rgba(22, 16, 32, 0.16);
+  }
 }
+
 .mm-case-cover {
-  transition: transform 0.5s ease;
+  transition: transform 0.26s var(--ease-out);
 }
-a.mm-case-card:hover .mm-case-cover {
-  transform: scale(1.05);
+@media (hover: hover) and (pointer: fine) {
+  a.mm-case-card:hover .mm-case-cover {
+    transform: scale(1.05);
+  }
 }
+
 .mm-case-open {
   display: inline-flex;
   align-items: center;
-  transition: gap 0.2s ease;
   gap: 6px;
 }
-a.mm-case-card:hover .mm-case-open {
-  gap: 12px;
+@media (hover: hover) and (pointer: fine) {
+  a.mm-case-card:hover .mm-case-open {
+    gap: 12px;
+  }
 }
+
 
 /* ---- story hero ---- */
 .mm-case-back {
   display: inline-block;
-  transition: transform 0.18s ease, color 0.18s ease;
+  transition: transform 0.18s var(--ease-out), color 0.18s ease;
 }
-.mm-case-back:hover {
-  transform: translateX(-3px);
+@media (hover: hover) and (pointer: fine) {
+  .mm-case-back:hover {
+    transform: translateX(-3px);
+  }
 }
+
 /* The cover fills the whole hero band; copy sits on a scrim over it. */
 .mm-case-hero-photo {
   position: absolute;
@@ -890,12 +942,15 @@ a.mm-case-card:hover .mm-case-open {
 
 /* ---- case story: partner credit ---- */
 .mm-case-partner {
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition: border-color 0.2s ease, transform 0.2s var(--ease-out);
 }
-.mm-case-partner:hover {
-  border-color: rgba(167, 139, 250, 0.65) !important;
-  transform: translateY(-1px);
+@media (hover: hover) and (pointer: fine) {
+  .mm-case-partner:hover {
+    border-color: rgba(167, 139, 250, 0.65) !important;
+    transform: translateY(-1px);
+  }
 }
+
 
 /* ---- case story: marketplace channels ---- */
 .mm-case-channels {
@@ -911,20 +966,25 @@ a.mm-case-card:hover .mm-case-open {
   gap: clamp(14px, 2vw, 20px);
 }
 .mm-case-press-item {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
 }
-.mm-case-press-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 34px rgba(22, 16, 32, 0.12);
+@media (hover: hover) and (pointer: fine) {
+  .mm-case-press-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 34px rgba(22, 16, 32, 0.12);
+  }
 }
+
 .mm-case-press-go {
   display: inline-flex;
   gap: 6px;
-  transition: gap 0.2s ease;
 }
-.mm-case-press-item:hover .mm-case-press-go {
-  gap: 12px;
+@media (hover: hover) and (pointer: fine) {
+  .mm-case-press-item:hover .mm-case-press-go {
+    gap: 12px;
+  }
 }
+
 
 @media (max-width: 1023px) {
   .mm-case-press {
@@ -961,10 +1021,13 @@ a.mm-case-card:hover .mm-case-open {
   white-space: nowrap;
   transition: background 0.18s ease, color 0.18s ease;
 }
-.mm-case-toc-link:hover {
-  background: #8b5cf6;
-  color: #fff;
+@media (hover: hover) and (pointer: fine) {
+  .mm-case-toc-link:hover {
+    background: #8b5cf6;
+    color: #fff;
+  }
 }
+
 /* On phones the chips scroll sideways instead of stacking into a tall block. */
 @media (max-width: 640px) {
   .mm-case-toc {
@@ -1150,16 +1213,19 @@ a.mm-case-card:hover .mm-case-open {
   content: 'Свернуть';
 }
 .mm-case-spoiler-toggle svg {
-  transition: transform 0.22s ease;
+  transition: transform 0.22s var(--ease-out);
 }
 .mm-case-spoiler[open] .mm-case-spoiler-toggle svg {
   transform: rotate(180deg);
 }
-.mm-case-spoiler-head:hover .mm-case-spoiler-toggle {
-  background: #8b5cf6;
-  color: #fff;
-  border-color: #8b5cf6;
+@media (hover: hover) and (pointer: fine) {
+  .mm-case-spoiler-head:hover .mm-case-spoiler-toggle {
+    background: #8b5cf6;
+    color: #fff;
+    border-color: #8b5cf6;
+  }
 }
+
 .mm-case-spoiler-body {
   padding-top: clamp(28px, 4vw, 40px);
 }
@@ -1185,7 +1251,7 @@ a.mm-case-card:hover .mm-case-open {
   overflow: hidden;
   cursor: zoom-in;
   display: block;
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  transition: transform 0.22s var(--ease-out), box-shadow 0.22s var(--ease-out);
 }
 .mm-case-tile img {
   display: block;
@@ -1194,13 +1260,19 @@ a.mm-case-card:hover .mm-case-open {
   object-fit: cover;
   transition: transform 0.4s ease;
 }
-.mm-case-tile:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 32px rgba(22, 16, 32, 0.18);
+@media (hover: hover) and (pointer: fine) {
+  .mm-case-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(22, 16, 32, 0.18);
+  }
 }
-.mm-case-tile:hover img {
-  transform: scale(1.06);
+
+@media (hover: hover) and (pointer: fine) {
+  .mm-case-tile:hover img {
+    transform: scale(1.06);
+  }
 }
+
 .mm-case-tile:focus-visible {
   outline: 2px solid #8b5cf6;
   outline-offset: 3px;
@@ -1222,13 +1294,24 @@ a.mm-case-card:hover .mm-case-open {
   justify-content: center;
   gap: clamp(8px, 2vw, 24px);
   padding: clamp(16px, 4vw, 48px);
-  animation: mm-lb-in 0.18s ease;
-}
-@keyframes mm-lb-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  transition: opacity 180ms var(--ease-out);
+  opacity: 1;
+
+  @starting-style {
+    opacity: 0;
+  }
 }
 .mm-case-lb-figure {
+  /* сжимается сама фотография, подложка только проявляется:
+     масштабировать полноэкранный фон незачем */
+  transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out);
+  opacity: 1;
+  transform: scale(1);
+
+  @starting-style {
+    opacity: 0;
+    transform: scale(0.97);
+  }
   margin: 0;
   max-width: min(1100px, 100%);
   display: flex;
@@ -1287,11 +1370,14 @@ a.mm-case-card:hover .mm-case-open {
   height: 44px;
   font-size: 18px;
 }
-.mm-case-lb-nav:hover,
-.mm-case-lb-close:hover {
-  background: #8b5cf6;
-  border-color: #8b5cf6;
+@media (hover: hover) and (pointer: fine) {
+  .mm-case-lb-nav:hover,
+  .mm-case-lb-close:hover {
+    background: #8b5cf6;
+    border-color: #8b5cf6;
+  }
 }
+
 .mm-case-lb-nav:focus-visible,
 .mm-case-lb-close:focus-visible {
   outline: 2px solid #a78bfa;
@@ -1314,5 +1400,63 @@ a.mm-case-card:hover .mm-case-open {
   .mm-case-lb-nav {
     width: 46px;
     height: 46px;
+  }
+}
+
+/* ---- модальные окна ----
+   Появление и исчезновение без перехода читаются как поломка интерфейса.
+   Модалку видят редко, поэтому анимация здесь оправдана. Подложка и карточка
+   разведены по длительности: фон проявляется чуть медленнее содержимого. */
+.mm-modal-scrim {
+  opacity: 1;
+  transition: opacity 220ms var(--ease-out);
+}
+.mm-modal-card {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
+}
+@starting-style {
+  .mm-modal-scrim {
+    opacity: 0;
+  }
+  .mm-modal-card {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+/* ---- уважение к prefers-reduced-motion ----
+   Сокращаем движение, а не выключаем анимацию целиком: изменения прозрачности
+   помогают понять, что произошло, и остаются. Уезжает именно перемещение —
+   оно и вызывает укачивание, особенно на scroll-driven секциях. */
+@media (prefers-reduced-motion: reduce) {
+  .mm-case-card,
+  .mm-case-cover,
+  .mm-case-tile img,
+  .mm-case-back,
+  .mm-case-filter,
+  .mm-case-partner,
+  .mm-case-press-item,
+  .mm-arrow,
+  .mm-modal-card {
+    transition-property: opacity, background, color, border-color, box-shadow;
+  }
+  a.mm-case-card:hover,
+  a.mm-case-card:active,
+  a.mm-case-back:active,
+  .mm-case-back:hover,
+  .mm-case-filter:hover,
+  .mm-case-tile:hover img,
+  a:hover .mm-arrow,
+  button:active,
+  a[href]:active,
+  summary:active,
+  [role='button']:active {
+    transform: none;
+  }
+  .mm-modal-card,
+  .mm-case-lb-figure {
+    transform: none;
   }
 }

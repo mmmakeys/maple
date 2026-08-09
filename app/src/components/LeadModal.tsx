@@ -99,6 +99,7 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div
+      className="mm-modal-scrim"
       onClick={onClose}
       onWheel={(e) => e.stopPropagation()}
       style={{
@@ -113,6 +114,7 @@ export default function LeadModal({ onClose }: { onClose: () => void }) {
       }}
     >
       <div
+        className="mm-modal-card"
         onClick={(e) => e.stopPropagation()}
         style={{
           position: 'relative',

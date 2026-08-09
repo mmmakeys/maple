@@ -159,7 +159,7 @@ export default function CasesIndex() {
                 cursor: 'pointer',
               }}
             >
-              Обсудить проект →
+              Обсудить проект <span className="mm-arrow" aria-hidden>→</span>
             </a>
           </div>
         </div>
@@ -223,7 +223,7 @@ function CaseGridCard({ c }: { c: CaseCard }) {
           </div>
           <div style={{ fontSize: 16, color: '#EADFFB', marginBottom: 18 }}>{c.result}</div>
           <span className="mm-case-open" style={{ fontSize: 15, fontWeight: 800, color: paper }}>
-            Открыть кейс →
+            Открыть кейс <span className="mm-arrow" aria-hidden>→</span>
           </span>
         </div>
       </Tag>

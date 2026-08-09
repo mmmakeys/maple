@@ -202,7 +202,7 @@ export default function App() {
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  Обсудить проект →
+                  Обсудить проект <span className="mm-arrow" aria-hidden>→</span>
                 </a>
                 <a
                   href="#cases"
@@ -408,7 +408,7 @@ export default function App() {
                 borderRadius: 10,
               }}
             >
-              {typo("Все кейсы →")}
+              {typo("Все кейсы ")}<span className="mm-arrow" aria-hidden>→</span>
             </a>
           </div>
           <div className="mm-cases-hero">
@@ -730,7 +730,7 @@ export default function App() {
               boxShadow: `0 12px 40px ${alpha('violet500', 0.36)}, inset 0 1px 0 rgba(255,255,255,0.18)`,
             }}
           >
-            Обсудить проект →
+            Обсудить проект <span className="mm-arrow" aria-hidden>→</span>
           </a>
         </div>
       </div>
@@ -797,7 +797,7 @@ export default function App() {
               boxShadow: '0 12px 40px rgba(163,22,33,0.36), inset 0 1px 0 rgba(255,255,255,0.18)',
             }}
           >
-            {typo("Перейти на Сценику →")}
+            {typo("Перейти на Сценику ")}<span className="mm-arrow" aria-hidden>→</span>
           </a>
         </div>
       </div>

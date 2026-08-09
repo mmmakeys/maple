@@ -37,8 +37,9 @@ const hideLoader = () => {
   const wait = Math.max(0, MIN_LOADER_MS - (performance.now() - bootStart));
   setTimeout(() => {
     el.classList.add('mm-loader--out');
-    // Match the CSS transition (.5s) before removing from the DOM.
-    setTimeout(() => el.remove(), 550);
+    // Совпадает с CSS-переходом (.3s). Выход системы должен быть быстрым:
+    // держать пустой экран, когда контент уже готов, — налог на первое впечатление.
+    setTimeout(() => el.remove(), 320);
   }, wait);
 };
 // Wait for two frames — the first one is React's initial paint, the second
