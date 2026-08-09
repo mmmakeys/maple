@@ -14,6 +14,7 @@ import {
   violet400,
   violet50,
   violet500,
+  violet600,
   violet700,
 } from '../tokens';
 import { caseStories } from '../cases';
@@ -99,7 +100,7 @@ export default function CaseStory({ slug }: { slug: string }) {
           </p>
           <a
             href="/cases"
-            style={{ textDecoration: 'none', background: violet500, color: paper, fontWeight: 800, fontSize: 16, padding: '16px 30px', borderRadius: 10 }}
+            style={{ textDecoration: 'none', background: violet600, color: paper, fontWeight: 800, fontSize: 16, padding: '16px 30px', borderRadius: 10 }}
           >
             {typo("Все кейсы ")}<span className="mm-arrow" aria-hidden>→</span>
           </a>
@@ -411,7 +412,7 @@ export default function CaseStory({ slug }: { slug: string }) {
             {/* order lifecycle */}
             {story.flow && (
               <div style={{ marginTop: 'clamp(34px,4vw,48px)' }}>
-                <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: violet500, marginBottom: 16 }}>
+                <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: violet600, marginBottom: 16 }}>
                   Жизненный цикл заказа
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
@@ -456,7 +457,7 @@ export default function CaseStory({ slug }: { slug: string }) {
             <div className="mm-case-phases">
               {story.phases.map((p) => (
                 <div key={p.t} className="mm-case-phase">
-                  <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase', color: violet500 }}>
+                  <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase', color: violet600 }}>
                     {p.when}
                   </div>
                   <div style={{ fontSize: 19, fontWeight: 800, lineHeight: 1.25, margin: '10px 0 8px' }}>{p.t}</div>
@@ -675,13 +676,13 @@ export default function CaseStory({ slug }: { slug: string }) {
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12 }}>
-                    <span style={{ fontSize: 12.5, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: violet500 }}>
+                    <span style={{ fontSize: 12.5, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: violet600 }}>
                       {p.outlet}
                     </span>
                     <span style={{ fontSize: 12.5, color: ink600, whiteSpace: 'nowrap' }}>{p.date}</span>
                   </div>
                   <span style={{ fontSize: 16.5, fontWeight: 700, lineHeight: 1.35, color: ink850 }}>{p.title}</span>
-                  <span className="mm-case-press-go" style={{ fontSize: 14, fontWeight: 700, color: violet500, marginTop: 'auto' }}>
+                  <span className="mm-case-press-go" style={{ fontSize: 14, fontWeight: 700, marginTop: 'auto' }}>
                     Читать <span className="mm-arrow" aria-hidden>→</span>
                   </span>
                 </a>
@@ -782,7 +783,7 @@ export default function CaseStory({ slug }: { slug: string }) {
             onClick={openLead}
             style={{
               textDecoration: 'none',
-              background: violet500,
+              background: violet600,
               color: paper,
               fontWeight: 800,
               fontSize: 17,

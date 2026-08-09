@@ -14,6 +14,7 @@ import {
   violet400,
   violet50,
   violet500,
+  violet600,
 } from './tokens';
 // three.js is the heaviest dependency (~600 KB min); split into its own chunk
 // so hero text/kicker/CTA paint immediately and the WebGL leaf hydrates async.
@@ -192,7 +193,7 @@ export default function App() {
                   onClick={openLead}
                   style={{
                     textDecoration: 'none',
-                    background: violet500,
+                    background: violet600,
                     color: paper,
                     fontWeight: 800,
                     fontSize: 'clamp(15px, 4.5vw, 17px)',
@@ -224,7 +225,7 @@ export default function App() {
       </div>
 
       {/* marquee (full-bleed) */}
-      <div className="mm-marquee-band" style={{ background: violet500, color: paper, padding: '16px 0', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+      <div className="mm-marquee-band" style={{ background: violet600, color: paper, padding: '16px 0', overflow: 'hidden', whiteSpace: 'nowrap' }}>
         <div
           className="mm-marquee-track"
           style={{
@@ -400,7 +401,7 @@ export default function App() {
               style={{
                 whiteSpace: 'nowrap',
                 textDecoration: 'none',
-                background: violet500,
+                background: violet600,
                 color: paper,
                 fontWeight: 800,
                 fontSize: 15,
@@ -416,7 +417,7 @@ export default function App() {
               href="/cases/pavel-volya"
               className="mm-case-card"
               style={{
-                background: violet500,
+                background: violet600,
                 borderRadius: 20,
                 overflow: 'hidden',
                 color: paper,
@@ -436,13 +437,13 @@ export default function App() {
                 }}
               />
               <div style={{ padding: '28px 30px 32px' }}>
-                <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#E0D2FB' }}>
+                <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: ink100 }}>
                   Концерты
                 </span>
                 <div style={{ fontFamily: DISPLAY, fontSize: 28, fontWeight: 200, margin: '12px 0 8px', lineHeight: 1.05 }}>
                   Павел Воля. Большой стендап
                 </div>
-                <div style={{ fontSize: 16, color: '#EADFFB' }}>{typo("Тур по 40 городам — 38 солдаутов")}</div>
+                <div style={{ fontSize: 16, color: ink100 }}>{typo("Тур по 40 городам — 38 солдаутов")}</div>
               </div>
             </a>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -457,7 +458,7 @@ export default function App() {
                   justifyContent: 'space-between',
                 }}
               >
-                <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: violet500 }}>
+                <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: violet600 }}>
                   PR
                 </span>
                 <div style={{ fontFamily: DISPLAY, fontSize: 22, fontWeight: 200, lineHeight: 1.2 }}>
@@ -487,7 +488,7 @@ export default function App() {
           </div>
           <div className="mm-cases-pair">
             <div style={{ background: violet50, borderRadius: 20, padding: '28px 30px' }}>
-              <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: violet500 }}>
+              <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: violet600 }}>
                 E-commerce
               </span>
               <div style={{ fontFamily: DISPLAY, fontSize: 22, fontWeight: 200, lineHeight: 1.2, marginTop: 10 }}>
@@ -495,7 +496,7 @@ export default function App() {
               </div>
             </div>
             <div style={{ background: violet50, borderRadius: 20, padding: '28px 30px' }}>
-              <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: violet500 }}>
+              <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: violet600 }}>
                 Туры
               </span>
               <div style={{ fontFamily: DISPLAY, fontSize: 22, fontWeight: 200, lineHeight: 1.2, marginTop: 10 }}>
@@ -719,7 +720,7 @@ export default function App() {
             onClick={openLead}
             style={{
               textDecoration: 'none',
-              background: violet500,
+              background: violet600,
               color: paper,
               fontWeight: 800,
               fontSize: 17,

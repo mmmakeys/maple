@@ -12,7 +12,7 @@ import {
   paper,
   violet400,
   violet50,
-  violet500,
+  violet600,
 } from '../tokens';
 import { caseCards, caseCategories, type CaseCard, type CaseCategory } from '../cases';
 import { MapleNav, MapleFooter, chromeCol, chromePad } from './MapleChrome';
@@ -150,7 +150,7 @@ export default function CasesIndex() {
               style={{
                 whiteSpace: 'nowrap',
                 textDecoration: 'none',
-                background: violet500,
+                background: violet600,
                 color: paper,
                 fontWeight: 800,
                 fontSize: 16,
@@ -196,7 +196,7 @@ function CaseGridCard({ c }: { c: CaseCard }) {
         {...tagProps}
         className="mm-case-card mm-case-card--featured"
         style={{
-          background: violet500,
+          background: violet600,
           borderRadius: 22,
           overflow: 'hidden',
           color: paper,
@@ -217,11 +217,11 @@ function CaseGridCard({ c }: { c: CaseCard }) {
           }}
         />
         <div style={{ padding: 'clamp(24px,3vw,34px)' }}>
-          <span style={{ ...catLabel('#E4D6FC') }}>{c.category}</span>
+          <span style={{ ...catLabel(ink100) }}>{c.category}</span>
           <div style={{ fontFamily: DISPLAY, fontSize: 'clamp(24px,3vw,32px)', fontWeight: 200, margin: '12px 0 10px', lineHeight: 1.05 }}>
             {c.title}
           </div>
-          <div style={{ fontSize: 16, color: '#EADFFB', marginBottom: 18 }}>{c.result}</div>
+          <div style={{ fontSize: 16, color: ink100, marginBottom: 18 }}>{c.result}</div>
           <span className="mm-case-open" style={{ fontSize: 15, fontWeight: 800, color: paper }}>
             Открыть кейс <span className="mm-arrow" aria-hidden>→</span>
           </span>
@@ -231,10 +231,10 @@ function CaseGridCard({ c }: { c: CaseCard }) {
   }
 
   const dark = c.accent === 'ink';
-  const bg = dark ? ink850 : c.accent === 'violet' ? violet500 : violet50;
+  const bg = dark ? ink850 : c.accent === 'violet' ? violet600 : violet50;
   const fg = dark || c.accent === 'violet' ? ink100 : ink850;
-  const label = dark ? violet400 : c.accent === 'violet' ? '#E4D6FC' : violet500;
-  const sub = dark ? ink400 : c.accent === 'violet' ? '#EADFFB' : ink600;
+  const label = dark ? violet400 : c.accent === 'violet' ? ink100 : violet600;
+  const sub = dark ? ink400 : c.accent === 'violet' ? ink100 : ink600;
 
   return (
     <Tag

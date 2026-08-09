@@ -21,6 +21,16 @@ export const alpha = (key: RgbKey, a: number): string =>
 // Brand violet.
 export const violet500 = '#8B5CF6'; // primary brand accent
 export const violet400 = '#A78BFA'; // secondary/highlight accent
+/**
+ * Доступная тёмная ступень бренда: oklch(0.556 0.219 292.7), тот же тон и
+ * насыщенность, что у violet500, ниже только светлота.
+ *
+ * violet500 не проходит AA под мелким текстом: белый на нём даёт 4.23, а сам
+ * он текстом на violet50 — 3.72. Здесь белый даёт 5.24, а на violet50 — 4.60.
+ * Ставить под заливки и надписи мельче 18.66px; крупный текст и иконки
+ * остаются на violet500, им хватает порога 3:1.
+ */
+export const violet600 = '#7D4BE5';
 export const violet25 = '#FBF9FE'; // faintest tint (input backgrounds)
 export const violet50 = '#F3EEFC'; // card backgrounds
 export const violet75 = '#F1ECFA'; // subtle modal chrome

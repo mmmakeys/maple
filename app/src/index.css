@@ -16,6 +16,9 @@ body {
   /* Встроенные CSS-кривые слишком вялые: при той же длительности движение
      читается медленнее, потому что почти не разгоняется на старте — а именно
      первые кадры пользователь и отслеживает. */
+  /* доступная тёмная ступень бренда, зеркалит violet600 из tokens.ts */
+  --violet-600: #7d4be5;
+
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
@@ -978,6 +981,7 @@ html {
 .mm-case-press-go {
   display: inline-flex;
   gap: 6px;
+  color: var(--violet-600);
 }
 @media (hover: hover) and (pointer: fine) {
   .mm-case-press-item:hover .mm-case-press-go {
@@ -1079,7 +1083,7 @@ html {
 /* ---- case story: contribution label on a workstream ---- */
 .mm-case-kind {
   display: inline-block;
-  background: #8b5cf6;
+  background: var(--violet-600);
   color: #fff;
   border-radius: 999px;
   padding: 5px 12px;
@@ -1128,7 +1132,7 @@ html {
 }
 .mm-case-shift-labels span:last-child {
   grid-column: 3;
-  color: #8b5cf6;
+  color: var(--violet-600);
 }
 .mm-case-shift-row {
   display: grid;
