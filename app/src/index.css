@@ -139,7 +139,7 @@ a.mm-case-back:active {
   height: 60%;
   left: -10%;
   top: -14%;
-  background: radial-gradient(circle at 40% 40%, rgba(163, 22, 33, 0.65), transparent 62%);
+  background: radial-gradient(circle at 40% 40%, rgba(163, 22, 33, 0.5), transparent 62%);
   animation: sc-mesh-a 28s ease-in-out infinite alternate;
 }
 .sc-mesh-b {
@@ -147,7 +147,7 @@ a.mm-case-back:active {
   height: 65%;
   right: -14%;
   top: 6%;
-  background: radial-gradient(circle at 50% 50%, rgba(72, 32, 110, 0.6), transparent 62%);
+  background: radial-gradient(circle at 50% 50%, rgba(150, 150, 155, 0.34), transparent 62%);
   animation: sc-mesh-b 34s ease-in-out infinite alternate;
 }
 .sc-mesh-c {
@@ -155,7 +155,7 @@ a.mm-case-back:active {
   height: 55%;
   left: 20%;
   bottom: -16%;
-  background: radial-gradient(circle at 50% 50%, rgba(40, 70, 140, 0.5), transparent 62%);
+  background: radial-gradient(circle at 50% 50%, rgba(120, 120, 126, 0.3), transparent 62%);
   animation: sc-mesh-c 40s ease-in-out infinite alternate;
 }
 @keyframes sc-mesh-a {
@@ -183,35 +183,6 @@ a.mm-case-back:active {
   }
 }
 
-/* Light variant — soft warm-and-cool wash on a PAPER background */
-.sc-mesh--light .sc-mesh-blob {
-  filter: blur(120px);
-  mix-blend-mode: multiply;
-}
-.sc-mesh--light .sc-mesh-a {
-  background: radial-gradient(circle at 40% 40%, rgba(163, 22, 33, 0.22), transparent 66%);
-}
-.sc-mesh--light .sc-mesh-b {
-  background: radial-gradient(circle at 50% 50%, rgba(255, 178, 122, 0.28), transparent 66%);
-}
-.sc-mesh--light .sc-mesh-c {
-  background: radial-gradient(circle at 50% 50%, rgba(120, 140, 220, 0.22), transparent 66%);
-}
-
-/* Warm variant — soft glowing halos on a RED background */
-.sc-mesh--warm .sc-mesh-blob {
-  filter: blur(120px);
-  mix-blend-mode: screen;
-}
-.sc-mesh--warm .sc-mesh-a {
-  background: radial-gradient(circle at 40% 40%, rgba(255, 180, 130, 0.55), transparent 66%);
-}
-.sc-mesh--warm .sc-mesh-b {
-  background: radial-gradient(circle at 50% 50%, rgba(255, 130, 150, 0.5), transparent 66%);
-}
-.sc-mesh--warm .sc-mesh-c {
-  background: radial-gradient(circle at 50% 50%, rgba(255, 220, 180, 0.45), transparent 66%);
-}
 @media (prefers-reduced-motion: reduce) {
   .sc-mesh-blob {
     animation: none;
@@ -1463,535 +1434,335 @@ html {
   }
 }
 
-/* ---- Сценика: доска с чек-листом тура ----
-   Восемь бумажек разбросаны по доске, как их положил бы живой человек:
-   стикеры, карточки и оторванные полоски под разными углами, с приписками
-   от руки. Когда отмечены все, они слетаются в одну папку «ШОУ». */
-
-.sc-board-wrap {
-  margin-top: 40px;
-  max-width: 980px;
+/* ---- Сценика: снимок зала под финальным призывом ----
+   Фотография должна подтверждать слова, а не спорить с ними: держим её
+   приглушённой и сажаем текст на плотную часть затемнения. */
+.sc-cta-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* сцена и партер важнее потолочных ферм */
+  object-position: 50% 62%;
+  opacity: 0.5;
+  pointer-events: none;
 }
-.sc-board-head {
+.sc-cta-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* два градиента: горизонтальный держит читаемость слева, где стоит текст,
+     вертикальный гасит верх и низ, чтобы снимок не спорил с соседними
+     секциями */
+  background:
+    linear-gradient(90deg, rgba(12, 12, 12, 0.9) 0%, rgba(12, 12, 12, 0.78) 38%, rgba(12, 12, 12, 0.3) 100%),
+    linear-gradient(180deg, rgba(12, 12, 12, 0.62) 0%, rgba(12, 12, 12, 0.2) 45%, rgba(12, 12, 12, 0.78) 100%);
+}
+@media (max-width: 900px) {
+  /* на узком экране текст занимает всю ширину, поэтому затемнение
+     становится равномерным, а не боковым */
+  .sc-cta-scrim {
+    background: linear-gradient(180deg, rgba(12, 12, 12, 0.8) 0%, rgba(12, 12, 12, 0.5) 55%, rgba(12, 12, 12, 0.84) 100%);
+  }
+  .sc-cta-photo {
+    /* узкий кадр вырезает тёмный партер — сдвигаем к сцене, она светлее */
+    object-position: 50% 44%;
+    opacity: 0.72;
+  }
+}
+@media (prefers-contrast: more) {
+  .sc-cta-photo {
+    opacity: 0.22;
+  }
+}
+
+/* ---- Сценика: планер механизма ----
+   Плоское стекло на чёрном. Красный держим как единственный акцент
+   состояния «готово», поэтому он появляется только на отметке,
+   переключателе и финальной папке. */
+
+.sc-plan {
+  margin-top: 40px;
+  max-width: 1040px;
+  border-radius: 24px;
+  padding: 22px 22px 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  backdrop-filter: blur(24px) saturate(140%);
+  font-family: 'Manrope', sans-serif;
+}
+.sc-plan-head {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 20px;
   flex-wrap: wrap;
-  margin-bottom: 14px;
 }
-.sc-hand {
-  font-family: 'Caveat', 'Manrope', cursive;
-  font-weight: 600;
-  /* рукописный шрифт сидит на строке иначе гротеска — компенсируем */
-  line-height: 1.1;
-}
-.sc-board-hand {
-  display: block;
-  font-size: clamp(28px, 3.6vw, 40px);
-  color: #fff;
-  transform: rotate(-1.6deg);
-  transform-origin: left bottom;
-}
-.sc-board-sub {
-  display: block;
-  margin-top: 4px;
-  font-family: 'Manrope', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.72);
-}
-.sc-board-tally {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-  font-family: 'Caveat', cursive;
-  color: #fff;
-  transform: rotate(1.4deg);
-}
-.sc-tally-num {
-  font-size: 46px;
+.sc-plan-title {
+  font-size: 17px;
   font-weight: 700;
-  line-height: 0.9;
+  letter-spacing: -0.01em;
+  color: #f5f5f3;
 }
-.sc-tally-of {
-  font-size: 22px;
-  opacity: 0.75;
+.sc-plan-sub {
+  margin-top: 3px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
 }
-
-/* доска */
-.sc-board {
-  position: relative;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  height: 620px;
-  border-radius: 18px;
-  /* «пробковая» подложка: тёмный слой поверх красного, чтобы бумага читалась */
-  background:
-    radial-gradient(120% 90% at 20% 0%, rgba(0, 0, 0, 0.16), transparent 60%),
-    rgba(0, 0, 0, 0.14);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  transition: height 620ms cubic-bezier(0.32, 0.72, 0, 1);
-}
-.sc-board[data-all] {
-  height: 250px;
-}
-
-/* ---- бумажка ---- */
-.sc-note {
-  position: absolute;
-  left: var(--x);
-  top: var(--y);
-  width: 27%;
-  min-width: 210px;
-  transform: rotate(var(--rot));
-  transition:
-    transform 620ms cubic-bezier(0.32, 0.72, 0, 1),
-    opacity 420ms var(--ease-out);
-  /* бумажки уезжают в папку по очереди, а возвращаются в обратном порядке */
-  transition-delay: calc(var(--i) * 55ms);
-}
-.sc-note-btn {
-  position: relative;
-  width: 100%;
+.sc-plan-right {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 14px 14px 16px;
-  border: 0;
-  text-align: left;
-  cursor: pointer;
-  color: #17140f;
-  font-family: 'Manrope', sans-serif;
-  background: #fffdf5;
-  border-radius: 3px;
-  box-shadow:
-    0 1px 1px rgba(0, 0, 0, 0.16),
-    0 14px 26px -12px rgba(0, 0, 0, 0.5);
-  transition: transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
+  align-items: center;
+  gap: 16px;
 }
-@media (hover: hover) and (pointer: fine) {
-  .sc-note-btn:hover {
-    transform: translateY(-3px) rotate(-0.6deg);
-    box-shadow:
-      0 1px 1px rgba(0, 0, 0, 0.16),
-      0 22px 34px -14px rgba(0, 0, 0, 0.55);
-  }
+.sc-plan-count {
+  font-family: 'Onest', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #f5f5f3;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
 }
-.sc-note-btn:active {
-  transform: translateY(-1px) scale(0.99);
+.sc-plan-total {
+  color: rgba(255, 255, 255, 0.4);
 }
 
-/* липкий стикер: тёплая бумага и клеевая полоса сверху */
-.sc-note[data-kind='sticky'] .sc-note-btn {
-  /* цвет-подложка обязателен: сокращение background с одним градиентом
-     обнуляет background-color, и без картинки стикер остался бы прозрачным,
-     то есть тёмный текст лёг бы прямо на красный фон */
-  background: linear-gradient(#fdf0b8, #fbe79a) #fbe79a;
-  border-radius: 2px;
+.sc-plan-bar {
+  margin: 16px 0 4px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
 }
-.sc-note[data-kind='sticky'] .sc-note-btn::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto;
-  height: 22px;
-  background: linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0));
-  pointer-events: none;
-}
-/* карточка: белая бумага в тонкую линейку */
-.sc-note[data-kind='card'] .sc-note-btn {
-  background:
-    repeating-linear-gradient(#fffdf8 0 26px, #e9e2d2 26px 27px),
-    #fffdf8;
-  border-radius: 4px;
-}
-/* оторванная полоска: рваный нижний край */
-.sc-note[data-kind='strip'] .sc-note-btn {
-  background: #f6f1e4;
-  border-radius: 2px;
-  -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='140' viewBox='0 0 240 140' preserveAspectRatio='none'%3E%3Cpath fill='%23000' d='M0 0h240v128c-18 6-30-2-46 1s-24 8-40 4-26-9-42-6-28 9-44 5-30-9-40-6-16 4-28 2z'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='140' viewBox='0 0 240 140' preserveAspectRatio='none'%3E%3Cpath fill='%23000' d='M0 0h240v128c-18 6-30-2-46 1s-24 8-40 4-26-9-42-6-28 9-44 5-30-9-40-6-16 4-28 2z'/%3E%3C/svg%3E");
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
-  padding-bottom: 24px;
-}
-/* скотч поверх карточек и полосок */
-.sc-note[data-kind='card'] .sc-note-btn::after,
-.sc-note[data-kind='strip'] .sc-note-btn::after {
-  content: '';
-  position: absolute;
-  top: -9px;
-  left: 50%;
-  width: 74px;
-  height: 20px;
-  transform: translateX(-50%) rotate(-2.4deg);
-  background: rgba(255, 255, 255, 0.42);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
-  pointer-events: none;
-}
-.sc-note[data-kind='strip'] .sc-note-btn::after {
-  left: 22%;
-  transform: rotate(4deg);
+.sc-plan-bar span {
+  display: block;
+  height: 100%;
+  background: #a31621;
+  transform-origin: left center;
+  transition: transform 420ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-/* ---- чекбокс от руки ---- */
-.sc-note-box {
+/* переключатель «отметить всё» */
+.sc-switch {
   position: relative;
   flex: none;
-  width: 26px;
-  height: 26px;
-  margin-top: 1px;
-  /* нарисованный, а не идеальный: у круга разная толщина обводки и наклон */
-  border: 2px solid #2f2a22;
-  border-radius: 49% 51% 47% 53% / 52% 48% 53% 47%;
-  transform: rotate(-4deg);
+  width: 50px;
+  height: 30px;
+  padding: 2px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  cursor: pointer;
   transition: background 220ms var(--ease-out);
 }
-.sc-note-tick {
-  position: absolute;
-  inset: -5px;
-  width: 34px;
-  height: 34px;
-  stroke: #1d5c2f;
-  stroke-width: 2.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  fill: none;
-  /* галочка «дорисовывается» — это и есть жест отметки */
-  stroke-dasharray: 34;
-  stroke-dashoffset: 34;
-  transition: stroke-dashoffset 340ms cubic-bezier(0.32, 0.72, 0, 1);
+.sc-switch[aria-checked='true'] {
+  background: #a31621;
 }
-.sc-note[data-done] .sc-note-tick {
-  stroke-dashoffset: 0;
+/* Визуальный размер переключателя оставляем прежним, а область нажатия
+   растим до 44px невидимым слоем — пальцем в 30px попасть трудно. */
+.sc-switch::after {
+  content: '';
+  position: absolute;
+  inset: -7px -4px;
+}
+.sc-switch-knob {
+  display: block;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  transition: transform 320ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+.sc-switch[aria-checked='true'] .sc-switch-knob {
+  transform: translateX(20px);
 }
 
-.sc-note-body {
+/* ---- карточки ---- */
+.sc-plan-grid {
+  position: relative;
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+  gap: 10px;
+}
+.sc-card {
+  max-height: 600px;
+  transition:
+    transform 560ms cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 360ms var(--ease-out),
+    max-height 520ms cubic-bezier(0.32, 0.72, 0, 1);
+  transition-delay: calc(var(--i) * 45ms);
+}
+.sc-card-btn {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #f5f5f3;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    background 220ms var(--ease-out),
+    border-color 220ms var(--ease-out),
+    transform 200ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .sc-card-btn:hover {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(255, 255, 255, 0.16);
+  }
+}
+.sc-card[data-done] .sc-card-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(163, 22, 33, 0.55);
+}
+.sc-card-icon {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.75);
+  transition: background 220ms var(--ease-out), color 220ms var(--ease-out);
+}
+.sc-card[data-done] .sc-card-icon {
+  background: rgba(163, 22, 33, 0.9);
+  color: #fff;
+}
+.sc-card-text {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 3px;
 }
-.sc-note-label {
-  position: relative;
-  align-self: flex-start;
-  font-size: 15.5px;
-  font-weight: 800;
+.sc-card-label {
+  font-size: 15px;
+  font-weight: 700;
   letter-spacing: -0.005em;
   line-height: 1.2;
 }
-.sc-note-strike {
-  position: absolute;
-  left: -3px;
-  right: -3px;
-  top: 52%;
-  width: calc(100% + 6px);
-  height: 10px;
-  stroke: #b3271f;
-  stroke-width: 2.4;
-  stroke-linecap: round;
-  fill: none;
-  stroke-dasharray: 210;
-  stroke-dashoffset: 210;
-  transition: stroke-dashoffset 420ms cubic-bezier(0.32, 0.72, 0, 1) 120ms;
-  pointer-events: none;
-}
-.sc-note[data-done] .sc-note-strike {
-  stroke-dashoffset: 0;
-}
-.sc-note-desc {
-  font-size: 12.5px;
+.sc-card-desc {
+  font-size: 13px;
   font-weight: 500;
   line-height: 1.35;
-  color: #5b5245;
-  transition: opacity 260ms var(--ease-out);
+  /* поверх стекла плоский серый выцветает: держим яркостью, а не оттенком */
+  color: rgba(255, 255, 255, 0.62);
 }
-.sc-note[data-done] .sc-note-desc {
-  opacity: 0.5;
-}
-/* приписка на полях — синей ручкой, под небольшим углом */
-.sc-note-scribble {
-  margin-top: 4px;
-  font-size: 17px;
-  color: #2f4bb5;
-  transform: rotate(-1.8deg);
-  transform-origin: left center;
-}
-.sc-note-icon {
+.sc-card-check {
   flex: none;
-  color: #8b8171;
-  opacity: 0.75;
-}
-
-/* ---- следы живого человека ---- */
-.sc-clip {
-  position: absolute;
-  left: 30.5%;
-  top: -8px;
-  width: 16px;
-  height: 42px;
-  border: 2.4px solid #b9bec6;
-  border-radius: 9px;
-  transform: rotate(9deg);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-}
-.sc-clip::after {
-  content: '';
-  position: absolute;
-  inset: 7px 3px 12px;
-  border: 2.4px solid #cfd4da;
-  border-radius: 6px;
-}
-.sc-coffee {
-  position: absolute;
-  right: 6%;
-  top: 60%;
-  width: 92px;
-  height: 92px;
+  width: 22px;
+  height: 22px;
+  margin-top: 6px;
   border-radius: 50%;
-  border: 7px solid rgba(92, 46, 16, 0.16);
-  transform: rotate(-8deg) scaleY(0.92);
-  pointer-events: none;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  display: grid;
+  place-items: center;
+  color: transparent;
+  transition: background 220ms var(--ease-out), border-color 220ms var(--ease-out), color 220ms var(--ease-out);
 }
-.sc-arrow {
-  position: absolute;
-  left: 25%;
-  top: 22.5%;
-  width: 130px;
-  height: 64px;
-  stroke: rgba(255, 255, 255, 0.6);
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  fill: none;
-  pointer-events: none;
+.sc-card-check svg {
+  width: 13px;
+  height: 13px;
 }
-.sc-arrow-note {
-  position: absolute;
-  left: 22%;
-  top: 17%;
-  font-size: 19px;
-  color: rgba(255, 255, 255, 0.72);
-  transform: rotate(-5deg);
-  pointer-events: none;
+.sc-card[data-done] .sc-card-check {
+  background: #a31621;
+  border-color: #a31621;
+  color: #fff;
 }
 
 /* ---- папка ---- */
 .sc-folder {
-  position: absolute;
-  right: 3.5%;
-  bottom: 5%;
-  width: 34%;
-  min-width: 240px;
-  transition: transform 620ms cubic-bezier(0.32, 0.72, 0, 1);
-}
-.sc-folder-tab {
-  display: block;
-  width: 92px;
-  height: 16px;
-  margin-left: 14px;
-  border-radius: 8px 12px 0 0;
-  background: #d9b25f;
-  transition: background 420ms var(--ease-out);
-}
-.sc-folder-face {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+  padding: 18px 20px;
+  border-radius: 18px;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 12px;
+  gap: 14px;
   flex-wrap: wrap;
-  padding: 16px 18px 18px;
-  border-radius: 4px 10px 10px 10px;
-  background: #e3c06b;
-  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.7);
-  color: #4a3a12;
-  transition: background 420ms var(--ease-out), color 420ms var(--ease-out), box-shadow 520ms var(--ease-out);
+  border: 1px dashed rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.03);
+  color: #f5f5f3;
+  transition:
+    background 420ms var(--ease-out),
+    border-color 420ms var(--ease-out),
+    box-shadow 520ms var(--ease-out);
 }
 .sc-folder-word {
   font-family: 'Onest', sans-serif;
   font-weight: 800;
-  font-size: clamp(24px, 3vw, 34px);
-  letter-spacing: 0.06em;
+  font-size: clamp(22px, 2.6vw, 30px);
+  letter-spacing: 0.04em;
   line-height: 1;
 }
 .sc-folder-meta {
-  font-family: 'Caveat', cursive;
-  font-size: 19px;
-  line-height: 1.1;
-  color: #6c5622;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  transition: color 420ms var(--ease-out);
 }
-/* пока папка пустая — она приглушена и ждёт */
-.sc-folder:not([data-open]) .sc-folder-face {
-  /* пунктир вместо заливки: пустая папка — это цель, куда всё соберётся */
-  background: rgba(120, 8, 16, 0.5);
-  color: #fff;
-  box-shadow: none;
-  outline: 2px dashed rgba(255, 255, 255, 0.5);
-  outline-offset: -6px;
-}
-.sc-folder:not([data-open]) .sc-folder-tab {
-  background: rgba(255, 255, 255, 0.3);
-}
-.sc-folder:not([data-open]) .sc-folder-meta {
-  color: rgba(255, 255, 255, 0.65);
-}
+/* единственный крупный красный акцент на экране — и он заслужен финалом */
 .sc-folder[data-open] {
-  transform: scale(1.04);
+  background: #a31621;
+  border: 1px solid #a31621;
+  box-shadow: 0 22px 60px -26px rgba(163, 22, 33, 0.9);
 }
-.sc-folder[data-open] .sc-folder-face {
-  box-shadow: 0 26px 60px -20px rgba(0, 0, 0, 0.75);
+.sc-folder[data-open] .sc-folder-meta {
+  color: rgba(255, 255, 255, 0.85);
 }
 
-/* ---- сбор в папку ----
-   Вектор до папки лежит в --dx/--dy, а само движение делает переход:
-   так сбор и разбор работают в обе стороны и прерываются на полпути. */
-.sc-board[data-all] .sc-note {
-  transform: translate(var(--dx, 0), var(--dy, 0)) rotate(calc(var(--rot) * 0.35)) scale(0.16);
+/* ---- сбор в папку ---- */
+.sc-plan-grid[data-all] .sc-card {
+  transform: translate(var(--dx, 0), var(--dy, 0)) scale(0.14);
   opacity: 0;
+  max-height: 0;
+  overflow: hidden;
   pointer-events: none;
 }
-.sc-board[data-all] .sc-clip,
-.sc-board[data-all] .sc-coffee,
-.sc-board[data-all] .sc-arrow,
-.sc-board[data-all] .sc-arrow-note {
-  opacity: 0;
-  transition: opacity 320ms var(--ease-out);
-}
-
-/* пометка у папки: появляется, когда доска расчищена */
-.sc-done {
-  position: absolute;
-  left: 30%;
-  bottom: 19%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 320ms var(--ease-out), transform 420ms cubic-bezier(0.32, 0.72, 0, 1);
-  pointer-events: none;
-}
-.sc-board[data-all] .sc-done {
-  opacity: 1;
-  transform: translateY(0);
-  transition-delay: 380ms;
-}
-.sc-done-word {
-  font-size: clamp(30px, 4vw, 44px);
-  color: #fff;
-  transform: rotate(-4deg);
-}
-.sc-done-arrow {
-  width: 120px;
-  height: 36px;
-  stroke: rgba(255, 255, 255, 0.7);
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  fill: none;
-}
-
-.sc-board-reset {
-  margin-top: 14px;
-  padding: 4px 2px;
-  border: 0;
-  background: none;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 21px;
-  cursor: pointer;
-  text-decoration: underline;
-  text-decoration-style: wavy;
-  text-underline-offset: 5px;
-}
-
-/* ---- узкие экраны ----
-   Разброс живёт там, где есть место. На телефоне бумажки встают в поток,
-   сохраняя наклон и приписки: иначе они наезжали бы друг на друга. */
-@media (max-width: 900px) {
-  .sc-board {
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 18px 14px;
-  }
-  .sc-note {
-    position: static;
-    width: auto;
-    min-width: 0;
-  }
-  .sc-note:nth-child(even) {
-    margin-left: clamp(10px, 5vw, 44px);
-  }
-  .sc-note:nth-child(odd) {
-    margin-right: clamp(10px, 5vw, 44px);
-  }
-  .sc-clip,
-  .sc-coffee,
-  .sc-arrow,
-  .sc-arrow-note,
-  .sc-done {
-    display: none;
-  }
-  .sc-board[data-all] {
-    height: auto;
-  }
-  /* В потоке прозрачная бумажка продолжает занимать место, и собранная доска
-     оставалась бы пустой колонкой во весь экран. Поэтому на узких экранах
-     схлопываем и высоту с отступами, а не только прозрачность. */
-  .sc-board {
-    gap: 0;
-  }
-  .sc-note {
-    max-height: 420px;
-    margin-bottom: 16px;
-    transition:
-      transform 420ms cubic-bezier(0.32, 0.72, 0, 1),
-      opacity 300ms var(--ease-out),
-      max-height 460ms cubic-bezier(0.32, 0.72, 0, 1),
-      margin-bottom 460ms cubic-bezier(0.32, 0.72, 0, 1);
-  }
-  .sc-board[data-all] .sc-note {
-    max-height: 0;
-    margin-bottom: 0;
-    overflow: hidden;
-  }
-  .sc-folder {
-    position: static;
-    width: auto;
-    min-width: 0;
-    margin-top: 6px;
-  }
-}
-
 @media (prefers-reduced-transparency: reduce) {
-  .sc-note[data-kind='card'] .sc-note-btn::after,
-  .sc-note[data-kind='strip'] .sc-note-btn::after {
-    background: #f0ece0;
+  .sc-plan {
+    background: #151515;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@media (prefers-contrast: more) {
+  .sc-card-btn {
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  .sc-card-desc {
+    color: rgba(255, 255, 255, 0.85);
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sc-note,
-  .sc-note-btn,
-  .sc-note-tick,
-  .sc-note-strike,
+  .sc-card,
+  .sc-card-btn,
+  .sc-card-icon,
+  .sc-card-check,
   .sc-folder,
-  .sc-folder-face {
+  .sc-switch,
+  .sc-switch-knob,
+  .sc-plan-bar span {
     transition-duration: 1ms;
     transition-delay: 0ms !important;
   }
-  /* убираем полёт: бумажки просто исчезают, без перемещения через весь экран */
-  .sc-board[data-all] .sc-note {
-    transform: rotate(var(--rot));
-  }
-  .sc-folder[data-open],
-  .sc-note-btn:hover {
+  /* убираем полёт через весь блок: карточки просто исчезают на месте */
+  .sc-plan-grid[data-all] .sc-card {
     transform: none;
-  }
-  .sc-board,
-  .sc-done {
-    transition-duration: 1ms;
   }
 }
