@@ -395,43 +395,94 @@ function FirstCall() {
   );
 }
 
-const MECH_NODES: Array<{ label: string; desc: string; icon: string }> = [
-  { label: 'Площадки', desc: typo('Выбираем города, даты и залы под реальный спрос'), icon: 'M4 20V10L12 4L20 10V20H4Z M9 20V15H15V20' },
-  { label: 'Билеты', desc: typo('Заводим билетный стол и контролируем продажи'), icon: 'M3 8H21V16H3Z M9 8V10 M9 12V14 M14 8V10 M14 12V14' },
-  { label: 'Договоры', desc: typo('Закрываем юридический и финансовый контур'), icon: 'M6 4H14L18 8V20H6Z M14 4V8H18 M9 12H15 M9 15H13' },
-  { label: 'Реклама', desc: typo('Запускаем digital, наружку и локальные кампании'), icon: 'M3 12L15 6V18Z M15 10V14 M18 8V16' },
-  { label: typo('PR и медиа'), desc: typo('Подключаем СМИ, радио и инфопартнёров'), icon: 'M9 4H15V13H9Z M6 12A6 6 0 0018 12 M12 18V21' },
-  { label: 'Райдеры', desc: typo('Собираем технические и бытовые требования'), icon: 'M6 5H18V20H6Z M10 3H14V6H10Z M9 11H15 M9 14H14' },
-  { label: 'Логистика', desc: typo('Планируем перемещения, тайминги и сопровождение'), icon: 'M2 8H13V16H2Z M13 12H17L20 15V16H13Z M6 20A2 2 0 106 16 A2 2 0 106 20 Z M18 20A2 2 0 1018 16 A2 2 0 1018 20 Z' },
-  { label: 'Турменеджмент', desc: typo('Контролируем день события и работу на площадке'), icon: 'M12 3A6 6 0 0118 9C18 13 12 21 12 21C12 21 6 13 6 9A6 6 0 0112 3Z M12 7A2 2 0 1012 11 A2 2 0 1012 7 Z' },
+type MechNode = {
+  label: string;
+  desc: string;
+  icon: string;
+  /** чем выглядит бумажка: липкий стикер, карточка, оторванная полоска */
+  kind: 'sticky' | 'card' | 'strip';
+  /** приписка от руки — то, что человек дописывает на полях */
+  scribble: string;
+  /** позиция на доске в процентах и наклон: разброс авторский, а не случайный,
+      иначе он менялся бы на каждом рендере и прыгал при гидратации */
+  x: number;
+  y: number;
+  rot: number;
+};
+
+const MECH_NODES: MechNode[] = [
+  { label: 'Площадки', desc: typo('Выбираем города, даты и залы под реальный спрос'), icon: 'M4 20V10L12 4L20 10V20H4Z M9 20V15H15V20',
+    kind: 'sticky', scribble: typo('сначала обзвон ДК'), x: 1, y: 2, rot: -3.4 },
+  { label: 'Билеты', desc: typo('Заводим билетный стол и контролируем продажи'), icon: 'M3 8H21V16H3Z M9 8V10 M9 12V14 M14 8V10 M14 12V14',
+    kind: 'card', scribble: typo('квоты на бронь!'), x: 36, y: 0, rot: 2.1 },
+  { label: 'Договоры', desc: typo('Закрываем юридический и финансовый контур'), icon: 'M6 4H14L18 8V20H6Z M14 4V8H18 M9 12H15 M9 15H13',
+    kind: 'strip', scribble: typo('юрист смотрит до пт'), x: 70, y: 4, rot: -1.6 },
+  { label: 'Реклама', desc: typo('Запускаем digital, наружку и локальные кампании'), icon: 'M3 12L15 6V18Z M15 10V14 M18 8V16',
+    kind: 'card', scribble: typo('бюджет по городам'), x: 4, y: 34, rot: 2.8 },
+  { label: typo('PR и медиа'), desc: typo('Подключаем СМИ, радио и инфопартнёров'), icon: 'M9 4H15V13H9Z M6 12A6 6 0 0018 12 M12 18V21',
+    kind: 'sticky', scribble: typo('питч в понедельник'), x: 38, y: 37, rot: -2.2 },
+  { label: 'Райдеры', desc: typo('Собираем технические и бытовые требования'), icon: 'M6 5H18V20H6Z M10 3H14V6H10Z M9 11H15 M9 14H14',
+    kind: 'strip', scribble: typo('спросить тех.дира'), x: 71, y: 33, rot: 3.1 },
+  { label: 'Логистика', desc: typo('Планируем перемещения, тайминги и сопровождение'), icon: 'M2 8H13V16H2Z M13 12H17L20 15V16H13Z M6 20A2 2 0 106 16 A2 2 0 106 20 Z M18 20A2 2 0 1018 16 A2 2 0 1018 20 Z',
+    kind: 'card', scribble: typo('автобус или поезд?'), x: 4, y: 64, rot: -2.6 },
+  { label: 'Турменеджмент', desc: typo('Контролируем день события и работу на площадке'), icon: 'M12 3A6 6 0 0118 9C18 13 12 21 12 21C12 21 6 13 6 9A6 6 0 0112 3Z M12 7A2 2 0 1012 11 A2 2 0 1012 7 Z',
+    kind: 'sticky', scribble: typo('график по дням'), x: 33, y: 66, rot: 1.9 },
 ];
+
+/** Галочка нарисована от руки: линия неровная и ставится в два росчерка. */
+function HandCheck() {
+  return (
+    <svg className="sc-note-tick" viewBox="0 0 26 26" fill="none" aria-hidden>
+      <path d="M6 13.5 C 8 15.4, 9.4 17.2, 10.8 19.4 C 13.6 14, 16.6 9.6, 20.6 6.4" />
+    </svg>
+  );
+}
 
 function SecondCall() {
   const N = MECH_NODES.length;
-  const [lit, setLit] = useState<boolean[]>(() => Array(N).fill(false));
-  // Мастер-переключатель включает части каскадом, с задержкой по индексу —
-  // как системы, выходящие на связь по очереди. Тап по одной строке
-  // срабатывает мгновенно: задержка тут только мешала бы.
-  const [cascade, setCascade] = useState(false);
-  const onCount = lit.filter(Boolean).length;
-  const all = onCount === N;
+  const [done, setDone] = useState<boolean[]>(() => Array(N).fill(false));
+  const count = done.filter(Boolean).length;
+  const all = count === N;
 
-  const toggleAll = () => {
-    setCascade(true);
-    setLit(Array(N).fill(!all));
-  };
-  const toggleOne = (i: number) => {
-    setCascade(false);
-    setLit((prev) => prev.map((v, j) => (j === i ? !v : v)));
-  };
+  const boardRef = useRef<HTMLUListElement>(null);
+  const folderRef = useRef<HTMLDivElement>(null);
+  const noteRefs = useRef<Array<HTMLLIElement | null>>([]);
 
-  const status = all ? 'Запущен' : onCount === 0 ? 'Выключен' : `${onCount} из ${N} включено`;
+  const toggle = (i: number) => setDone((prev) => prev.map((v, j) => (j === i ? !v : v)));
+  const reset = () => setDone(Array(N).fill(false));
+
+  // Вектор от каждой бумажки к папке пишем в CSS-переменные, а само движение
+  // отдаём переходу — тогда сбор и возврат работают в обе стороны и
+  // прерываются на полпути. Считаем по offset-координатам, а не по
+  // getBoundingClientRect: те уже включают собственный transform заметки.
+  useEffect(() => {
+    const measure = () => {
+      const folder = folderRef.current;
+      if (!folder) return;
+      const fx = folder.offsetLeft + folder.offsetWidth / 2;
+      const fy = folder.offsetTop + folder.offsetHeight / 2;
+      noteRefs.current.forEach((el) => {
+        if (!el) return;
+        el.style.setProperty('--dx', `${Math.round(fx - (el.offsetLeft + el.offsetWidth / 2))}px`);
+        el.style.setProperty('--dy', `${Math.round(fy - (el.offsetTop + el.offsetHeight / 2))}px`);
+      });
+    };
+    measure();
+    const board = boardRef.current;
+    if (!board || typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(board);
+    return () => ro.disconnect();
+  }, []);
 
   return (
     <section
       id="mechanism"
       style={{
         position: 'relative',
+        // Меш задан с inset -160px и без обрезки вылезал вверх, на белый
+        // первый экран — там появлялось персиковое пятно из чужой секции.
+        overflow: 'hidden',
         background: RED,
         color: PAPER,
         padding: `72px ${PAD_X}`,
@@ -450,56 +501,89 @@ function SecondCall() {
           {typo("Площадки, билеты, договоры, реклама, PR, райдеры, логистика — каждая часть должна включиться вовремя. Собираем «под ключ», пока артист готовит шоу.")}
         </p>
 
-        <div className="sc-mech">
-          <div className="sc-mech-head">
-            <div>
-              <div className="sc-mech-title">{typo('Механизм полного зала')}</div>
-              <div className="sc-mech-status" aria-live="polite">{typo(status)}</div>
+        <div className="sc-board-wrap">
+          <div className="sc-board-head">
+            <div className="sc-board-title">
+              <span className="sc-hand sc-board-hand">{typo('чек-лист тура')}</span>
+              <span className="sc-board-sub">{typo('Отметь всё — соберём в одну папку')}</span>
             </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={all}
-              aria-label={all ? 'Остановить механизм' : 'Запустить механизм'}
-              className="sc-switch"
-              onClick={toggleAll}
-            >
-              <span className="sc-switch-knob" />
-            </button>
+            <div className="sc-board-tally">
+              <span className="sc-tally-num">{count}</span>
+              <span className="sc-tally-of">{typo(`из ${N}`)}</span>
+            </div>
           </div>
 
-          <ul className="sc-mech-list">
+          <ul className="sc-board" ref={boardRef} data-all={all || undefined}>
             {MECH_NODES.map((node, i) => (
-              <li key={node.label}>
-                <button
-                  type="button"
-                  className="sc-mech-row"
-                  aria-pressed={lit[i]}
-                  data-on={lit[i] || undefined}
-                  style={{ transitionDelay: cascade ? `${i * 45}ms` : '0ms' }}
-                  onClick={() => toggleOne(i)}
-                >
-                  <span className="sc-mech-icon" aria-hidden>
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+              <li
+                key={node.label}
+                ref={(el) => { noteRefs.current[i] = el; }}
+                className="sc-note"
+                data-kind={node.kind}
+                data-done={done[i] || undefined}
+                style={{
+                  '--x': `${node.x}%`,
+                  '--y': `${node.y}%`,
+                  '--rot': `${node.rot}deg`,
+                  '--i': i,
+                } as React.CSSProperties}
+              >
+                <button type="button" className="sc-note-btn" aria-pressed={done[i]} onClick={() => toggle(i)}>
+                  <span className="sc-note-box" aria-hidden>
+                    <HandCheck />
+                  </span>
+                  <span className="sc-note-body">
+                    <span className="sc-note-label">
+                      {node.label}
+                      <svg className="sc-note-strike" viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden>
+                        <path d="M3 7.5 C 45 4.6, 96 8.8, 150 5.2 C 170 4, 186 6.4, 197 5.6" />
+                      </svg>
+                    </span>
+                    <span className="sc-note-desc">{node.desc}</span>
+                    <span className="sc-hand sc-note-scribble">{node.scribble}</span>
+                  </span>
+                  <span className="sc-note-icon" aria-hidden>
+                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                       <path d={node.icon} />
                     </svg>
                   </span>
-                  <span className="sc-mech-text">
-                    <span className="sc-mech-label">{node.label}</span>
-                    <span className="sc-mech-desc">{node.desc}</span>
-                  </span>
-                  <span className="sc-mech-dot" aria-hidden />
                 </button>
               </li>
             ))}
+
+            {/* Следы живого человека: скотч, скрепка, кофейное кольцо, стрелка */}
+            <span className="sc-clip" aria-hidden />
+            <span className="sc-coffee" aria-hidden />
+            <svg className="sc-arrow" viewBox="0 0 120 60" fill="none" aria-hidden>
+              <path d="M6 12 C 40 4, 78 16, 104 40" />
+              <path d="M92 40 L 106 43 L 100 30" />
+            </svg>
+            <span className="sc-hand sc-arrow-note" aria-hidden>{typo('это в первую очередь')}</span>
+
+            <div className="sc-done" aria-hidden>
+              <span className="sc-hand sc-done-word">{typo('готово')}</span>
+              <svg className="sc-done-arrow" viewBox="0 0 140 40" fill="none">
+                <path d="M4 26 C 34 8, 74 6, 122 16" />
+                <path d="M110 8 L 126 17 L 108 24" />
+              </svg>
+            </div>
+
+            <div className="sc-folder" ref={folderRef} data-open={all || undefined}>
+              <span className="sc-folder-tab" aria-hidden />
+              <span className="sc-folder-face">
+                <span className="sc-folder-word">ШОУ</span>
+                <span className="sc-folder-meta" aria-live="polite">
+                  {all ? typo('Собрано целиком — тур готов к продаже') : typo(`Ждёт ещё ${N - count}`)}
+                </span>
+              </span>
+            </div>
           </ul>
 
-          <div className="sc-mech-stage" data-on={all || undefined}>
-            <span className="sc-mech-stage-word">ШОУ</span>
-            <span className="sc-mech-stage-note">
-              {all ? typo('Зал собран, артист на сцене') : typo('Включи все восемь частей')}
-            </span>
-          </div>
+          {all && (
+            <button type="button" className="sc-hand sc-board-reset" onClick={reset}>
+              {typo('разобрать обратно')}
+            </button>
+          )}
         </div>
 
         <PartnershipStrap />

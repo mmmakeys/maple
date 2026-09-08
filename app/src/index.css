@@ -1463,262 +1463,535 @@ html {
   }
 }
 
-/* ---- Сценика: механизм полного зала ----
-   Одна стеклянная панель поверх красного меша: сгруппированный список
-   частей, мастер-переключатель и «сцена», которая загорается только
-   когда включены все части. Метафора совпадает с механикой. */
-.sc-mech {
-  margin-top: 36px;
-  max-width: 760px;
-  border-radius: 28px;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-  -webkit-backdrop-filter: blur(28px) saturate(170%);
-  backdrop-filter: blur(28px) saturate(170%);
-  /* верхняя кромка ловит свет — так материал читается как стекло, а не как плашка */
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.38),
-    0 30px 80px -30px rgba(0, 0, 0, 0.55);
-  overflow: hidden;
-  font-family: 'Manrope', sans-serif;
+/* ---- Сценика: доска с чек-листом тура ----
+   Восемь бумажек разбросаны по доске, как их положил бы живой человек:
+   стикеры, карточки и оторванные полоски под разными углами, с приписками
+   от руки. Когда отмечены все, они слетаются в одну папку «ШОУ». */
+
+.sc-board-wrap {
+  margin-top: 40px;
+  max-width: 980px;
 }
-.sc-mech-head {
+.sc-board-head {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: 16px;
-  padding: 20px 22px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
 }
-.sc-mech-title {
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.2;
+.sc-hand {
+  font-family: 'Caveat', 'Manrope', cursive;
+  font-weight: 600;
+  /* рукописный шрифт сидит на строке иначе гротеска — компенсируем */
+  line-height: 1.1;
 }
-.sc-mech-status {
-  margin-top: 3px;
-  font-size: 13.5px;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  color: rgba(255, 255, 255, 0.78);
-}
-
-/* переключатель в духе iOS */
-.sc-switch {
-  flex: none;
-  width: 52px;
-  height: 32px;
-  padding: 2px;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.22);
-  cursor: pointer;
-  transition: background 220ms var(--ease-out), transform 160ms var(--ease-out);
-}
-.sc-switch[aria-checked='true'] {
-  background: #fff;
-}
-.sc-switch-knob {
+.sc-board-hand {
   display: block;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.28);
-  transition: transform 320ms cubic-bezier(0.32, 0.72, 0, 1), background 220ms var(--ease-out);
+  font-size: clamp(28px, 3.6vw, 40px);
+  color: #fff;
+  transform: rotate(-1.6deg);
+  transform-origin: left bottom;
 }
-.sc-switch[aria-checked='true'] .sc-switch-knob {
-  transform: translateX(20px);
-  background: #111;
+.sc-board-sub {
+  display: block;
+  margin-top: 4px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.72);
+}
+.sc-board-tally {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-family: 'Caveat', cursive;
+  color: #fff;
+  transform: rotate(1.4deg);
+}
+.sc-tally-num {
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 0.9;
+}
+.sc-tally-of {
+  font-size: 22px;
+  opacity: 0.75;
 }
 
-.sc-mech-list {
+/* доска */
+.sc-board {
+  position: relative;
   list-style: none;
   margin: 0;
-  padding: 8px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 4px;
+  padding: 0;
+  height: 620px;
+  border-radius: 18px;
+  /* «пробковая» подложка: тёмный слой поверх красного, чтобы бумага читалась */
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgba(0, 0, 0, 0.16), transparent 60%),
+    rgba(0, 0, 0, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: height 620ms cubic-bezier(0.32, 0.72, 0, 1);
 }
-.sc-mech-row {
+.sc-board[data-all] {
+  height: 250px;
+}
+
+/* ---- бумажка ---- */
+.sc-note {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 27%;
+  min-width: 210px;
+  transform: rotate(var(--rot));
+  transition:
+    transform 620ms cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 420ms var(--ease-out);
+  /* бумажки уезжают в папку по очереди, а возвращаются в обратном порядке */
+  transition-delay: calc(var(--i) * 55ms);
+}
+.sc-note-btn {
+  position: relative;
   width: 100%;
-  min-height: 62px;
   display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 14px;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 14px 16px;
   border: 0;
-  border-radius: 16px;
-  background: transparent;
-  color: #fff;
   text-align: left;
   cursor: pointer;
-  font-family: inherit;
-  transition: background 220ms var(--ease-out), transform 160ms var(--ease-out);
-}
-.sc-mech-row[data-on] {
-  background: rgba(255, 255, 255, 0.14);
+  color: #17140f;
+  font-family: 'Manrope', sans-serif;
+  background: #fffdf5;
+  border-radius: 3px;
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.16),
+    0 14px 26px -12px rgba(0, 0, 0, 0.5);
+  transition: transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
 }
 @media (hover: hover) and (pointer: fine) {
-  .sc-mech-row:hover {
-    background: rgba(255, 255, 255, 0.09);
-  }
-  .sc-mech-row[data-on]:hover {
-    background: rgba(255, 255, 255, 0.18);
+  .sc-note-btn:hover {
+    transform: translateY(-3px) rotate(-0.6deg);
+    box-shadow:
+      0 1px 1px rgba(0, 0, 0, 0.16),
+      0 22px 34px -14px rgba(0, 0, 0, 0.55);
   }
 }
-.sc-mech-icon {
+.sc-note-btn:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+/* липкий стикер: тёплая бумага и клеевая полоса сверху */
+.sc-note[data-kind='sticky'] .sc-note-btn {
+  /* цвет-подложка обязателен: сокращение background с одним градиентом
+     обнуляет background-color, и без картинки стикер остался бы прозрачным,
+     то есть тёмный текст лёг бы прямо на красный фон */
+  background: linear-gradient(#fdf0b8, #fbe79a) #fbe79a;
+  border-radius: 2px;
+}
+.sc-note[data-kind='sticky'] .sc-note-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 22px;
+  background: linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+/* карточка: белая бумага в тонкую линейку */
+.sc-note[data-kind='card'] .sc-note-btn {
+  background:
+    repeating-linear-gradient(#fffdf8 0 26px, #e9e2d2 26px 27px),
+    #fffdf8;
+  border-radius: 4px;
+}
+/* оторванная полоска: рваный нижний край */
+.sc-note[data-kind='strip'] .sc-note-btn {
+  background: #f6f1e4;
+  border-radius: 2px;
+  -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='140' viewBox='0 0 240 140' preserveAspectRatio='none'%3E%3Cpath fill='%23000' d='M0 0h240v128c-18 6-30-2-46 1s-24 8-40 4-26-9-42-6-28 9-44 5-30-9-40-6-16 4-28 2z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='140' viewBox='0 0 240 140' preserveAspectRatio='none'%3E%3Cpath fill='%23000' d='M0 0h240v128c-18 6-30-2-46 1s-24 8-40 4-26-9-42-6-28 9-44 5-30-9-40-6-16 4-28 2z'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  padding-bottom: 24px;
+}
+/* скотч поверх карточек и полосок */
+.sc-note[data-kind='card'] .sc-note-btn::after,
+.sc-note[data-kind='strip'] .sc-note-btn::after {
+  content: '';
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 74px;
+  height: 20px;
+  transform: translateX(-50%) rotate(-2.4deg);
+  background: rgba(255, 255, 255, 0.42);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+}
+.sc-note[data-kind='strip'] .sc-note-btn::after {
+  left: 22%;
+  transform: rotate(4deg);
+}
+
+/* ---- чекбокс от руки ---- */
+.sc-note-box {
+  position: relative;
   flex: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 11px;
-  display: grid;
-  place-items: center;
-  background: rgba(255, 255, 255, 0.16);
-  color: #fff;
-  transition:
-    background 220ms var(--ease-out),
-    color 220ms var(--ease-out),
-    transform 320ms cubic-bezier(0.32, 0.72, 0, 1);
-  transition-delay: inherit;
+  width: 26px;
+  height: 26px;
+  margin-top: 1px;
+  /* нарисованный, а не идеальный: у круга разная толщина обводки и наклон */
+  border: 2px solid #2f2a22;
+  border-radius: 49% 51% 47% 53% / 52% 48% 53% 47%;
+  transform: rotate(-4deg);
+  transition: background 220ms var(--ease-out);
 }
-.sc-mech-row[data-on] .sc-mech-icon {
-  background: #fff;
-  color: #111;
-  transform: scale(1.06);
+.sc-note-tick {
+  position: absolute;
+  inset: -5px;
+  width: 34px;
+  height: 34px;
+  stroke: #1d5c2f;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  /* галочка «дорисовывается» — это и есть жест отметки */
+  stroke-dasharray: 34;
+  stroke-dashoffset: 34;
+  transition: stroke-dashoffset 340ms cubic-bezier(0.32, 0.72, 0, 1);
 }
-.sc-mech-text {
+.sc-note[data-done] .sc-note-tick {
+  stroke-dashoffset: 0;
+}
+
+.sc-note-body {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
-.sc-mech-label {
-  font-size: 15px;
-  font-weight: 700;
+.sc-note-label {
+  position: relative;
+  align-self: flex-start;
+  font-size: 15.5px;
+  font-weight: 800;
   letter-spacing: -0.005em;
   line-height: 1.2;
 }
-.sc-mech-desc {
-  font-size: 13px;
+.sc-note-strike {
+  position: absolute;
+  left: -3px;
+  right: -3px;
+  top: 52%;
+  width: calc(100% + 6px);
+  height: 10px;
+  stroke: #b3271f;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  fill: none;
+  stroke-dasharray: 210;
+  stroke-dashoffset: 210;
+  transition: stroke-dashoffset 420ms cubic-bezier(0.32, 0.72, 0, 1) 120ms;
+  pointer-events: none;
+}
+.sc-note[data-done] .sc-note-strike {
+  stroke-dashoffset: 0;
+}
+.sc-note-desc {
+  font-size: 12.5px;
   font-weight: 500;
   line-height: 1.35;
-  letter-spacing: 0.005em;
-  /* поверх стекла плоский серый выцветает: держим контраст весом и альфой */
-  color: rgba(255, 255, 255, 0.76);
+  color: #5b5245;
+  transition: opacity 260ms var(--ease-out);
 }
-.sc-mech-dot {
+.sc-note[data-done] .sc-note-desc {
+  opacity: 0.5;
+}
+/* приписка на полях — синей ручкой, под небольшим углом */
+.sc-note-scribble {
+  margin-top: 4px;
+  font-size: 17px;
+  color: #2f4bb5;
+  transform: rotate(-1.8deg);
+  transform-origin: left center;
+}
+.sc-note-icon {
   flex: none;
-  position: relative;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.45);
-  transition: background 220ms var(--ease-out), border-color 220ms var(--ease-out);
-  transition-delay: inherit;
-}
-.sc-mech-dot::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E") center / 12px no-repeat;
-  opacity: 0;
-  transform: scale(0.6);
-  transition: opacity 180ms var(--ease-out), transform 260ms cubic-bezier(0.32, 0.72, 0, 1);
-  transition-delay: inherit;
-}
-.sc-mech-row[data-on] .sc-mech-dot {
-  background: #fff;
-  border-color: #fff;
-}
-.sc-mech-row[data-on] .sc-mech-dot::after {
-  opacity: 1;
-  transform: scale(1);
+  color: #8b8171;
+  opacity: 0.75;
 }
 
-.sc-mech-stage {
-  margin: 4px 8px 8px;
-  padding: 18px 22px;
-  border-radius: 20px;
+/* ---- следы живого человека ---- */
+.sc-clip {
+  position: absolute;
+  left: 30.5%;
+  top: -8px;
+  width: 16px;
+  height: 42px;
+  border: 2.4px solid #b9bec6;
+  border-radius: 9px;
+  transform: rotate(9deg);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+.sc-clip::after {
+  content: '';
+  position: absolute;
+  inset: 7px 3px 12px;
+  border: 2.4px solid #cfd4da;
+  border-radius: 6px;
+}
+.sc-coffee {
+  position: absolute;
+  right: 6%;
+  top: 60%;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  border: 7px solid rgba(92, 46, 16, 0.16);
+  transform: rotate(-8deg) scaleY(0.92);
+  pointer-events: none;
+}
+.sc-arrow {
+  position: absolute;
+  left: 25%;
+  top: 22.5%;
+  width: 130px;
+  height: 64px;
+  stroke: rgba(255, 255, 255, 0.6);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  pointer-events: none;
+}
+.sc-arrow-note {
+  position: absolute;
+  left: 22%;
+  top: 17%;
+  font-size: 19px;
+  color: rgba(255, 255, 255, 0.72);
+  transform: rotate(-5deg);
+  pointer-events: none;
+}
+
+/* ---- папка ---- */
+.sc-folder {
+  position: absolute;
+  right: 3.5%;
+  bottom: 5%;
+  width: 34%;
+  min-width: 240px;
+  transition: transform 620ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+.sc-folder-tab {
+  display: block;
+  width: 92px;
+  height: 16px;
+  margin-left: 14px;
+  border-radius: 8px 12px 0 0;
+  background: #d9b25f;
+  transition: background 420ms var(--ease-out);
+}
+.sc-folder-face {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   flex-wrap: wrap;
-  background: rgba(0, 0, 0, 0.28);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #fff;
-  transition:
-    background 360ms var(--ease-out),
-    color 360ms var(--ease-out),
-    border-color 360ms var(--ease-out),
-    box-shadow 480ms var(--ease-out),
-    transform 480ms cubic-bezier(0.32, 0.72, 0, 1);
+  padding: 16px 18px 18px;
+  border-radius: 4px 10px 10px 10px;
+  background: #e3c06b;
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.7);
+  color: #4a3a12;
+  transition: background 420ms var(--ease-out), color 420ms var(--ease-out), box-shadow 520ms var(--ease-out);
 }
-.sc-mech-stage[data-on] {
-  background: #fff;
-  color: #111;
-  border-color: #fff;
-  box-shadow: 0 24px 64px -20px rgba(255, 255, 255, 0.6);
-  transform: translateY(-2px);
-}
-.sc-mech-stage-word {
+.sc-folder-word {
   font-family: 'Onest', sans-serif;
   font-weight: 800;
-  font-size: clamp(22px, 3vw, 30px);
+  font-size: clamp(24px, 3vw, 34px);
   letter-spacing: 0.06em;
   line-height: 1;
 }
-.sc-mech-stage-note {
-  font-size: 13.5px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.7);
-  transition: color 360ms var(--ease-out);
+.sc-folder-meta {
+  font-family: 'Caveat', cursive;
+  font-size: 19px;
+  line-height: 1.1;
+  color: #6c5622;
 }
-.sc-mech-stage[data-on] .sc-mech-stage-note {
-  color: #555;
+/* пока папка пустая — она приглушена и ждёт */
+.sc-folder:not([data-open]) .sc-folder-face {
+  /* пунктир вместо заливки: пустая папка — это цель, куда всё соберётся */
+  background: rgba(120, 8, 16, 0.5);
+  color: #fff;
+  box-shadow: none;
+  outline: 2px dashed rgba(255, 255, 255, 0.5);
+  outline-offset: -6px;
+}
+.sc-folder:not([data-open]) .sc-folder-tab {
+  background: rgba(255, 255, 255, 0.3);
+}
+.sc-folder:not([data-open]) .sc-folder-meta {
+  color: rgba(255, 255, 255, 0.65);
+}
+.sc-folder[data-open] {
+  transform: scale(1.04);
+}
+.sc-folder[data-open] .sc-folder-face {
+  box-shadow: 0 26px 60px -20px rgba(0, 0, 0, 0.75);
 }
 
-@media (max-width: 480px) {
-  .sc-mech {
-    border-radius: 22px;
+/* ---- сбор в папку ----
+   Вектор до папки лежит в --dx/--dy, а само движение делает переход:
+   так сбор и разбор работают в обе стороны и прерываются на полпути. */
+.sc-board[data-all] .sc-note {
+  transform: translate(var(--dx, 0), var(--dy, 0)) rotate(calc(var(--rot) * 0.35)) scale(0.16);
+  opacity: 0;
+  pointer-events: none;
+}
+.sc-board[data-all] .sc-clip,
+.sc-board[data-all] .sc-coffee,
+.sc-board[data-all] .sc-arrow,
+.sc-board[data-all] .sc-arrow-note {
+  opacity: 0;
+  transition: opacity 320ms var(--ease-out);
+}
+
+/* пометка у папки: появляется, когда доска расчищена */
+.sc-done {
+  position: absolute;
+  left: 30%;
+  bottom: 19%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 320ms var(--ease-out), transform 420ms cubic-bezier(0.32, 0.72, 0, 1);
+  pointer-events: none;
+}
+.sc-board[data-all] .sc-done {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 380ms;
+}
+.sc-done-word {
+  font-size: clamp(30px, 4vw, 44px);
+  color: #fff;
+  transform: rotate(-4deg);
+}
+.sc-done-arrow {
+  width: 120px;
+  height: 36px;
+  stroke: rgba(255, 255, 255, 0.7);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.sc-board-reset {
+  margin-top: 14px;
+  padding: 4px 2px;
+  border: 0;
+  background: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 21px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  text-underline-offset: 5px;
+}
+
+/* ---- узкие экраны ----
+   Разброс живёт там, где есть место. На телефоне бумажки встают в поток,
+   сохраняя наклон и приписки: иначе они наезжали бы друг на друга. */
+@media (max-width: 900px) {
+  .sc-board {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 18px 14px;
   }
-  .sc-mech-head {
-    padding: 16px 16px 14px;
+  .sc-note {
+    position: static;
+    width: auto;
+    min-width: 0;
   }
-  .sc-mech-row {
-    padding: 11px 10px;
-    gap: 12px;
+  .sc-note:nth-child(even) {
+    margin-left: clamp(10px, 5vw, 44px);
+  }
+  .sc-note:nth-child(odd) {
+    margin-right: clamp(10px, 5vw, 44px);
+  }
+  .sc-clip,
+  .sc-coffee,
+  .sc-arrow,
+  .sc-arrow-note,
+  .sc-done {
+    display: none;
+  }
+  .sc-board[data-all] {
+    height: auto;
+  }
+  /* В потоке прозрачная бумажка продолжает занимать место, и собранная доска
+     оставалась бы пустой колонкой во весь экран. Поэтому на узких экранах
+     схлопываем и высоту с отступами, а не только прозрачность. */
+  .sc-board {
+    gap: 0;
+  }
+  .sc-note {
+    max-height: 420px;
+    margin-bottom: 16px;
+    transition:
+      transform 420ms cubic-bezier(0.32, 0.72, 0, 1),
+      opacity 300ms var(--ease-out),
+      max-height 460ms cubic-bezier(0.32, 0.72, 0, 1),
+      margin-bottom 460ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .sc-board[data-all] .sc-note {
+    max-height: 0;
+    margin-bottom: 0;
+    overflow: hidden;
+  }
+  .sc-folder {
+    position: static;
+    width: auto;
+    min-width: 0;
+    margin-top: 6px;
   }
 }
+
 @media (prefers-reduced-transparency: reduce) {
-  .sc-mech {
-    background: rgba(24, 0, 4, 0.6);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-}
-@media (prefers-contrast: more) {
-  .sc-mech {
-    background: rgba(0, 0, 0, 0.65);
-    border: 1px solid #fff;
+  .sc-note[data-kind='card'] .sc-note-btn::after,
+  .sc-note[data-kind='strip'] .sc-note-btn::after {
+    background: #f0ece0;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sc-mech-row,
-  .sc-mech-icon,
-  .sc-mech-dot,
-  .sc-mech-dot::after,
-  .sc-mech-stage,
-  .sc-switch,
-  .sc-switch-knob {
+  .sc-note,
+  .sc-note-btn,
+  .sc-note-tick,
+  .sc-note-strike,
+  .sc-folder,
+  .sc-folder-face {
     transition-duration: 1ms;
     transition-delay: 0ms !important;
   }
-  .sc-mech-row[data-on] .sc-mech-icon,
-  .sc-mech-stage[data-on] {
+  /* убираем полёт: бумажки просто исчезают, без перемещения через весь экран */
+  .sc-board[data-all] .sc-note {
+    transform: rotate(var(--rot));
+  }
+  .sc-folder[data-open],
+  .sc-note-btn:hover {
     transform: none;
+  }
+  .sc-board,
+  .sc-done {
+    transition-duration: 1ms;
   }
 }
