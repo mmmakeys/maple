@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { typo } from '../typo';
 
 const DISPLAY = "'Onest', sans-serif";
@@ -406,61 +406,29 @@ const MECH_NODES: Array<{ label: string; desc: string; icon: string }> = [
   { label: 'Турменеджмент', desc: typo('Контролируем день события и работу на площадке'), icon: 'M12 3A6 6 0 0118 9C18 13 12 21 12 21C12 21 6 13 6 9A6 6 0 0112 3Z M12 7A2 2 0 1012 11 A2 2 0 1012 7 Z' },
 ];
 
-// 8 grid slots around the centre (row-major, centre skipped).
-const MECH_SLOTS: Array<[number, number]> = [
-  [1, 1], [2, 1], [3, 1],
-  [1, 2],         [3, 2],
-  [1, 3], [2, 3], [3, 3],
-];
-
 function SecondCall() {
   const N = MECH_NODES.length;
-  const [assembled, setAssembled] = useState(false);
-  const [hovered, setHovered] = useState<number>(-1);
-  const [slotByNode, setSlotByNode] = useState<number[]>(() => Array.from({ length: N }, (_, i) => i));
-  const [flashDelays, setFlashDelays] = useState<number[]>(() => Array(N + 1).fill(0));
-  const tileRefs = useRef<Array<HTMLDivElement | null>>([]);
-  const prevRects = useRef<Array<DOMRect | null> | null>(null);
+  const [lit, setLit] = useState<boolean[]>(() => Array(N).fill(false));
+  // Мастер-переключатель включает части каскадом, с задержкой по индексу —
+  // как системы, выходящие на связь по очереди. Тап по одной строке
+  // срабатывает мгновенно: задержка тут только мешала бы.
+  const [cascade, setCascade] = useState(false);
+  const onCount = lit.filter(Boolean).length;
+  const all = onCount === N;
 
-  const toggle = () => {
-    prevRects.current = tileRefs.current.map((el) => el?.getBoundingClientRect() ?? null);
-    setSlotByNode((prev) => {
-      const arr = [...prev];
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    });
-    setFlashDelays(Array.from({ length: N + 1 }, () => Math.floor(Math.random() * 380)));
-    setAssembled((prev) => !prev);
+  const toggleAll = () => {
+    setCascade(true);
+    setLit(Array(N).fill(!all));
+  };
+  const toggleOne = (i: number) => {
+    setCascade(false);
+    setLit((prev) => prev.map((v, j) => (j === i ? !v : v)));
   };
 
-  useLayoutEffect(() => {
-    const prev = prevRects.current;
-    if (!prev) return;
-    tileRefs.current.forEach((el, i) => {
-      const before = prev[i];
-      if (!el || !before) return;
-      const after = el.getBoundingClientRect();
-      const dx = before.left - after.left;
-      const dy = before.top - after.top;
-      if (Math.hypot(dx, dy) < 0.5) return;
-      el.animate(
-        [
-          { transform: `translate(${dx}px, ${dy}px)` },
-          { transform: 'translate(0, 0)' },
-        ],
-        { duration: 640, easing: 'cubic-bezier(0.32, 0.72, 0.24, 1)' },
-      );
-    });
-    prevRects.current = null;
-  }, [slotByNode]);
-
-  const focused = hovered >= 0 ? MECH_NODES[hovered] : null;
+  const status = all ? 'Запущен' : onCount === 0 ? 'Выключен' : `${onCount} из ${N} включено`;
 
   return (
-    <div
+    <section
       id="mechanism"
       style={{
         position: 'relative',
@@ -476,186 +444,67 @@ function SecondCall() {
         <div className="sc-mesh-blob sc-mesh-c" />
       </div>
       <div style={{ position: 'relative', zIndex: 1 }}>
-      <div style={{ ...CALL_LABEL, color: PAPER }}>Второй звонок</div>
-      <h2 style={{ ...SECTION_H2, margin: '20px 0 0', maxWidth: 900, color: PAPER }}>Запускаем механизм полного зала</h2>
-      <p style={{ fontSize: 17, lineHeight: 1.55, color: 'rgba(255,255,255,0.78)', maxWidth: 720, margin: '18px 0 0' }}>
-        {typo("Площадки, билеты, договоры, реклама, PR, райдеры, логистика — каждая часть должна включиться вовремя. Собираем «под ключ», пока артист готовит шоу.")}
-      </p>
+        <div style={{ ...CALL_LABEL, color: PAPER }}>Второй звонок</div>
+        <h2 style={{ ...SECTION_H2, margin: '20px 0 0', maxWidth: 900, color: PAPER }}>Запускаем механизм полного зала</h2>
+        <p style={{ fontSize: 17, lineHeight: 1.55, color: 'rgba(255,255,255,0.78)', maxWidth: 720, margin: '18px 0 0' }}>
+          {typo("Площадки, билеты, договоры, реклама, PR, райдеры, логистика — каждая часть должна включиться вовремя. Собираем «под ключ», пока артист готовит шоу.")}
+        </p>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginTop: 28, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <svg
-            viewBox="0 0 100 100"
-            width="34"
-            height="34"
-            fill="none"
-            stroke={PAPER}
-            strokeWidth="6"
-            strokeLinecap="round"
-            style={{
-              transformOrigin: '50% 50%',
-              animation: assembled ? 'sc-gear-cw 3.2s linear infinite' : undefined,
-            }}
-          >
-            <circle cx="50" cy="50" r="26" />
-            <circle cx="50" cy="50" r="7" fill={PAPER} stroke="none" />
-            {gearTeeth}
-          </svg>
-          <svg
-            viewBox="0 0 100 100"
-            width="24"
-            height="24"
-            fill="none"
-            stroke={INK}
-            strokeWidth="6"
-            strokeLinecap="round"
-            style={{
-              transformOrigin: '50% 50%',
-              marginLeft: -5,
-              animation: assembled ? 'sc-gear-ccw 2.1s linear infinite' : undefined,
-            }}
-          >
-            <circle cx="50" cy="50" r="26" />
-            <circle cx="50" cy="50" r="7" fill={INK} stroke="none" />
-            {gearTeeth}
-          </svg>
-        </div>
-        <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.82)', letterSpacing: '0.02em', fontWeight: assembled ? 700 : 400 }}>
-          {assembled ? 'Механизм запущен.' : typo('Тапни любой блок — соберём механизм.')}
-        </span>
-      </div>
-
-      <div
-        style={{
-          marginTop: 24,
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gridTemplateRows: 'repeat(3, 1fr)',
-          gap: 'clamp(8px, 1.1vw, 16px)',
-          width: '100%',
-          maxWidth: 460,
-          aspectRatio: '1 / 1',
-        }}
-      >
-        {MECH_NODES.map((node, i) => {
-          const slot = slotByNode[i];
-          const [col, row] = MECH_SLOTS[slot];
-          const lit = assembled;
-          const delay = flashDelays[i];
-          return (
-            <div
-              key={i}
-              ref={(el) => { tileRefs.current[i] = el; }}
-              style={{ gridColumn: col, gridRow: row, minWidth: 0 }}
-            >
-              <button
-                type="button"
-                aria-label={node.label}
-                aria-pressed={assembled}
-                onMouseEnter={() => setHovered(i)}
-                onMouseLeave={() => setHovered(-1)}
-                onFocus={() => setHovered(i)}
-                onBlur={() => setHovered(-1)}
-                onClick={toggle}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 'clamp(6px, 0.9vw, 12px)',
-                  padding: 'clamp(10px, 1.6vw, 22px)',
-                  background: lit ? INK : PAPER,
-                  border: `1.5px solid ${PAPER}`,
-                  borderRadius: 0,
-                  cursor: 'pointer',
-                  transition: `background 260ms ease ${delay}ms, color 260ms ease ${delay}ms`,
-                  fontFamily: "'Manrope', sans-serif",
-                  color: lit ? PAPER : INK,
-                }}
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  width="clamp(22px, 3vw, 34px)"
-                  height="clamp(22px, 3vw, 34px)"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d={node.icon} />
-                </svg>
-                <span
-                  style={{
-                    fontSize: 'clamp(11px, 1.15vw, 14px)',
-                    fontWeight: 700,
-                    letterSpacing: '0.01em',
-                    textAlign: 'center',
-                    lineHeight: 1.2,
-                  }}
-                >
-                  {node.label}
-                </span>
-              </button>
+        <div className="sc-mech">
+          <div className="sc-mech-head">
+            <div>
+              <div className="sc-mech-title">{typo('Механизм полного зала')}</div>
+              <div className="sc-mech-status" aria-live="polite">{typo(status)}</div>
             </div>
-          );
-        })}
-        <div style={{ gridColumn: 2, gridRow: 2, minWidth: 0 }}>
-          <button
-            type="button"
-            aria-label={assembled ? 'Разобрать механизм' : 'Собрать механизм'}
-            onClick={toggle}
-            style={{
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: assembled ? PAPER : INK,
-              border: `2px solid ${PAPER}`,
-              borderRadius: 0,
-              cursor: 'pointer',
-              transition: `background 260ms ease ${flashDelays[N]}ms, color 260ms ease ${flashDelays[N]}ms`,
-              fontFamily: DISPLAY,
-              fontWeight: 800,
-              fontSize: 'clamp(18px, 2.4vw, 30px)',
-              letterSpacing: '0.08em',
-              color: assembled ? INK : PAPER,
-            }}
-          >
-            ШОУ
-          </button>
-        </div>
-      </div>
-      <div
-        aria-live="polite"
-        style={{
-          marginTop: 18,
-          minHeight: 48,
-          maxWidth: 460,
-          fontFamily: "'Manrope', sans-serif",
-          fontSize: 14,
-          lineHeight: 1.45,
-          color: 'rgba(255,255,255,0.72)',
-          transition: 'opacity 220ms ease',
-          opacity: focused || assembled ? 1 : 0.6,
-        }}
-      >
-        {focused ? (
-          <>
-            <div style={{ fontWeight: 800, color: PAPER, marginBottom: 2 }}>{focused.label}</div>
-            <div>{focused.desc}</div>
-          </>
-        ) : assembled ? (
-          <div>Тапни любой блок ещё раз — разберём в рандомное состояние.</div>
-        ) : null}
-      </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={all}
+              aria-label={all ? 'Остановить механизм' : 'Запустить механизм'}
+              className="sc-switch"
+              onClick={toggleAll}
+            >
+              <span className="sc-switch-knob" />
+            </button>
+          </div>
 
-      <PartnershipStrap />
+          <ul className="sc-mech-list">
+            {MECH_NODES.map((node, i) => (
+              <li key={node.label}>
+                <button
+                  type="button"
+                  className="sc-mech-row"
+                  aria-pressed={lit[i]}
+                  data-on={lit[i] || undefined}
+                  style={{ transitionDelay: cascade ? `${i * 45}ms` : '0ms' }}
+                  onClick={() => toggleOne(i)}
+                >
+                  <span className="sc-mech-icon" aria-hidden>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                      <path d={node.icon} />
+                    </svg>
+                  </span>
+                  <span className="sc-mech-text">
+                    <span className="sc-mech-label">{node.label}</span>
+                    <span className="sc-mech-desc">{node.desc}</span>
+                  </span>
+                  <span className="sc-mech-dot" aria-hidden />
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          <div className="sc-mech-stage" data-on={all || undefined}>
+            <span className="sc-mech-stage-word">ШОУ</span>
+            <span className="sc-mech-stage-note">
+              {all ? typo('Зал собран, артист на сцене') : typo('Включи все восемь частей')}
+            </span>
+          </div>
+        </div>
+
+        <PartnershipStrap />
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -788,18 +637,6 @@ function PartnershipStrap() {
 const MAPLE_VIOLET_500 = '#8B5CF6';
 
 
-const gearTeeth = (
-  <>
-    <line x1="76" y1="50" x2="88" y2="50" />
-    <line x1="68.4" y1="68.4" x2="76.9" y2="76.9" />
-    <line x1="50" y1="76" x2="50" y2="88" />
-    <line x1="31.6" y1="68.4" x2="23.1" y2="76.9" />
-    <line x1="24" y1="50" x2="12" y2="50" />
-    <line x1="31.6" y1="31.6" x2="23.1" y2="23.1" />
-    <line x1="50" y1="24" x2="50" y2="12" />
-    <line x1="68.4" y1="31.6" x2="76.9" y2="23.1" />
-  </>
-);
 
 function ThirdCall() {
   const rootRef = useRef<HTMLDivElement | null>(null);
