@@ -3,11 +3,12 @@ import { typo } from '../typo';
 
 const DISPLAY = "'Onest', sans-serif";
 const RED = '#A31621';
-/** Тот же тон, выше светлота. Бренд-красный на тёмном даёт 2.4–2.5 и
- *  не проходит AA. Светлота подобрана по самому светлому из тёмных фонов
- *  (#1C1C1C): там 4.68, на #111111 — 5.18, на #0C0C0C — 5.37.
- *  Ставить на тёмных поверхностях, на белых остаётся RED. */
-const RED_ON_DARK = '#E25855';
+/** Яркая ступень бренда для тёмных поверхностей: oklch(0.66 0.224 24.5).
+ *  Тон бренда сохранён, насыщенность взята по краю sRGB — так красный
+ *  остаётся звонким, а не выцветшим. Бренд-красный на тёмном давал 2.4–2.5
+ *  и не проходил AA; здесь 4.92 на #1C1C1C, 5.65 на #0C0C0C.
+ *  На светлых поверхностях остаётся RED. */
+const RED_ON_DARK = '#FE4147';
 const INK = '#111111';
 const PAPER = '#FFFFFF';
 const CREAM_LIGHT = '#F5F5F3';
@@ -33,6 +34,7 @@ export default function Scenika() {
       <FirstCall />
       <SecondCall />
       <ThirdCall />
+      <PartnershipStrap />
       <AfterConcert />
       <Cases />
       <Numbers />
@@ -89,7 +91,7 @@ function ScenikaHero() {
       vy = vy * 0.975 + dy * 0.0006 + (Math.random() - 0.5) * 0.02;
       x = Math.max(6, Math.min(94, x + vx));
       y = Math.max(8, Math.min(92, y + vy));
-      el.style.background = `radial-gradient(circle 280px at ${x.toFixed(2)}% ${y.toFixed(2)}%, rgba(255,255,255,0.85) 0, rgba(255,255,255,0.35) 30%, rgba(255,255,255,0.08) 62%, rgba(255,255,255,0) 88%)`;
+      el.style.background = `radial-gradient(circle 240px at ${x.toFixed(2)}% ${y.toFixed(2)}%, rgba(255,255,255,0.95) 0, rgba(255,255,255,0.58) 20%, rgba(255,255,255,0.17) 46%, rgba(255,255,255,0.04) 68%, rgba(255,255,255,0) 84%)`;
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
@@ -112,8 +114,6 @@ function ScenikaHero() {
     >
       <div className="sc-mesh" aria-hidden>
         <div className="sc-mesh-blob sc-mesh-a" />
-        <div className="sc-mesh-blob sc-mesh-b" />
-        <div className="sc-mesh-blob sc-mesh-c" />
       </div>
       <div
         ref={beamRef}
@@ -123,8 +123,8 @@ function ScenikaHero() {
           pointerEvents: 'none',
           mixBlendMode: 'difference',
           zIndex: 5,
-          filter: 'blur(18px)',
-          background: 'radial-gradient(circle 280px at 50% 45%, rgba(255,255,255,0.85) 0, rgba(255,255,255,0.35) 30%, rgba(255,255,255,0.08) 62%, rgba(255,255,255,0) 88%)',
+          filter: 'blur(5px)',
+          background: 'radial-gradient(circle 240px at 50% 45%, rgba(255,255,255,0.95) 0, rgba(255,255,255,0.58) 20%, rgba(255,255,255,0.17) 46%, rgba(255,255,255,0.04) 68%, rgba(255,255,255,0) 84%)',
         }}
       />
       <div className="sc-hero-bells" style={{ display: 'flex', alignItems: 'flex-end', gap: 10, height: 56, marginBottom: 48 }}>
@@ -463,13 +463,25 @@ function SecondCall() {
       }}
     >
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <div style={{ ...CALL_LABEL, color: RED_ON_DARK }}>Второй звонок</div>
-        <h2 style={{ ...SECTION_H2, margin: '20px 0 0', maxWidth: 900, color: PAPER }}>Запускаем механизм полного зала</h2>
-        <p style={{ fontSize: 17, lineHeight: 1.55, color: 'rgba(255,255,255,0.6)', maxWidth: 720, margin: '18px 0 0' }}>
-          {typo("Площадки, билеты, договоры, реклама, PR, райдеры, логистика — каждая часть должна включиться вовремя. Собираем «под ключ», пока артист готовит шоу.")}
-        </p>
+        {/* Свет гаснет: белое поле шапки растворяется в чёрном фоне секции.
+            Затухание привязано к самой шапке, а не к процентам высоты секции,
+            иначе на других экранах оно попадает на строку текста, где не
+            работает ни тёмный текст, ни светлый. */}
+        <div
+          className="sc-dim-top"
+          style={{
+            margin: `-96px calc(-1 * ${PAD_X}) 0`,
+            padding: `96px ${PAD_X} clamp(96px, 13vw, 180px)`,
+          }}
+        >
+          <div style={{ ...CALL_LABEL, color: RED }}>Второй звонок</div>
+          <h2 style={{ ...SECTION_H2, margin: '20px 0 0', maxWidth: 900, color: INK }}>Запускаем механизм полного зала</h2>
+          <p style={{ fontSize: 17, lineHeight: 1.55, color: MUTED, maxWidth: 720, margin: '18px 0 0' }}>
+            {typo("Площадки, билеты, договоры, реклама, PR, райдеры, логистика — каждая часть должна включиться вовремя. Собираем «под ключ», пока артист готовит шоу.")}
+          </p>
+        </div>
 
-        <div className="sc-plan">
+        <div className="sc-plan" style={{ marginTop: 0 }}>
           <div className="sc-plan-head">
             <div>
               <div className="sc-plan-title">{typo('Чек-лист тура')}</div>
@@ -532,141 +544,71 @@ function SecondCall() {
           </ul>
         </div>
 
-        <PartnershipStrap />
       </div>
     </section>
   );
 }
 
+/** Партнёрская полоса: одна строка на ярком красном.
+ *  #E90026 — самый яркий красный тона бренда, на котором белый текст ещё
+ *  держит AA (4.67). Насыщенность 0.242 против 0.173 у #A31621. */
+const STRAP_RED = '#E90026';
+
 function PartnershipStrap() {
   return (
-    <div style={{ marginTop: 72, borderTop: '1px solid rgba(255,255,255,0.18)', paddingTop: 56 }}>
-      <span
-        style={{
-          display: 'inline-block',
-          fontSize: 12,
-          fontWeight: 700,
-          letterSpacing: '0.18em',
-          textTransform: 'uppercase',
-          color: PAPER,
-          border: `1px solid ${PAPER}`,
-          padding: '7px 14px',
-          borderRadius: 999,
-          fontFamily: "'Manrope', sans-serif",
-        }}
-      >
-        Сценика × Мэпл
-      </span>
-      <h3
-        style={{
-          fontFamily: DISPLAY,
-          fontWeight: 800,
-          textTransform: 'uppercase',
-          fontSize: 'clamp(30px, 4.6vw, 60px)',
-          lineHeight: 1.05,
-          letterSpacing: '0.03em',
-          margin: '24px 0 0',
-          maxWidth: 900,
-          color: PAPER,
-        }}
-      >
-        Один механизм.<br />
-        <span style={{ color: 'rgba(255,255,255,0.7)' }}>Два контура.</span>
-      </h3>
-
-      <div style={{ marginTop: 40, maxWidth: 720 }}>
-        <svg viewBox="0 0 1000 220" preserveAspectRatio="xMidYMid meet" style={{ width: '100%', height: 'auto', display: 'block' }}>
-          <line x1="260" y1="110" x2="500" y2="110" stroke={PAPER} strokeWidth="3" strokeLinecap="round" />
-          <line x1="740" y1="110" x2="500" y2="110" stroke={INK} strokeWidth="3" strokeLinecap="round" />
-
-          <g transform="translate(180, 80) scale(1.6)">
-            <path
-              d="M 37.80 14.47 C 38.73 17.75, 36.04 22.40, 33.85 25.78 C 31.66 29.15, 28.32 33.93, 24.68 34.72 C 21.03 35.51, 15.68 32.54, 11.96 30.50 C 8.25 28.46, 3.41 25.74, 2.37 22.49 C 1.32 19.24, 3.56 14.41, 5.70 10.99 C 7.85 7.57, 11.47 2.79, 15.24 1.98 C 19.00 1.17, 24.54 4.02, 28.30 6.10 C 32.06 8.18, 36.88 11.19, 37.80 14.47 Z"
-              fill={MAPLE_VIOLET_500}
-            />
-            <path
-              d="M 8.5 28.5 C 9.50 26.08, 12.42 15.17, 14.50 14.00 C 16.58 12.83, 18.33 22.42, 21.00 21.50 C 23.67 20.58, 28.92 10.67, 30.50 8.50"
-              fill="none"
-              stroke={PAPER}
-              strokeWidth="4.8"
-              strokeLinejoin="round"
-              strokeLinecap="round"
-            />
-          </g>
-          <text x="212" y="180" fill={PAPER} fontFamily={DISPLAY} fontSize="22" textAnchor="middle" letterSpacing="2">
-            МЭПЛ
-          </text>
-          <text x="212" y="204" fill="rgba(255,255,255,0.7)" fontFamily="'Manrope', sans-serif" fontSize="13" textAnchor="middle">
-            собирает систему
-          </text>
-
-          <g transform="translate(768, 78)">
-            <rect x="0" y="0" width="10" height="64" fill={INK} />
-            <rect x="20" y="0" width="10" height="64" fill={INK} />
-            <rect x="40" y="0" width="10" height="64" fill={INK} />
-          </g>
-          <text x="793" y="180" fill={PAPER} fontFamily={DISPLAY} fontSize="22" textAnchor="middle" letterSpacing="2">
-            СЦЕНИКА
-          </text>
-          <text x="793" y="204" fill="rgba(255,255,255,0.7)" fontFamily="'Manrope', sans-serif" fontSize="13" textAnchor="middle">
-            собирает тур
-          </text>
-
-          <circle cx="500" cy="110" r="7" fill={PAPER} />
-          <circle cx="500" cy="110" r="22" fill="none" stroke={PAPER} strokeWidth="1.5" opacity="0.4" />
-          <text x="500" y="168" fill={PAPER} fontFamily={DISPLAY} fontSize="24" textAnchor="middle" letterSpacing="3">
-            ПОЛНЫЙ ЗАЛ
-          </text>
-        </svg>
-      </div>
-
+    <div style={{ background: STRAP_RED, color: PAPER }}>
       <div
+        className="sc-strap"
         style={{
-          marginTop: 40,
+          padding: `22px ${PAD_X}`,
           display: 'flex',
-          alignItems: 'flex-end',
+          alignItems: 'center',
           justifyContent: 'space-between',
-          gap: 32,
+          gap: 24,
           flexWrap: 'wrap',
         }}
       >
-        <p
-          style={{
-            margin: 0,
-            fontSize: 'clamp(15px, 1.4vw, 18px)',
-            lineHeight: 1.6,
-            color: 'rgba(255,255,255,0.78)',
-            maxWidth: 620,
-            fontFamily: "'Manrope', sans-serif",
-          }}
-        >
-          МЭПЛ собирает систему. СЦЕНИКА собирает тур.{' '}
-          <span style={{ color: PAPER, fontWeight: 800 }}>Вместе собираем зал.</span>
-        </p>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, flexWrap: 'wrap', minWidth: 0 }}>
+          <span
+            style={{
+              fontFamily: DISPLAY,
+              fontWeight: 800,
+              fontSize: 17,
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {typo('Один механизм. Два контура.')}
+          </span>
+          <span style={{ fontSize: 15.5, lineHeight: 1.4, color: PAPER }}>
+            {typo('МЭПЛ собирает систему, Сценика собирает тур.')}
+          </span>
+        </div>
         <a
           href="/"
           style={{
+            flex: 'none',
             textDecoration: 'none',
             background: PAPER,
-            color: RED,
+            color: STRAP_RED,
             fontWeight: 800,
-            fontSize: 15,
-            padding: '14px 26px',
+            fontSize: 14.5,
+            padding: '11px 20px',
+            borderRadius: 8,
             whiteSpace: 'nowrap',
             fontFamily: "'Manrope', sans-serif",
-            letterSpacing: '0.02em',
+            display: 'inline-flex',
+            alignItems: 'center',
+            minHeight: 44,
           }}
         >
-          Открыть страницу МЭПЛ →
+          {typo('Открыть страницу МЭПЛ ')}<span className="mm-arrow" aria-hidden>→</span>
         </a>
       </div>
     </div>
   );
 }
-
-const MAPLE_VIOLET_500 = '#8B5CF6';
-
-
 
 function ThirdCall() {
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -851,7 +793,12 @@ function AfterConcert() {
     { t: 'следующий город', rank: 1 },
     { t: 'следующий концерт', rank: 1 },
     { t: 'следующий солдаут', rank: 2 },
+    { t: 'следующий тур', rank: 2 },
   ];
+  // Цикл замыкается: те же задачи начинаются заново и тают. Повтор
+  // декоративный и скрыт от скринридеров — эти слова уже прочитаны выше,
+  // читать их второй раз затухающим списком незачем.
+  const loop = ['логистика', 'отчёты', 'закрывающие документы', 'финансы', 'следующий город'];
   return (
     <div style={{ background: NEAR_BLACK, color: '#F5F5F3', padding: `120px ${PAD_X}` }}>
       <h2 style={{ ...SECTION_H2, fontSize: 'clamp(28px, 4.4vw, 64px)', lineHeight: 1.08, maxWidth: 880 }}>
@@ -873,6 +820,21 @@ function AfterConcert() {
             }}
           >
             {it.t}
+          </div>
+        ))}
+        {loop.map((t, i) => (
+          <div
+            key={`loop-${t}`}
+            aria-hidden
+            style={{
+              border: `1px solid ${MUTED_LINE}`,
+              color: '#F5F5F3',
+              padding: '14px 24px',
+              fontSize: 17,
+              opacity: Math.max(0.05, 0.5 - i * 0.11),
+            }}
+          >
+            {t}
           </div>
         ))}
       </div>

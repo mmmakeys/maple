@@ -139,24 +139,8 @@ a.mm-case-back:active {
   height: 60%;
   left: -10%;
   top: -14%;
-  background: radial-gradient(circle at 40% 40%, rgba(163, 22, 33, 0.5), transparent 62%);
+  background: radial-gradient(circle at 40% 40%, rgba(235, 12, 45, 0.58), transparent 62%);
   animation: sc-mesh-a 28s ease-in-out infinite alternate;
-}
-.sc-mesh-b {
-  width: 65%;
-  height: 65%;
-  right: -14%;
-  top: 6%;
-  background: radial-gradient(circle at 50% 50%, rgba(150, 150, 155, 0.34), transparent 62%);
-  animation: sc-mesh-b 34s ease-in-out infinite alternate;
-}
-.sc-mesh-c {
-  width: 55%;
-  height: 55%;
-  left: 20%;
-  bottom: -16%;
-  background: radial-gradient(circle at 50% 50%, rgba(120, 120, 126, 0.3), transparent 62%);
-  animation: sc-mesh-c 40s ease-in-out infinite alternate;
 }
 @keyframes sc-mesh-a {
   0% {
@@ -164,22 +148,6 @@ a.mm-case-back:active {
   }
   100% {
     transform: translate3d(18%, 12%, 0) scale(1.15);
-  }
-}
-@keyframes sc-mesh-b {
-  0% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  100% {
-    transform: translate3d(-14%, 18%, 0) scale(1.1);
-  }
-}
-@keyframes sc-mesh-c {
-  0% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  100% {
-    transform: translate3d(10%, -16%, 0) scale(1.2);
   }
 }
 
@@ -1475,6 +1443,13 @@ html {
   .sc-cta-photo {
     opacity: 0.22;
   }
+}
+
+/* Белое поле шапки тает в чёрном фоне секции. Проценты здесь считаются от
+   высоты самой шапки, поэтому текст всегда остаётся на плотном белом,
+   а растворение приходится на отступ под ним. */
+.sc-dim-top {
+  background: linear-gradient(180deg, #ffffff 0%, #ffffff 74%, rgba(255, 255, 255, 0) 100%);
 }
 
 /* ---- Сценика: планер механизма ----
