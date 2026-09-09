@@ -238,16 +238,20 @@ function Stage() {
   // Первая половина пути — шторы: сходятся к середине, там за ними меняется
   // содержимое, дальше расходятся. Вторая половина — проявление «Второго
   // звонка» поверх «Первого»: смена без движения, только плотностью.
-  const curtain = Math.min(1, p / 0.3);
+  const curtain = Math.min(1, p / 0.25);
   const half = curtain < 0.5 ? curtain * 2 : (1 - curtain) * 2;
   const cover = half * half * (3 - 2 * half);
   const shown = curtain >= 0.5;
-  const fadeRaw = Math.max(0, Math.min(1, (p - 0.55) / 0.25));
+  const fadeRaw = Math.max(0, Math.min(1, (p - 0.28) / 0.2));
   const fade = fadeRaw * fadeRaw * (3 - 2 * fadeRaw);
   // Хвост сцены: «Второй звонок» гаснет до черноты ещё до того, как
   // закрепление отпустит. Иначе он уезжал вверх вместе с контейнером, и
   // вместо перехода в «Третий звонок» получался рывок.
-  const outRaw = Math.max(0, Math.min(1, (p - 0.84) / 0.16));
+  //
+  // Между появлением и уходом он держится открытым около 78svh — почти
+  // экран прокрутки. Раньше на это отводилось 4% пути, меньше полусотни
+  // пикселей: чек-лист не успевали прочитать, не то что потрогать.
+  const outRaw = Math.max(0, Math.min(1, (p - 0.87) / 0.13));
   const out = outRaw * outRaw * (3 - 2 * outRaw);
 
   const swayL = Math.sin(cover * Math.PI * 3) * 10;
@@ -255,12 +259,12 @@ function Stage() {
   const edge = cover < 0.6 ? 1 : Math.max(0, 1 - (cover - 0.6) / 0.3);
 
   return (
-    <div ref={wrapRef} style={{ position: 'relative', height: '260svh' }}>
+    <div ref={wrapRef} style={{ position: 'relative', height: '300svh' }}>
       {/* Якоря меню: сами секции живут внутри закреплённого контейнера и
           с места не двигаются, поэтому переход по ссылке ведёт к меткам,
           расставленным по пути прокрутки. */}
-      <span id="path" aria-hidden style={{ position: 'absolute', top: '34%', left: 0, width: 1, height: 1 }} />
-      <span id="mechanism" aria-hidden style={{ position: 'absolute', top: '86%', left: 0, width: 1, height: 1 }} />
+      <span id="path" aria-hidden style={{ position: 'absolute', top: '18%', left: 0, width: 1, height: 1 }} />
+      <span id="mechanism" aria-hidden style={{ position: 'absolute', top: '42%', left: 0, width: 1, height: 1 }} />
       <div
         data-tone={cover > 0.5 ? 'light' : 'dark'}
         style={{
