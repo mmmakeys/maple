@@ -433,8 +433,11 @@ summary:active,
 }
 
 .sc-card[data-done] .sc-card-btn {
-  background: #ffffff;
-  border-color: rgba(163, 22, 33, 0.45);
+  /* Закрытый пункт на тёмном: подложка подкрашивается фирменным красным,
+     а не выбеливается. Белый фон достался от светлой версии панели и делал
+     подпись белой по белому. */
+  background: rgba(220, 26, 46, 0.14);
+  border-color: rgba(220, 26, 46, 0.55);
 }
 
 .sc-card-icon {
@@ -541,7 +544,7 @@ summary:active,
   background: #dc1a2e;
   border: 1px solid #dc1a2e;
   color: #ffffff;
-  box-shadow: 0 22px 60px -26px rgba(163, 22, 33, 0.7);
+  box-shadow: 0 22px 60px -26px rgba(220, 26, 46, 0.7);
 }
 
 .sc-folder[data-open] .sc-folder-meta {
