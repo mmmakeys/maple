@@ -822,6 +822,10 @@ function PartnershipStrap() {
 function ThirdCall() {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [progress, setProgress] = useState(0);
+  // Отдельно от прогресса: он начинает считаться, только когда верх секции
+  // доходит до верха экрана, а до этого лежит целая высота прокрутки —
+  // если ждать его, кадр всё это время остаётся чёрным.
+  const [entry, setEntry] = useState(0);
   const [vw, setVw] = useState(1200);
 
   useEffect(() => {
@@ -834,6 +838,10 @@ function ThirdCall() {
       const total = Math.max(1, rect.height - vh);
       const scrolled = -rect.top;
       setProgress(Math.max(0, Math.min(1, scrolled / total)));
+      // Проявление стартует, когда секция поднялась на 15% экрана, и
+      // заканчивается на 45%: до этого держится темнота примерно на один
+      // щелчок колеса, дальше кадр уже виден и досдвигается на место.
+      setEntry(Math.max(0, Math.min(1, (vh * 0.85 - rect.top) / (vh * 0.3))));
       setVw(window.innerWidth);
     };
     const onScroll = () => {
@@ -889,7 +897,7 @@ function ThirdCall() {
           overflow: 'hidden',
           // Первый кадр проявляется, а не выезжает снизу: предыдущая сцена
           // гаснет в тот же чёрный, и рывка на стыке не остаётся.
-          opacity: range(progress, 0, 0.035),
+          opacity: entry,
         }}
       >
         <div
