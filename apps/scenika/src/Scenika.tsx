@@ -255,7 +255,10 @@ function Stage() {
       >
         {/* Слои держим смонтированными и переключаем видимость: пересборка
             в момент смыкания сбрасывала бы луч прожектора и набор текста. */}
-        <div style={{ position: 'absolute', inset: 0, visibility: shown ? 'hidden' : 'visible' }} aria-hidden={shown}>
+        <div
+          aria-hidden={shown}
+          style={{ position: 'absolute', inset: 0, isolation: 'isolate', visibility: shown ? 'hidden' : 'visible' }}
+        >
           <ScenikaHero />
         </div>
         <div
@@ -263,6 +266,7 @@ function Stage() {
           style={{
             position: 'absolute',
             inset: 0,
+            isolation: 'isolate',
             visibility: shown ? 'visible' : 'hidden',
             // Гаснет полностью прежде, чем зажигается второй. Встречное
             // проявление показывало оба текста разом, и заголовки налезали
@@ -278,6 +282,7 @@ function Stage() {
           style={{
             position: 'absolute',
             inset: 0,
+            isolation: 'isolate',
             opacity: Math.max(0, fade * 2 - 1),
             // пока прозрачен — не перехватывает нажатия на слой под ним
             pointerEvents: fade > 0.75 ? 'auto' : 'none',
