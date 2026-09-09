@@ -139,44 +139,26 @@ export default function CaseStory({ slug }: { slug: string }) {
     };
   }, []);
 
-  if (!story) {
-    return (
-      <div style={{ background: paper, color: ink850, minHeight: '100vh' }}>
-        <MapleNav onLead={openLead} />
-        <main>
-        <div style={{ ...chromeCol, padding: `clamp(80px,12vw,140px) ${chromePad}`, textAlign: 'center' }}>
-          <h1 style={{ ...heading, fontSize: 'clamp(32px,6vw,60px)' }}>Кейс не найден</h1>
-          <p style={{ fontSize: 18, color: ink600, margin: '18px 0 30px' }}>
-            {typo("Возможно, он ещё в работе. Посмотрите остальные проекты.")}
-          </p>
-          <a
-            href="/cases"
-            style={{ textDecoration: 'none', background: violet600, color: paper, fontWeight: 800, fontSize: 16, padding: '16px 30px', borderRadius: 10 }}
-          >
-            {typo("Все кейсы ")}<span className="mm-arrow" aria-hidden>→</span>
-          </a>
-        </div>
-        </main>
-      <MapleFooter />
-      </div>
-    );
-  }
-
-  const relevant = story.team
+  // Список якорей и наблюдатель за секциями считаются до раннего возврата:
+  // порядок вызова хуков обязан совпадать при любом состоянии компонента,
+  // иначе на переходе «кейс не найден» → «кейс найден» React сопоставит
+  // состояние не с теми хуками. Пока story нет, список пуст и наблюдатель
+  // просто не находит узлов.
+  const relevant = (story?.team ?? [])
     .map((name) => team.find((m) => m.name === name))
     .filter((m): m is (typeof team)[number] => Boolean(m));
 
   // Anchor nav — only lists sections this story actually renders.
   const toc = [
-    { id: 'task', label: 'Задача', on: true },
-    { id: 'shift', label: typo('Точка А → Б'), on: Boolean(story.shift) },
-    { id: 'build', label: typo('Что собрали'), on: true },
-    { id: 'platform', label: 'Платформа', on: Boolean(story.stack) },
-    { id: 'timeline', label: typo('Как шёл проект'), on: Boolean(story.phases) },
-    { id: 'channels', label: 'Маркетплейсы', on: Boolean(story.channels) },
-    { id: 'results', label: 'Результаты', on: true },
-    { id: 'film', label: 'Ролик', on: Boolean(story.film) },
-    { id: 'press', label: 'СМИ', on: Boolean(story.press) },
+    { id: 'task', label: 'Задача', on: Boolean(story) },
+    { id: 'shift', label: typo('Точка А → Б'), on: Boolean(story?.shift) },
+    { id: 'build', label: typo('Что собрали'), on: Boolean(story) },
+    { id: 'platform', label: 'Платформа', on: Boolean(story?.stack) },
+    { id: 'timeline', label: typo('Как шёл проект'), on: Boolean(story?.phases) },
+    { id: 'channels', label: 'Маркетплейсы', on: Boolean(story?.channels) },
+    { id: 'results', label: 'Результаты', on: Boolean(story) },
+    { id: 'film', label: 'Ролик', on: Boolean(story?.film) },
+    { id: 'press', label: 'СМИ', on: Boolean(story?.press) },
     { id: 'team', label: 'Команда', on: relevant.length > 0 },
   ].filter((t) => t.on);
 
@@ -199,6 +181,28 @@ export default function CaseStory({ slug }: { slug: string }) {
     return () => io.disconnect();
   }, [tocIds]);
 
+  if (!story) {
+    return (
+      <div style={{ background: paper, color: ink850, minHeight: '100vh' }}>
+        <MapleNav onLead={openLead} />
+        <main>
+        <div style={{ ...chromeCol, padding: `clamp(80px,12vw,140px) ${chromePad}`, textAlign: 'center' }}>
+          <h1 style={{ ...heading, fontSize: 'clamp(32px,6vw,60px)' }}>Кейс не найден</h1>
+          <p style={{ fontSize: 18, color: ink600, margin: '18px 0 30px' }}>
+            {typo("Возможно, он ещё в работе. Посмотрите остальные проекты.")}
+          </p>
+          <a
+            href="/cases"
+            style={{ textDecoration: 'none', background: violet600, color: paper, fontWeight: 800, fontSize: 16, padding: '16px 30px', borderRadius: 10 }}
+          >
+            {typo("Все кейсы ")}<span className="mm-arrow" aria-hidden>→</span>
+          </a>
+        </div>
+        </main>
+      <MapleFooter />
+      </div>
+    );
+  }
 
   return (
     <div style={{ background: paper, color: ink850, overflowX: 'hidden' }}>
