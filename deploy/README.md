@@ -1,12 +1,15 @@
 # Хостинг сайтов на Timeweb
 
-Два домена, одна сборка. Страницу выбирает фронтенд по имени хоста
-(`app/src/sites.ts`), поэтому собирать и выкатывать нужно один раз.
+Два сайта, две независимые сборки, один сервер.
 
-| Домен | Что открывается |
-|---|---|
-| `maple-media.ru` | сайт МЭПЛ, `/cases`, `/cases/:slug` |
-| `scenika.ru` | «Сценика» с корня |
+| Приложение | Домен | Каталог на сервере |
+|---|---|---|
+| `apps/maple` | `maple-media.ru` | `/var/www/maple/current` |
+| `apps/scenika` | `scenika.ru` | `/var/www/scenika/current` |
+
+Общий код — в `shared/` (пока только типографика). Всё остальное у каждого
+своё: зависимости, стили, оболочка, релизы. «Сценика» не тянет за собой
+three.js и стили МЭПЛ, МЭПЛ не тянет стили «Сценики».
 
 `maple-media.ru/scenika` отдаёт постоянный редирект на `scenika.ru`,
 `scenika.ru/cases` — на домен МЭПЛ. Так один и тот же контент не висит
@@ -25,12 +28,18 @@
 ## Выкатка
 
 ```bash
-./deploy/deploy.sh
+./deploy/deploy.sh            # оба сайта
+./deploy/deploy.sh scenika    # только «Сценика»
+./deploy/deploy.sh maple      # только МЭПЛ
 ```
 
-Собирает локально, заливает релиз в `/var/www/maple/releases/<дата>`,
+Собирает локально, заливает релиз в `<каталог>/releases/<дата>`,
 переключает симлинк `current`, перезагружает nginx. Хранится пять
-последних релизов.
+последних релизов у каждого сайта.
+
+Сборки обоих приложений выполняются **до** первой заливки: если что-то
+не собралось, на сервере ничего не меняется и оба сайта остаются на
+прежних релизах.
 
 Скрипт останавливается, не начав сборку, если выкатывать нечестно:
 ветка не `main`, в рабочей копии есть незакоммиченные правки или
@@ -40,8 +49,8 @@
 Откат без пересборки — перестановка симлинка:
 
 ```bash
-ssh maple-server 'ls -1t /var/www/maple/releases'
-ssh maple-server 'ln -sfn /var/www/maple/releases/<релиз> /var/www/maple/current && sudo /usr/bin/systemctl reload nginx'
+ssh maple-server 'ls -1t /var/www/scenika/releases'
+ssh maple-server 'ln -sfn /var/www/scenika/releases/<релиз> /var/www/scenika/current && sudo /usr/bin/systemctl reload nginx'
 ```
 
 ## Доступ

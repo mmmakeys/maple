@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
-import { typo } from '../typo';
+import { typo } from '../../../../shared/typo';
 import { DISPLAY, team } from '../data';
 import {
   alpha,

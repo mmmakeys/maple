@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 # Выкатка с локальной машины: собрать, залить, переключить симлинк.
+#
+#   ./deploy/deploy.sh            — оба сайта
+#   ./deploy/deploy.sh maple      — только МЭПЛ
+#   ./deploy/deploy.sh scenika    — только «Сценика»
+#
 # Релизы складываются по времени, current указывает на активный —
 # откат сводится к перестановке ссылки, без повторной сборки.
 set -euo pipefail
@@ -7,52 +12,65 @@ set -euo pipefail
 SERVER="deploy@147.45.229.3"
 SSH_KEY="$HOME/.ssh/maple_deploy"
 SSH_OPTS="-i $SSH_KEY -o BatchMode=yes -o ConnectTimeout=15"
-WEBROOT="/var/www/maple"
-APP_DIR="$(cd "$(dirname "$0")/../app" && pwd)"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 RELEASE="$(date +%Y%m%d-%H%M%S)"
-COMMIT="$(git -C "$(dirname "$0")/.." rev-parse --short HEAD)"
+COMMIT="$(git -C "$ROOT" rev-parse --short HEAD)"
+
+# Какое приложение куда едет и под каким доменом проверяется.
+webroot_for() { case "$1" in maple) echo /var/www/maple;; scenika) echo /var/www/scenika;; esac; }
+url_for()     { case "$1" in maple) echo https://maple-media.ru/;; scenika) echo https://scenika.ru/;; esac; }
+
+APPS=("$@")
+[ ${#APPS[@]} -gt 0 ] || APPS=(maple scenika)
+for a in "${APPS[@]}"; do
+  [ -d "$ROOT/apps/$a" ] || { echo "Нет приложения $a в apps/." >&2; exit 1; }
+done
 
 # Выкатываем только с main и только то, что уже в репозитории: иначе на
 # сервер уезжает код, которого нет ни у кого, кроме этой машины, и понять
 # потом, что именно там работает, будет неоткуда.
-BRANCH="$(git -C "$APP_DIR/.." rev-parse --abbrev-ref HEAD)"
+BRANCH="$(git -C "$ROOT" rev-parse --abbrev-ref HEAD)"
 if [ "$BRANCH" != "main" ]; then
   echo "ОСТАНОВЛЕНО: выкатка идёт только с main, а сейчас $BRANCH." >&2
   exit 1
 fi
-if [ -n "$(git -C "$APP_DIR/.." status --porcelain)" ]; then
+if [ -n "$(git -C "$ROOT" status --porcelain)" ]; then
   echo "ОСТАНОВЛЕНО: в рабочей копии есть незакоммиченные правки." >&2
-  git -C "$APP_DIR/.." status --short >&2
+  git -C "$ROOT" status --short >&2
   exit 1
 fi
-git -C "$APP_DIR/.." fetch origin main -q 2>/dev/null || true
-if [ -n "$(git -C "$APP_DIR/.." log --oneline origin/main..HEAD 2>/dev/null)" ]; then
+git -C "$ROOT" fetch origin main -q 2>/dev/null || true
+if [ -n "$(git -C "$ROOT" log --oneline origin/main..HEAD 2>/dev/null)" ]; then
   echo "ОСТАНОВЛЕНО: локальные коммиты не запушены в origin/main." >&2
-  git -C "$APP_DIR/.." log --oneline origin/main..HEAD >&2
+  git -C "$ROOT" log --oneline origin/main..HEAD >&2
   exit 1
 fi
-
-echo "→ Сборка"
-cd "$APP_DIR"
-npm run build
 
 echo "→ Проверка связи"
-ssh $SSH_OPTS "$SERVER" true || {
-  echo "Нет доступа к серверу по SSH." >&2; exit 1; }
+ssh $SSH_OPTS "$SERVER" true || { echo "Нет доступа к серверу по SSH." >&2; exit 1; }
 
-echo "→ Заливаем релиз $RELEASE"
-ssh $SSH_OPTS "$SERVER" "mkdir -p $WEBROOT/releases/$RELEASE"
-rsync -az --delete -e "ssh $SSH_OPTS" "$APP_DIR/dist/" "$SERVER:$WEBROOT/releases/$RELEASE/"
+# Сборки делаем до заливки: если что-то не собралось, на сервере ничего
+# не меняется и оба сайта остаются на прежних релизах.
+for app in "${APPS[@]}"; do
+  echo "→ Сборка $app"
+  ( cd "$ROOT/apps/$app" && npm run build )
+done
 
-echo "→ Переключаем current"
-ssh $SSH_OPTS "$SERVER" "ln -sfn $WEBROOT/releases/$RELEASE $WEBROOT/current && \
-  sudo /usr/sbin/nginx -t && sudo /usr/bin/systemctl reload nginx"
+for app in "${APPS[@]}"; do
+  WEBROOT="$(webroot_for "$app")"
+  echo "→ Заливаем $app, релиз $RELEASE"
+  ssh $SSH_OPTS "$SERVER" "mkdir -p $WEBROOT/releases/$RELEASE"
+  rsync -az --delete -e "ssh $SSH_OPTS" "$ROOT/apps/$app/dist/" "$SERVER:$WEBROOT/releases/$RELEASE/"
+  ssh $SSH_OPTS "$SERVER" "ln -sfn $WEBROOT/releases/$RELEASE $WEBROOT/current"
+  echo "→ Оставляем пять последних релизов $app"
+  ssh $SSH_OPTS "$SERVER" "cd $WEBROOT/releases && ls -1t | tail -n +6 | xargs -r rm -rf"
+done
 
-echo "→ Оставляем пять последних релизов"
-ssh $SSH_OPTS "$SERVER" "cd $WEBROOT/releases && ls -1t | tail -n +6 | xargs -r rm -rf"
+ssh $SSH_OPTS "$SERVER" "sudo /usr/sbin/nginx -t && sudo /usr/bin/systemctl reload nginx"
 
 echo
 echo "Выкачено: $RELEASE (коммит $COMMIT)"
-for u in https://maple-media.ru/ https://scenika.ru/; do
+for app in "${APPS[@]}"; do
+  u="$(url_for "$app")"
   printf '%-28s %s\n' "$u" "$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "$u" || echo 'нет ответа')"
 done

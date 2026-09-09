@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { typo } from '../typo';
-import { MAPLE_HOME } from '../sites';
+import { typo } from '../../../shared/typo';
+
+/** Ссылка на сайт агентства: «Сценика» живёт на своём домене. */
+const MAPLE_HOME = 'https://maple-media.ru/';
 
 const DISPLAY = "'Onest', sans-serif";
 const RED = '#A31621';

@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState } from 'react';
-import { typo } from './typo';
+import { typo } from '../../../shared/typo';
 import { SCENIKA_HOME } from './sites';
 import { DISPLAY, marqueeText, whyCards, roles, team, type Member } from './data';
 import {

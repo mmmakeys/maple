@@ -1,4 +1,4 @@
-import { deepTypo } from './typo';
+import { deepTypo } from '../../../shared/typo';
 /**
  * Cases catalog + long-form case stories.
  *

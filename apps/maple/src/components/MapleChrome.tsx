@@ -5,7 +5,7 @@
  */
 import { DISPLAY } from '../data';
 import { ink100, ink400, ink850, ink900, paper, violet400, violet500 } from '../tokens';
-import { typo } from '../typo';
+import { typo } from '../../../../shared/typo';
 
 const mark = (
   <svg viewBox="0 0 40 40" width="30" height="30" style={{ display: 'block' }} aria-label="Maple">

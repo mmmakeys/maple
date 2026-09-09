@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { typo } from '../typo';
+import { typo } from '../../../../shared/typo';
 import { DISPLAY, budgetOpts } from '../data';
 import {
   alpha,

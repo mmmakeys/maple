@@ -2,19 +2,14 @@ import { StrictMode, Suspense, lazy, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
-import { onScenikaHost } from './sites'
 
-const Scenika = lazy(() => import('./components/Scenika.tsx'))
 const CasesIndex = lazy(() => import('./components/CasesIndex.tsx'))
 const CaseStory = lazy(() => import('./components/CaseStory.tsx'))
 
 const path = window.location.pathname.replace(/\/+$/, '') || '/'
 
 let Page: ReactNode
-if (onScenikaHost || path === '/scenika') {
-  // На своём домене «Сценика» открывается с корня, локально — по пути.
-  Page = <Suspense fallback={null}><Scenika /></Suspense>
-} else if (path === '/cases') {
+if (path === '/cases') {
   Page = <Suspense fallback={null}><CasesIndex /></Suspense>
 } else if (path.startsWith('/cases/')) {
   Page = <Suspense fallback={null}><CaseStory slug={path.slice('/cases/'.length)} /></Suspense>

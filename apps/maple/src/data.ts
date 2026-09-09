@@ -1,4 +1,4 @@
-import { deepTypo } from './typo';
+import { deepTypo } from '../../../shared/typo';
 export type CV = {
   about: string;
   exp: string[];

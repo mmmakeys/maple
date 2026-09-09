@@ -1,0 +1,639 @@
+/* ---- основа ----
+   Продублирована из приложения МЭПЛ намеренно: два сайта собираются
+   отдельно, и общий файл стилей связал бы их сборки обратно. Здесь
+   только то, что «Сценика» действительно использует. */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  font-family: 'Manrope', sans-serif;
+}
+
+:root {
+  /* Встроенные CSS-кривые слишком вялые: при той же длительности движение
+     читается медленнее, потому что почти не разгоняется на старте — а именно
+     первые кадры пользователь и отслеживает. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* ---- отклик на нажатие ----
+   :where() держит нулевую специфичность, поэтому собственные правила
+   компонентов перекрывают базовый переход без !important. */
+:where(button, a[href], summary, [role='button']) {
+  transition: transform 160ms var(--ease-out);
+}
+button:active,
+a[href]:active,
+summary:active,
+[role='button']:active {
+  transform: scale(0.97);
+}
+
+/* стрелка уезжает вперёд у ссылок-переходов */
+.mm-arrow {
+  display: inline-block;
+  transition: transform 200ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  a:hover .mm-arrow {
+    transform: translateX(5px);
+  }
+}
+
+/* ---- Scenika keyframes ---- */
+@keyframes sc-bell {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.55);
+  }
+}
+
+@keyframes sc-caret {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes sc-pulse-flow {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+/* Hero mesh — very subtle drifting blobs to warm up the INK background */
+.sc-mesh {
+  position: absolute;
+  inset: -160px 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.sc-mesh-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+.sc-mesh-a {
+  width: 60%;
+  height: 60%;
+  left: -10%;
+  top: -14%;
+  background: radial-gradient(circle at 40% 40%, rgba(235, 12, 45, 0.58), transparent 62%);
+  animation: sc-mesh-a 28s ease-in-out infinite alternate;
+}
+
+@keyframes sc-mesh-a {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(18%, 12%, 0) scale(1.15);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-mesh-blob {
+      animation: none;
+    }
+}
+
+/* First-call curtains — wavy drapery folds + weighted leading edge (edge fades on closure) */
+.sc-curtain {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 54%;
+  will-change: transform, background-position;
+  z-index: 0;
+  pointer-events: none;
+  background-color: #ffffff;
+  background-repeat: repeat;
+  background-size: 120px 240px;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='240' viewBox='0 0 120 240'%3E%3Cg fill='none' stroke-linecap='round'%3E%3Cpath d='M20 0 Q24 60 20 120 T20 240' stroke='rgba(0,0,0,0.065)' stroke-width='1.1'/%3E%3Cpath d='M55 0 Q51 60 55 120 T55 240' stroke='rgba(0,0,0,0.06)' stroke-width='1.1'/%3E%3Cpath d='M90 0 Q94 60 90 120 T90 240' stroke='rgba(0,0,0,0.055)' stroke-width='1'/%3E%3Cpath d='M37 0 Q39 60 37 120 T37 240' stroke='rgba(0,0,0,0.025)' stroke-width='1'/%3E%3Cpath d='M72 0 Q70 60 72 120 T72 240' stroke='rgba(0,0,0,0.022)' stroke-width='1'/%3E%3Cpath d='M108 0 Q110 60 108 120 T108 240' stroke='rgba(0,0,0,0.028)' stroke-width='1'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.sc-curtain::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 90px;
+  pointer-events: none;
+  opacity: var(--sc-curtain-edge, 1);
+  transition: opacity 0.15s linear;
+}
+
+.sc-curtain-l {
+  left: 0;
+  -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='690' height='240' viewBox='0 0 690 240' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 0 L682 0 Q690 60 682 120 T682 240 L0 240 Z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='690' height='240' viewBox='0 0 690 240' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 0 L682 0 Q690 60 682 120 T682 240 L0 240 Z'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: repeat-y;
+  mask-repeat: repeat-y;
+  -webkit-mask-size: 100% 240px;
+  mask-size: 100% 240px;
+  -webkit-mask-position: 0 var(--sc-curtain-mask-y, 0px);
+  mask-position: 0 var(--sc-curtain-mask-y, 0px);
+}
+
+.sc-curtain-l::after {
+  right: 0;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0, 0, 0, 0.02) 60%,
+    rgba(0, 0, 0, 0.07) 100%
+  );
+}
+
+.sc-curtain-r {
+  right: 0;
+  -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='690' height='240' viewBox='0 0 690 240' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M690 0 L8 0 Q0 60 8 120 T8 240 L690 240 Z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='690' height='240' viewBox='0 0 690 240' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M690 0 L8 0 Q0 60 8 120 T8 240 L690 240 Z'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: repeat-y;
+  mask-repeat: repeat-y;
+  -webkit-mask-size: 100% 240px;
+  mask-size: 100% 240px;
+  -webkit-mask-position: 0 var(--sc-curtain-mask-y, 0px);
+  mask-position: 0 var(--sc-curtain-mask-y, 0px);
+}
+
+.sc-curtain-r::after {
+  left: 0;
+  background: linear-gradient(
+    to left,
+    transparent 0%,
+    rgba(0, 0, 0, 0.02) 60%,
+    rgba(0, 0, 0, 0.07) 100%
+  );
+}
+
+@media (max-width: 640px) {
+  /* ---- Scenika mobile ---- */
+    .sc-nav-links {
+      gap: 14px !important;
+      font-size: 13px !important;
+    }
+  .sc-nav-anchor {
+      display: none !important;
+    }
+  .sc-first-grid,
+    .sc-why-grid {
+      grid-template-columns: 1fr !important;
+      gap: 40px !important;
+    }
+  .sc-numbers-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 36px 20px !important;
+    }
+  .sc-case-row {
+      grid-template-columns: 1fr !important;
+      gap: 8px !important;
+    }
+  .sc-footer {
+      flex-direction: column;
+      align-items: flex-start !important;
+      gap: 12px !important;
+    }
+}
+
+/* ---- Сценика: снимок зала под финальным призывом ----
+   Фотография должна подтверждать слова, а не спорить с ними: держим её
+   приглушённой и сажаем текст на плотную часть затемнения. */
+.sc-cta-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* сцена и партер важнее потолочных ферм */
+  object-position: 50% 62%;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.sc-cta-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* два градиента: горизонтальный держит читаемость слева, где стоит текст,
+     вертикальный гасит верх и низ, чтобы снимок не спорил с соседними
+     секциями */
+  background:
+    linear-gradient(90deg, rgba(12, 12, 12, 0.9) 0%, rgba(12, 12, 12, 0.78) 38%, rgba(12, 12, 12, 0.3) 100%),
+    linear-gradient(180deg, rgba(12, 12, 12, 0.62) 0%, rgba(12, 12, 12, 0.2) 45%, rgba(12, 12, 12, 0.78) 100%);
+}
+
+@media (max-width: 900px) {
+  /* на узком экране текст занимает всю ширину, поэтому затемнение
+       становится равномерным, а не боковым */
+    .sc-cta-scrim {
+      background: linear-gradient(180deg, rgba(12, 12, 12, 0.8) 0%, rgba(12, 12, 12, 0.5) 55%, rgba(12, 12, 12, 0.84) 100%);
+    }
+  .sc-cta-photo {
+      /* узкий кадр вырезает тёмный партер — сдвигаем к сцене, она светлее */
+      object-position: 50% 44%;
+      opacity: 0.72;
+    }
+}
+
+@media (prefers-contrast: more) {
+  .sc-cta-photo {
+      opacity: 0.22;
+    }
+}
+
+/* ---- Сценика: планер механизма ----
+   Светлая секция: панель и карточки — матовое стекло поверх кремового,
+   а не тёмное. Красный держим как единственный акцент состояния «готово»,
+   поэтому он появляется только на отметке, полосе и финальной папке. */
+
+.sc-plan {
+  margin-top: 40px;
+  max-width: 1040px;
+  border-radius: 24px;
+  padding: 22px 22px 20px;
+  /* На светлом фоне прозрачное стекло поверх прозрачного теряет читаемость,
+     поэтому подложка почти плотная, а «стеклянность» держится размытием
+     и волосяной рамкой. */
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(17, 17, 17, 0.08);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  backdrop-filter: blur(24px) saturate(140%);
+  box-shadow: 0 18px 48px -28px rgba(17, 17, 17, 0.35);
+  font-family: 'Manrope', sans-serif;
+}
+
+.sc-plan-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.sc-plan-title {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #111111;
+}
+
+.sc-plan-sub {
+  margin-top: 3px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #555555;
+}
+
+.sc-plan-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sc-plan-count {
+  font-family: 'Onest', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111111;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.sc-plan-total {
+  color: #8a8a8a;
+}
+
+.sc-plan-bar {
+  margin: 16px 0 4px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(17, 17, 17, 0.1);
+  overflow: hidden;
+}
+
+.sc-plan-bar span {
+  display: block;
+  height: 100%;
+  background: #a31621;
+  transform-origin: left center;
+  transition: transform 420ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* переключатель «отметить всё» */
+.sc-switch {
+  position: relative;
+  flex: none;
+  width: 50px;
+  height: 30px;
+  padding: 2px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(17, 17, 17, 0.18);
+  cursor: pointer;
+  transition: background 220ms var(--ease-out);
+}
+
+.sc-switch[aria-checked='true'] {
+  background: #a31621;
+}
+
+/* Визуальный размер переключателя оставляем прежним, а область нажатия
+   растим до 44px невидимым слоем — пальцем в 30px попасть трудно. */
+.sc-switch::after {
+  content: '';
+  position: absolute;
+  inset: -7px -4px;
+}
+
+.sc-switch-knob {
+  display: block;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(17, 17, 17, 0.28);
+  transition: transform 320ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.sc-switch[aria-checked='true'] .sc-switch-knob {
+  transform: translateX(20px);
+}
+
+/* ---- карточки ---- */
+.sc-plan-grid {
+  position: relative;
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+  gap: 10px;
+}
+
+.sc-card {
+  max-height: 600px;
+  transition:
+    transform 560ms cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 360ms var(--ease-out),
+    max-height 520ms cubic-bezier(0.32, 0.72, 0, 1);
+  transition-delay: calc(var(--i) * 45ms);
+}
+
+.sc-card-btn {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(17, 17, 17, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #111111;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    background 220ms var(--ease-out),
+    border-color 220ms var(--ease-out),
+    transform 200ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sc-card-btn:hover {
+      background: #ffffff;
+      border-color: rgba(17, 17, 17, 0.18);
+    }
+}
+
+.sc-card[data-done] .sc-card-btn {
+  background: #ffffff;
+  border-color: rgba(163, 22, 33, 0.45);
+}
+
+.sc-card-icon {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  background: rgba(17, 17, 17, 0.06);
+  color: #555555;
+  transition: background 220ms var(--ease-out), color 220ms var(--ease-out);
+}
+
+.sc-card[data-done] .sc-card-icon {
+  background: #a31621;
+  color: #fff;
+}
+
+.sc-card-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sc-card-label {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  line-height: 1.2;
+}
+
+.sc-card-desc {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #555555;
+}
+
+.sc-card-check {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin-top: 6px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(17, 17, 17, 0.25);
+  display: grid;
+  place-items: center;
+  color: transparent;
+  transition: background 220ms var(--ease-out), border-color 220ms var(--ease-out), color 220ms var(--ease-out);
+}
+
+.sc-card-check svg {
+  width: 13px;
+  height: 13px;
+}
+
+.sc-card[data-done] .sc-card-check {
+  background: #a31621;
+  border-color: #a31621;
+  color: #fff;
+}
+
+/* ---- папка ---- */
+.sc-folder {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+  padding: 18px 20px;
+  border-radius: 18px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  border: 1px dashed rgba(17, 17, 17, 0.25);
+  background: rgba(17, 17, 17, 0.02);
+  color: #111111;
+  transition:
+    background 420ms var(--ease-out),
+    border-color 420ms var(--ease-out),
+    color 420ms var(--ease-out),
+    box-shadow 520ms var(--ease-out);
+}
+
+.sc-folder-word {
+  font-family: 'Onest', sans-serif;
+  font-weight: 800;
+  font-size: clamp(22px, 2.6vw, 30px);
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.sc-folder-meta {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #555555;
+  transition: color 420ms var(--ease-out);
+}
+
+/* единственный крупный красный акцент на экране — и он заслужен финалом */
+.sc-folder[data-open] {
+  background: #a31621;
+  border: 1px solid #a31621;
+  color: #ffffff;
+  box-shadow: 0 22px 60px -26px rgba(163, 22, 33, 0.7);
+}
+
+.sc-folder[data-open] .sc-folder-meta {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ---- сбор в папку ---- */
+.sc-plan-grid[data-all] .sc-card {
+  transform: translate(var(--dx, 0), var(--dy, 0)) scale(0.14);
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .sc-plan {
+      background: #ffffff;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+}
+
+@media (prefers-contrast: more) {
+  .sc-card-btn {
+      border-color: rgba(17, 17, 17, 0.45);
+    }
+  .sc-card-desc {
+      color: #333333;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-card,
+    .sc-card-btn,
+    .sc-card-icon,
+    .sc-card-check,
+    .sc-folder,
+    .sc-switch,
+    .sc-switch-knob,
+    .sc-plan-bar span {
+      transition-duration: 1ms;
+      transition-delay: 0ms !important;
+    }
+  /* убираем полёт через весь блок: карточки просто исчезают на месте */
+    .sc-plan-grid[data-all] .sc-card {
+      transform: none;
+    }
+}
+
+/* ---- Сценика: снимок зала под финальным призывом ----
+   Фотография должна подтверждать слова, а не спорить с ними: держим её
+   приглушённой и сажаем текст на плотную часть затемнения. */
+.sc-cta-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* сцена и партер важнее потолочных ферм */
+  object-position: 50% 62%;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.sc-cta-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* два градиента: горизонтальный держит читаемость слева, где стоит текст,
+     вертикальный гасит верх и низ, чтобы снимок не спорил с соседними
+     секциями */
+  background:
+    linear-gradient(90deg, rgba(12, 12, 12, 0.9) 0%, rgba(12, 12, 12, 0.78) 38%, rgba(12, 12, 12, 0.3) 100%),
+    linear-gradient(180deg, rgba(12, 12, 12, 0.62) 0%, rgba(12, 12, 12, 0.2) 45%, rgba(12, 12, 12, 0.78) 100%);
+}
+
+@media (max-width: 900px) {
+  /* на узком экране текст занимает всю ширину, поэтому затемнение
+       становится равномерным, а не боковым */
+    .sc-cta-scrim {
+      background: linear-gradient(180deg, rgba(12, 12, 12, 0.8) 0%, rgba(12, 12, 12, 0.5) 55%, rgba(12, 12, 12, 0.84) 100%);
+    }
+  .sc-cta-photo {
+      /* узкий кадр вырезает тёмный партер — сдвигаем к сцене, она светлее */
+      object-position: 50% 44%;
+      opacity: 0.72;
+    }
+}
+
+@media (prefers-contrast: more) {
+  .sc-cta-photo {
+      opacity: 0.22;
+    }
+}

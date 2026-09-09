@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { typo } from '../typo';
+import { typo } from '../../../../shared/typo';
 import { DISPLAY, services } from '../data';
 import { alpha, ink500, paper, violet400, violet500 } from '../tokens';
 
