@@ -1,5 +1,6 @@
 import { lazy, Suspense, useState } from 'react';
 import { typo } from './typo';
+import { SCENIKA_HOME } from './sites';
 import { DISPLAY, marqueeText, whyCards, roles, team, type Member } from './data';
 import {
   alpha,
@@ -785,7 +786,7 @@ export default function App() {
             </p>
           </div>
           <a
-            href="/scenika"
+            href={SCENIKA_HOME}
             style={{
               whiteSpace: 'nowrap',
               textDecoration: 'none',

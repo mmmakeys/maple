@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { typo } from '../typo';
+import { MAPLE_HOME } from '../sites';
 
 const DISPLAY = "'Onest', sans-serif";
 const RED = '#A31621';
@@ -456,32 +457,20 @@ function SecondCall() {
       style={{
         position: 'relative',
         overflow: 'hidden',
-        background: BLACK,
-        color: PAPER,
+        background: CREAM_LIGHT,
+        color: INK,
         padding: `96px ${PAD_X}`,
         scrollMarginTop: 24,
       }}
     >
       <div style={{ position: 'relative', zIndex: 1 }}>
-        {/* Свет гаснет: белое поле шапки растворяется в чёрном фоне секции.
-            Затухание привязано к самой шапке, а не к процентам высоты секции,
-            иначе на других экранах оно попадает на строку текста, где не
-            работает ни тёмный текст, ни светлый. */}
-        <div
-          className="sc-dim-top"
-          style={{
-            margin: `-96px calc(-1 * ${PAD_X}) 0`,
-            padding: `96px ${PAD_X} clamp(96px, 13vw, 180px)`,
-          }}
-        >
-          <div style={{ ...CALL_LABEL, color: RED }}>Второй звонок</div>
-          <h2 style={{ ...SECTION_H2, margin: '20px 0 0', maxWidth: 900, color: INK }}>Запускаем механизм полного зала</h2>
-          <p style={{ fontSize: 17, lineHeight: 1.55, color: MUTED, maxWidth: 720, margin: '18px 0 0' }}>
-            {typo("Площадки, билеты, договоры, реклама, PR, райдеры, логистика — каждая часть должна включиться вовремя. Собираем «под ключ», пока артист готовит шоу.")}
-          </p>
-        </div>
+        <div style={{ ...CALL_LABEL, color: RED }}>Второй звонок</div>
+        <h2 style={{ ...SECTION_H2, margin: '20px 0 0', maxWidth: 900, color: INK }}>Запускаем механизм полного зала</h2>
+        <p style={{ fontSize: 17, lineHeight: 1.55, color: MUTED, maxWidth: 720, margin: '18px 0 0' }}>
+          {typo("Площадки, билеты, договоры, реклама, PR, райдеры, логистика — каждая часть должна включиться вовремя. Собираем «под ключ», пока артист готовит шоу.")}
+        </p>
 
-        <div className="sc-plan" style={{ marginTop: 0 }}>
+        <div className="sc-plan">
           <div className="sc-plan-head">
             <div>
               <div className="sc-plan-title">{typo('Чек-лист тура')}</div>
@@ -586,7 +575,7 @@ function PartnershipStrap() {
           </span>
         </div>
         <a
-          href="/"
+          href={MAPLE_HOME}
           style={{
             flex: 'none',
             textDecoration: 'none',
@@ -1071,7 +1060,7 @@ function ScenikaFooter() {
       </div>
       <div style={{ display: 'flex', gap: 28, alignItems: 'center', flexWrap: 'wrap' }}>
         <span>Концертное агентство полного цикла</span>
-        <a href="/" style={{ color: '#7B7B7B', textDecoration: 'none' }}>Мэпл — digital →</a>
+        <a href={MAPLE_HOME} style={{ color: '#7B7B7B', textDecoration: 'none' }}>Мэпл — digital →</a>
       </div>
     </div>
   );

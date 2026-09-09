@@ -1445,27 +1445,25 @@ html {
   }
 }
 
-/* Белое поле шапки тает в чёрном фоне секции. Проценты здесь считаются от
-   высоты самой шапки, поэтому текст всегда остаётся на плотном белом,
-   а растворение приходится на отступ под ним. */
-.sc-dim-top {
-  background: linear-gradient(180deg, #ffffff 0%, #ffffff 74%, rgba(255, 255, 255, 0) 100%);
-}
 
 /* ---- Сценика: планер механизма ----
-   Плоское стекло на чёрном. Красный держим как единственный акцент
-   состояния «готово», поэтому он появляется только на отметке,
-   переключателе и финальной папке. */
+   Светлая секция: панель и карточки — матовое стекло поверх кремового,
+   а не тёмное. Красный держим как единственный акцент состояния «готово»,
+   поэтому он появляется только на отметке, полосе и финальной папке. */
 
 .sc-plan {
   margin-top: 40px;
   max-width: 1040px;
   border-radius: 24px;
   padding: 22px 22px 20px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  /* На светлом фоне прозрачное стекло поверх прозрачного теряет читаемость,
+     поэтому подложка почти плотная, а «стеклянность» держится размытием
+     и волосяной рамкой. */
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(17, 17, 17, 0.08);
   -webkit-backdrop-filter: blur(24px) saturate(140%);
   backdrop-filter: blur(24px) saturate(140%);
+  box-shadow: 0 18px 48px -28px rgba(17, 17, 17, 0.35);
   font-family: 'Manrope', sans-serif;
 }
 .sc-plan-head {
@@ -1479,13 +1477,13 @@ html {
   font-size: 17px;
   font-weight: 700;
   letter-spacing: -0.01em;
-  color: #f5f5f3;
+  color: #111111;
 }
 .sc-plan-sub {
   margin-top: 3px;
   font-size: 13.5px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.55);
+  color: #555555;
 }
 .sc-plan-right {
   display: flex;
@@ -1496,19 +1494,19 @@ html {
   font-family: 'Onest', sans-serif;
   font-size: 22px;
   font-weight: 700;
-  color: #f5f5f3;
+  color: #111111;
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
 }
 .sc-plan-total {
-  color: rgba(255, 255, 255, 0.4);
+  color: #8a8a8a;
 }
 
 .sc-plan-bar {
   margin: 16px 0 4px;
   height: 3px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(17, 17, 17, 0.1);
   overflow: hidden;
 }
 .sc-plan-bar span {
@@ -1528,7 +1526,7 @@ html {
   padding: 2px;
   border: 0;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(17, 17, 17, 0.18);
   cursor: pointer;
   transition: background 220ms var(--ease-out);
 }
@@ -1548,7 +1546,7 @@ html {
   height: 26px;
   border-radius: 50%;
   background: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 6px rgba(17, 17, 17, 0.28);
   transition: transform 320ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 .sc-switch[aria-checked='true'] .sc-switch-knob {
@@ -1580,10 +1578,10 @@ html {
   align-items: flex-start;
   gap: 12px;
   padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(17, 17, 17, 0.08);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.05);
-  color: #f5f5f3;
+  background: rgba(255, 255, 255, 0.78);
+  color: #111111;
   text-align: left;
   cursor: pointer;
   font-family: inherit;
@@ -1594,13 +1592,13 @@ html {
 }
 @media (hover: hover) and (pointer: fine) {
   .sc-card-btn:hover {
-    background: rgba(255, 255, 255, 0.09);
-    border-color: rgba(255, 255, 255, 0.16);
+    background: #ffffff;
+    border-color: rgba(17, 17, 17, 0.18);
   }
 }
 .sc-card[data-done] .sc-card-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(163, 22, 33, 0.55);
+  background: #ffffff;
+  border-color: rgba(163, 22, 33, 0.45);
 }
 .sc-card-icon {
   flex: none;
@@ -1609,12 +1607,12 @@ html {
   border-radius: 11px;
   display: grid;
   place-items: center;
-  background: rgba(255, 255, 255, 0.09);
-  color: rgba(255, 255, 255, 0.75);
+  background: rgba(17, 17, 17, 0.06);
+  color: #555555;
   transition: background 220ms var(--ease-out), color 220ms var(--ease-out);
 }
 .sc-card[data-done] .sc-card-icon {
-  background: rgba(163, 22, 33, 0.9);
+  background: #a31621;
   color: #fff;
 }
 .sc-card-text {
@@ -1634,8 +1632,7 @@ html {
   font-size: 13px;
   font-weight: 500;
   line-height: 1.35;
-  /* поверх стекла плоский серый выцветает: держим яркостью, а не оттенком */
-  color: rgba(255, 255, 255, 0.62);
+  color: #555555;
 }
 .sc-card-check {
   flex: none;
@@ -1643,7 +1640,7 @@ html {
   height: 22px;
   margin-top: 6px;
   border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border: 1.5px solid rgba(17, 17, 17, 0.25);
   display: grid;
   place-items: center;
   color: transparent;
@@ -1670,12 +1667,13 @@ html {
   justify-content: space-between;
   gap: 14px;
   flex-wrap: wrap;
-  border: 1px dashed rgba(255, 255, 255, 0.24);
-  background: rgba(255, 255, 255, 0.03);
-  color: #f5f5f3;
+  border: 1px dashed rgba(17, 17, 17, 0.25);
+  background: rgba(17, 17, 17, 0.02);
+  color: #111111;
   transition:
     background 420ms var(--ease-out),
     border-color 420ms var(--ease-out),
+    color 420ms var(--ease-out),
     box-shadow 520ms var(--ease-out);
 }
 .sc-folder-word {
@@ -1688,17 +1686,18 @@ html {
 .sc-folder-meta {
   font-size: 13.5px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.55);
+  color: #555555;
   transition: color 420ms var(--ease-out);
 }
 /* единственный крупный красный акцент на экране — и он заслужен финалом */
 .sc-folder[data-open] {
   background: #a31621;
   border: 1px solid #a31621;
-  box-shadow: 0 22px 60px -26px rgba(163, 22, 33, 0.9);
+  color: #ffffff;
+  box-shadow: 0 22px 60px -26px rgba(163, 22, 33, 0.7);
 }
 .sc-folder[data-open] .sc-folder-meta {
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* ---- сбор в папку ---- */
@@ -1711,17 +1710,17 @@ html {
 }
 @media (prefers-reduced-transparency: reduce) {
   .sc-plan {
-    background: #151515;
+    background: #ffffff;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
 }
 @media (prefers-contrast: more) {
   .sc-card-btn {
-    border-color: rgba(255, 255, 255, 0.4);
+    border-color: rgba(17, 17, 17, 0.45);
   }
   .sc-card-desc {
-    color: rgba(255, 255, 255, 0.85);
+    color: #333333;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1739,5 +1738,48 @@ html {
   /* убираем полёт через весь блок: карточки просто исчезают на месте */
   .sc-plan-grid[data-all] .sc-card {
     transform: none;
+  }
+}
+
+/* ---- Сценика: снимок зала под финальным призывом ----
+   Фотография должна подтверждать слова, а не спорить с ними: держим её
+   приглушённой и сажаем текст на плотную часть затемнения. */
+.sc-cta-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* сцена и партер важнее потолочных ферм */
+  object-position: 50% 62%;
+  opacity: 0.5;
+  pointer-events: none;
+}
+.sc-cta-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* два градиента: горизонтальный держит читаемость слева, где стоит текст,
+     вертикальный гасит верх и низ, чтобы снимок не спорил с соседними
+     секциями */
+  background:
+    linear-gradient(90deg, rgba(12, 12, 12, 0.9) 0%, rgba(12, 12, 12, 0.78) 38%, rgba(12, 12, 12, 0.3) 100%),
+    linear-gradient(180deg, rgba(12, 12, 12, 0.62) 0%, rgba(12, 12, 12, 0.2) 45%, rgba(12, 12, 12, 0.78) 100%);
+}
+@media (max-width: 900px) {
+  /* на узком экране текст занимает всю ширину, поэтому затемнение
+     становится равномерным, а не боковым */
+  .sc-cta-scrim {
+    background: linear-gradient(180deg, rgba(12, 12, 12, 0.8) 0%, rgba(12, 12, 12, 0.5) 55%, rgba(12, 12, 12, 0.84) 100%);
+  }
+  .sc-cta-photo {
+    /* узкий кадр вырезает тёмный партер — сдвигаем к сцене, она светлее */
+    object-position: 50% 44%;
+    opacity: 0.72;
+  }
+}
+@media (prefers-contrast: more) {
+  .sc-cta-photo {
+    opacity: 0.22;
   }
 }
