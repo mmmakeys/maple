@@ -71,6 +71,7 @@ function ScenikaNav() {
       const y = nav.getBoundingClientRect().bottom + 8;
       let tone: string | null = null;
       for (const el of Array.from(document.querySelectorAll('[data-tone]'))) {
+        if (el === nav) continue;
         const r = el.getBoundingClientRect();
         if (r.height > 0 && r.top <= y && r.bottom > y) tone = el.getAttribute('data-tone');
       }
@@ -229,6 +230,11 @@ function Stage() {
   const shown = curtain >= 0.5;
   const fadeRaw = Math.max(0, Math.min(1, (p - 0.55) / 0.25));
   const fade = fadeRaw * fadeRaw * (3 - 2 * fadeRaw);
+  // Хвост сцены: «Второй звонок» гаснет до черноты ещё до того, как
+  // закрепление отпустит. Иначе он уезжал вверх вместе с контейнером, и
+  // вместо перехода в «Третий звонок» получался рывок.
+  const outRaw = Math.max(0, Math.min(1, (p - 0.84) / 0.16));
+  const out = outRaw * outRaw * (3 - 2 * outRaw);
 
   const swayL = Math.sin(cover * Math.PI * 3) * 10;
   const swayR = Math.sin(cover * Math.PI * 3 + 0.7) * 10;
@@ -250,7 +256,9 @@ function Stage() {
           overflow: 'hidden',
           // Подложка сцены: слои проявляются поверх темноты, а не поверх
           // белого фона страницы, иначе полупрозрачный кадр выцветает.
-          background: INK,
+          // К концу уходит в чёрный «Третьего звонка», чтобы на стыке
+          // не было ступеньки по яркости.
+          background: out > 0 ? BLACK : INK,
         }}
       >
         {/* Слои держим смонтированными и переключаем видимость: пересборка
@@ -283,10 +291,10 @@ function Stage() {
             position: 'absolute',
             inset: 0,
             isolation: 'isolate',
-            opacity: Math.max(0, fade * 2 - 1),
+            opacity: Math.max(0, fade * 2 - 1) * (1 - out),
             // пока прозрачен — не перехватывает нажатия на слой под ним
-            pointerEvents: fade > 0.75 ? 'auto' : 'none',
-            visibility: fade > 0.5 ? 'visible' : 'hidden',
+            pointerEvents: fade > 0.75 && out < 0.2 ? 'auto' : 'none',
+            visibility: fade > 0.5 && out < 1 ? 'visible' : 'hidden',
           }}
         >
           <SecondCall />
@@ -864,6 +872,7 @@ function ThirdCall() {
     <div
       id="sold-out"
       ref={rootRef}
+      data-tone="dark"
       style={{
         background: BLACK,
         color: '#F5F5F3',
@@ -878,6 +887,9 @@ function ThirdCall() {
           top: 0,
           height: '100vh',
           overflow: 'hidden',
+          // Первый кадр проявляется, а не выезжает снизу: предыдущая сцена
+          // гаснет в тот же чёрный, и рывка на стыке не остаётся.
+          opacity: range(progress, 0, 0.035),
         }}
       >
         <div
@@ -1208,6 +1220,7 @@ function FinalCta() {
   return (
     <div
       id="contact"
+      data-tone="dark"
       style={{
         position: 'relative',
         overflow: 'hidden',
