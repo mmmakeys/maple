@@ -242,7 +242,7 @@ function Stage() {
       <span id="path" aria-hidden style={{ position: 'absolute', top: '34%', left: 0, width: 1, height: 1 }} />
       <span id="mechanism" aria-hidden style={{ position: 'absolute', top: '86%', left: 0, width: 1, height: 1 }} />
       <div
-        data-tone={cover > 0.5 || fade > 0.5 ? 'light' : 'dark'}
+        data-tone={cover > 0.5 ? 'light' : 'dark'}
         style={{
           position: 'sticky',
           top: 0,
@@ -655,20 +655,31 @@ function SecondCall() {
       style={{
         position: 'relative',
         overflow: 'hidden',
-        background: CREAM_LIGHT,
-        color: INK,
+        background: INK,
+        color: '#F5F5F3',
         minHeight: '100svh',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        padding: `clamp(96px, 13svh, 124px) ${PAD_X} clamp(28px, 4.4svh, 64px)`,
+        padding: `clamp(84px, 11svh, 112px) ${PAD_X} clamp(20px, 3svh, 48px)`,
         scrollMarginTop: 24,
       }}
     >
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{ ...CALL_LABEL, color: RED }}>{typo('Второй звонок')}</div>
-        <h2 style={{ ...SECTION_H2, margin: '20px 0 0', maxWidth: 900, color: INK }}>{typo('Запускаем механизм полного зала')}</h2>
-        <p style={{ fontSize: 17, lineHeight: 1.55, color: MUTED, maxWidth: 720, margin: 'clamp(10px, 1.8svh, 18px) 0 0' }}>
+        {/* Короче прежнего «Запускаем механизм полного зала»: тот занимал
+            три строки и вместе с планером не помещался в экран. */}
+        <h2
+          style={{
+            ...SECTION_H2,
+            fontSize: 'clamp(30px, min(5vw, 8svh), 72px)',
+            margin: 'clamp(8px, 1.2svh, 16px) 0 0',
+            maxWidth: 900,
+          }}
+        >
+          {typo('Механизм полного зала')}
+        </h2>
+        <p style={{ fontSize: 17, lineHeight: 1.55, color: MUTED_DARK, maxWidth: 720, margin: 'clamp(8px, 1.2svh, 14px) 0 0' }}>
           {typo("Площадки, билеты, договоры, реклама, PR, райдеры, логистика. Каждая часть должна включиться вовремя. Собираем «под ключ», пока артист готовит шоу.")}
         </p>
 

@@ -273,18 +273,18 @@ summary:active,
    поэтому он появляется только на отметке, полосе и финальной папке. */
 
 .sc-plan {
-  margin-top: clamp(14px, 2.4svh, 36px);
+  margin-top: clamp(10px, 1.6svh, 28px);
   max-width: 1040px;
   border-radius: 24px;
   padding: clamp(14px, 2.2svh, 22px) 22px clamp(12px, 2svh, 20px);
-  /* На светлом фоне прозрачное стекло поверх прозрачного теряет читаемость,
-     поэтому подложка почти плотная, а «стеклянность» держится размытием
-     и волосяной рамкой. */
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(17, 17, 17, 0.08);
+  /* На тёмном фоне стекло работает наоборот: подложка осветляет темноту,
+     а не затемняет белое. Плотность держим низкой, читаемость даёт
+     контраст текста, а не толщина подложки. */
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   -webkit-backdrop-filter: blur(24px) saturate(140%);
   backdrop-filter: blur(24px) saturate(140%);
-  box-shadow: 0 18px 48px -28px rgba(17, 17, 17, 0.35);
+  box-shadow: 0 18px 48px -28px rgba(0, 0, 0, 0.6);
   font-family: 'Manrope', sans-serif;
 }
 
@@ -300,14 +300,14 @@ summary:active,
   font-size: 17px;
   font-weight: 700;
   letter-spacing: -0.01em;
-  color: #111111;
+  color: #F5F5F3;
 }
 
 .sc-plan-sub {
   margin-top: 3px;
   font-size: 13.5px;
   font-weight: 500;
-  color: #555555;
+  color: #9A9A9A;
 }
 
 .sc-plan-right {
@@ -320,7 +320,7 @@ summary:active,
   font-family: 'Onest', sans-serif;
   font-size: 22px;
   font-weight: 700;
-  color: #111111;
+  color: #F5F5F3;
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
 }
@@ -333,7 +333,7 @@ summary:active,
   margin: 16px 0 4px;
   height: 3px;
   border-radius: 999px;
-  background: rgba(17, 17, 17, 0.1);
+  background: rgba(255, 255, 255, 0.12);
   overflow: hidden;
 }
 
@@ -354,7 +354,7 @@ summary:active,
   padding: 2px;
   border: 0;
   border-radius: 999px;
-  background: rgba(17, 17, 17, 0.18);
+  background: rgba(255, 255, 255, 0.16);
   cursor: pointer;
   transition: background 220ms var(--ease-out);
 }
@@ -393,7 +393,7 @@ summary:active,
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
-  gap: clamp(6px, 1svh, 10px);
+  gap: clamp(5px, 0.8svh, 10px);
 }
 
 .sc-card {
@@ -411,11 +411,11 @@ summary:active,
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: clamp(10px, 1.6svh, 16px) 16px;
-  border: 1px solid rgba(17, 17, 17, 0.08);
+  padding: clamp(8px, 1.2svh, 16px) 16px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.78);
-  color: #111111;
+  background: rgba(255, 255, 255, 0.035);
+  color: #F5F5F3;
   text-align: left;
   cursor: pointer;
   font-family: inherit;
@@ -444,8 +444,8 @@ summary:active,
   border-radius: 11px;
   display: grid;
   place-items: center;
-  background: rgba(17, 17, 17, 0.06);
-  color: #555555;
+  background: rgba(255, 255, 255, 0.07);
+  color: #9A9A9A;
   transition: background 220ms var(--ease-out), color 220ms var(--ease-out);
 }
 
@@ -473,7 +473,7 @@ summary:active,
   font-size: 13px;
   font-weight: 500;
   line-height: 1.35;
-  color: #555555;
+  color: #9A9A9A;
 }
 
 .sc-card-check {
@@ -482,7 +482,7 @@ summary:active,
   height: 22px;
   margin-top: 6px;
   border-radius: 50%;
-  border: 1.5px solid rgba(17, 17, 17, 0.25);
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
   display: grid;
   place-items: center;
   color: transparent;
@@ -504,16 +504,16 @@ summary:active,
 .sc-folder {
   grid-column: 1 / -1;
   margin-top: 4px;
-  padding: clamp(12px, 1.8svh, 18px) 20px;
+  padding: clamp(9px, 1.3svh, 18px) 20px;
   border-radius: 18px;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 14px;
   flex-wrap: wrap;
-  border: 1px dashed rgba(17, 17, 17, 0.25);
-  background: rgba(17, 17, 17, 0.02);
-  color: #111111;
+  border: 1px dashed rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.02);
+  color: #F5F5F3;
   transition:
     background 420ms var(--ease-out),
     border-color 420ms var(--ease-out),
@@ -532,7 +532,7 @@ summary:active,
 .sc-folder-meta {
   font-size: 13.5px;
   font-weight: 500;
-  color: #555555;
+  color: #9A9A9A;
   transition: color 420ms var(--ease-out);
 }
 
