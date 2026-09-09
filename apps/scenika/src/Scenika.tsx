@@ -27,7 +27,7 @@ const PAD_X = 'clamp(20px, 5vw, 64px)';
 
 export default function Scenika() {
   useEffect(() => {
-    document.title = 'Сценика — концертное агентство полного цикла';
+    document.title = 'Сценика. Концертное агентство полного цикла';
   }, []);
 
   return (
@@ -70,7 +70,7 @@ function ScenikaNav() {
         <a href="#cases" className="sc-nav-anchor" style={{ color: MUTED, textDecoration: 'none' }}>Кейсы</a>
         <a href="#numbers" className="sc-nav-anchor" style={{ color: MUTED, textDecoration: 'none' }}>Цифры</a>
         <a href="#contact" style={{ color: INK, textDecoration: 'none', border: `1px solid ${INK}`, padding: '10px 22px' }}>
-          Обсудить тур
+          {typo('Обсудить тур')}
         </a>
       </div>
     </div>
@@ -161,7 +161,7 @@ function ScenikaHero() {
         {typo("3 звонка до солдаута")}
       </div>
       <p style={{ fontSize: 19, lineHeight: 1.6, color: MUTED_DARK, maxWidth: 520, margin: '32px 0 0' }}>
-        {typo("Концертное агентство полного цикла. Полностью организуем концертные туры — от первой идеи до полного зала.")}
+        {typo("Концертное агентство полного цикла. Организуем концертные туры целиком: замысел, подготовка, полный зал.")}
       </p>
       <div style={{ marginTop: 48 }}>
         <a
@@ -179,7 +179,7 @@ function ScenikaHero() {
             padding: '20px 44px',
           }}
         >
-          Обсудить тур
+          {typo('Обсудить тур')}
         </a>
       </div>
     </div>
@@ -357,7 +357,7 @@ function FirstCall() {
         );
       })()}
       <div style={{ position: 'relative', zIndex: 1 }}>
-      <div style={CALL_LABEL}>Первый звонок</div>
+      <div style={CALL_LABEL}>{typo('Первый звонок')}</div>
       <h2 style={{ ...SECTION_H2, margin: '36px 0 0', maxWidth: 900 }}>
         {typo("До сцены начинается главное")}
       </h2>
@@ -421,6 +421,10 @@ function SecondCall() {
   const [done, setDone] = useState<boolean[]>(() => Array(N).fill(false));
   const count = done.filter(Boolean).length;
   const all = count === N;
+  // Готовность шоу к встрече зрителей: пока закрыты не все пункты, двери
+  // открывать рано, поэтому шкала считается по доле закрытых, а не по
+  // остатку — остаток говорит о работе, доля говорит о результате.
+  const readiness = Math.round((count / N) * 100);
 
   const boardRef = useRef<HTMLUListElement>(null);
   const folderRef = useRef<HTMLDivElement>(null);
@@ -466,17 +470,17 @@ function SecondCall() {
       }}
     >
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <div style={{ ...CALL_LABEL, color: RED }}>Второй звонок</div>
-        <h2 style={{ ...SECTION_H2, margin: '20px 0 0', maxWidth: 900, color: INK }}>Запускаем механизм полного зала</h2>
+        <div style={{ ...CALL_LABEL, color: RED }}>{typo('Второй звонок')}</div>
+        <h2 style={{ ...SECTION_H2, margin: '20px 0 0', maxWidth: 900, color: INK }}>{typo('Запускаем механизм полного зала')}</h2>
         <p style={{ fontSize: 17, lineHeight: 1.55, color: MUTED, maxWidth: 720, margin: '18px 0 0' }}>
-          {typo("Площадки, билеты, договоры, реклама, PR, райдеры, логистика — каждая часть должна включиться вовремя. Собираем «под ключ», пока артист готовит шоу.")}
+          {typo("Площадки, билеты, договоры, реклама, PR, райдеры, логистика. Каждая часть должна включиться вовремя. Собираем «под ключ», пока артист готовит шоу.")}
         </p>
 
         <div className="sc-plan">
           <div className="sc-plan-head">
             <div>
               <div className="sc-plan-title">{typo('Чек-лист тура')}</div>
-              <div className="sc-plan-sub">{typo('Отметьте всё — соберём в одну папку')}</div>
+              <div className="sc-plan-sub">{typo('Каждый пункт закрываем сами или вместе с вами')}</div>
             </div>
             <div className="sc-plan-right">
               <span className="sc-plan-count" aria-live="polite">{count}<span className="sc-plan-total">/{N}</span></span>
@@ -484,7 +488,7 @@ function SecondCall() {
                 type="button"
                 role="switch"
                 aria-checked={all}
-                aria-label={all ? 'Снять все отметки' : 'Отметить всё'}
+                aria-label={all ? 'Открыть все пункты заново' : 'Закрыть все пункты'}
                 className="sc-switch"
                 onClick={toggleAll}
               >
@@ -529,7 +533,9 @@ function SecondCall() {
             <div className="sc-folder" ref={folderRef} data-open={all || undefined}>
               <span className="sc-folder-word">ШОУ</span>
               <span className="sc-folder-meta" aria-live="polite">
-                {all ? typo('Собрано целиком — тур готов к продаже') : typo(`Ждёт ещё ${N - count}`)}
+                {all
+                  ? typo('Готовность 100%. Можно открывать двери')
+                  : typo(`Готовность ${readiness}%`)}
               </span>
             </div>
           </ul>
@@ -693,7 +699,7 @@ function ThirdCall() {
             color: RED_ON_DARK,
           }}
         >
-          Третий звонок
+          {typo('Третий звонок')}
         </div>
 
         {texts.map((t, i) => {
@@ -842,7 +848,7 @@ function Cases() {
   ];
   return (
     <div id="cases" style={{ padding: `120px ${PAD_X}`, scrollMarginTop: 24 }}>
-      <h2 style={{ ...SECTION_H2 }}>Мы уже проходили этот путь</h2>
+      <h2 style={{ ...SECTION_H2 }}>{typo('Мы уже проходили этот путь')}</h2>
       <div style={{ display: 'flex', flexDirection: 'column', marginTop: 64 }}>
         {rows.map((r, i, arr) => (
           <div
@@ -1009,7 +1015,7 @@ function FinalCta() {
           maxWidth: 1000,
         }}
       >
-        Давайте соберём следующий полный зал
+        {typo('Давайте соберём следующий полный зал')}
       </h2>
       {/* Поверх снимка приглушённый серый выцветает и не проходит по контрасту:
           над меняющимся фоном текст держат яркостью и весом, а не оттенком. */}
@@ -1032,7 +1038,7 @@ function FinalCta() {
             padding: '20px 44px',
           }}
         >
-          Обсудить тур
+          {typo('Обсудить тур')}
         </a>
       </div>
       </div>
@@ -1061,8 +1067,8 @@ function ScenikaFooter() {
         Сценика
       </div>
       <div style={{ display: 'flex', gap: 28, alignItems: 'center', flexWrap: 'wrap' }}>
-        <span>Концертное агентство полного цикла</span>
-        <a href={MAPLE_HOME} style={{ color: '#7B7B7B', textDecoration: 'none' }}>Мэпл — digital →</a>
+        <span>{typo('Концертное агентство полного цикла')}</span>
+        <a href={MAPLE_HOME} style={{ color: '#7B7B7B', textDecoration: 'none' }}>{typo('Мэпл · digital ')}→</a>
       </div>
     </div>
   );

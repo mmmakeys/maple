@@ -3,59 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Сценика — концертное агентство полного цикла</title>
-    <meta name="description" content="Организуем концерты и туры под ключ: площадки, логистика, продвижение, отчётность." />
+    <title>Сценика. Концертное агентство полного цикла</title>
+    <meta name="description" content="Организуем концертные туры целиком: площадки, билеты, продвижение, логистика, отчётность." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;500;600;700;800&family=Onest:wght@400;500;700;800&display=swap"
       rel="stylesheet"
     />
+    <!-- Без заставки: страница светлая и лёгкая, ждать ей нечего.
+         Фон и обнулённые поля стоят инлайном, чтобы первый кадр совпал
+         с оформлением до того, как приедет файл стилей. -->
     <style>
-      /* Заставка на время загрузки — инлайном, чтобы отрисоваться до того,
-         как приедет JS. Убирается из main.tsx после первого кадра. */
-      html, body { margin: 0; }
-      #sc-loader {
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #ffffff;
-        color: #111111;
-        font-family: 'Onest', sans-serif;
-        transition: opacity .3s cubic-bezier(0.23, 1, 0.32, 1);
-      }
-      #sc-loader.sc-loader--out { opacity: 0; pointer-events: none; }
-      #sc-loader.sc-loader--out * { animation: none !important; }
-      .sc-loader__word {
-        font-weight: 800;
-        font-size: clamp(28px, 6vw, 44px);
-        letter-spacing: 0.24em;
-        text-transform: uppercase;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-      /* Точка света, как луч перед началом: единственный красный акцент. */
-      .sc-loader__dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: #e90026;
-        animation: sc-loader-pulse 1.4s ease-in-out infinite;
-      }
-      @keyframes sc-loader-pulse {
-        0%, 100% { opacity: 0.3; transform: scale(0.85); }
-        50%      { opacity: 1;   transform: scale(1.15); }
-      }
+      html, body { margin: 0; background: #ffffff; }
     </style>
   </head>
   <body>
-    <div id="sc-loader" aria-hidden="true">
-      <div class="sc-loader__word">Сценика<span class="sc-loader__dot"></span></div>
-    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
