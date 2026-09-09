@@ -5,13 +5,16 @@ import { typo } from '../../../shared/typo';
 const MAPLE_HOME = 'https://maple-media.ru/';
 
 const DISPLAY = "'Onest', sans-serif";
-const RED = '#A31621';
-/** Яркая ступень бренда для тёмных поверхностей: oklch(0.66 0.224 24.5).
- *  Тон бренда сохранён, насыщенность взята по краю sRGB — так красный
- *  остаётся звонким, а не выцветшим. Бренд-красный на тёмном давал 2.4–2.5
- *  и не проходил AA; здесь 4.92 на #1C1C1C, 5.65 на #0C0C0C.
- *  На светлых поверхностях остаётся RED. */
-const RED_ON_DARK = '#FE4147';
+/**
+ * Единственный фирменный красный: oklch(0.556 0.216 20.8).
+ *
+ * Раньше их было три — свой для светлого фона, свой для тёмного и свой для
+ * полосы, и это читалось как три разных красных. Этот подобран так, чтобы
+ * работать везде: белый на нём 4.96, он же текстом на белом 4.96 и на
+ * кремовом 4.55 — везде AA. На тёмных поверхностях даёт 3.43, поэтому
+ * текстом там идёт только от 18.66px при жирном начертании, где порог 3:1.
+ */
+const RED = '#DC1A2E';
 const INK = '#111111';
 const PAPER = '#FFFFFF';
 const CREAM_LIGHT = '#F5F5F3';
@@ -33,8 +36,7 @@ export default function Scenika() {
   return (
     <div style={{ fontFamily: "'Manrope', sans-serif", color: INK, background: PAPER, overflowX: 'clip' }}>
       <ScenikaNav />
-      <ScenikaHero />
-      <FirstCall />
+      <Stage />
       <SecondCall />
       <ThirdCall />
       <PartnershipStrap />
@@ -77,6 +79,114 @@ function ScenikaNav() {
   );
 }
 
+/**
+ * Закреплённая сцена: герой и «Первый звонок» занимают один экран.
+ *
+ * Прокрутка не уводит страницу, а двигает шторы: они сходятся над героем,
+ * в момент полного смыкания за ними меняется содержимое, и расходятся уже
+ * над «Первым звонком». Так второй блок появляется ровно на месте первого,
+ * а зритель управляет темпом и может отмотать назад.
+ *
+ * При включённом «уменьшении движения» закрепление выключается целиком:
+ * оба блока идут обычным потоком, как раньше.
+ */
+function Stage() {
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const [p, setP] = useState(0);
+  const [reduced, setReduced] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const sync = () => setReduced(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+
+  useEffect(() => {
+    if (reduced) return;
+    const el = wrapRef.current;
+    if (!el) return;
+    let raf = 0;
+    const update = () => {
+      const rect = el.getBoundingClientRect();
+      const travel = Math.max(1, rect.height - window.innerHeight);
+      setP(Math.max(0, Math.min(1, -rect.top / travel)));
+    };
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, [reduced]);
+
+  if (reduced) {
+    return (
+      <>
+        <ScenikaHero />
+        <FirstCall />
+      </>
+    );
+  }
+
+  // Смыкание идёт до середины пути, расхождение — после. Кривая
+  // симметричная (smoothstep): ткань мягко трогается, идёт ровно и мягко
+  // приходит. Ease-out здесь не годится — он съедал первую четверть пути,
+  // и герой скрывался раньше, чем зритель успевал его рассмотреть.
+  const half = p < 0.5 ? p * 2 : (1 - p) * 2;
+  const cover = half * half * (3 - 2 * half);
+  const shown = p >= 0.5;
+
+  const swayL = Math.sin(cover * Math.PI * 3) * 10;
+  const swayR = Math.sin(cover * Math.PI * 3 + 0.7) * 10;
+  const edge = cover < 0.6 ? 1 : Math.max(0, 1 - (cover - 0.6) / 0.3);
+
+  return (
+    <div ref={wrapRef} style={{ position: 'relative', height: '240svh' }}>
+      <div style={{ position: 'sticky', top: 0, height: '100svh', overflow: 'hidden' }}>
+        {/* Слои держим смонтированными и переключаем видимость: пересборка
+            в момент смыкания сбрасывала бы луч прожектора и набор текста. */}
+        <div style={{ position: 'absolute', inset: 0, visibility: shown ? 'hidden' : 'visible' }} aria-hidden={shown}>
+          <ScenikaHero />
+        </div>
+        <div style={{ position: 'absolute', inset: 0, visibility: shown ? 'visible' : 'hidden' }} aria-hidden={!shown}>
+          <FirstCall />
+        </div>
+
+        <div
+          aria-hidden
+          className="sc-curtain sc-curtain-l"
+          style={{
+            transform: `translateX(${-100 + cover * 100}%)`,
+            backgroundPosition: `0px ${swayL}px`,
+            ['--sc-curtain-edge' as string]: String(edge),
+            ['--sc-curtain-mask-y' as string]: `${swayL}px`,
+            zIndex: 2,
+          } as React.CSSProperties}
+        />
+        <div
+          aria-hidden
+          className="sc-curtain sc-curtain-r"
+          style={{
+            transform: `translateX(${100 - cover * 100}%)`,
+            backgroundPosition: `0px ${swayR}px`,
+            ['--sc-curtain-edge' as string]: String(edge),
+            ['--sc-curtain-mask-y' as string]: `${swayR}px`,
+            zIndex: 2,
+          } as React.CSSProperties}
+        />
+      </div>
+    </div>
+  );
+}
+
 function ScenikaHero() {
   const beamRef = useRef<HTMLDivElement | null>(null);
 
@@ -106,7 +216,8 @@ function ScenikaHero() {
       style={{
         position: 'relative',
         overflow: 'hidden',
-        minHeight: '88vh',
+        height: '100%',
+        minHeight: '88svh',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -131,9 +242,9 @@ function ScenikaHero() {
         }}
       />
       <div className="sc-hero-bells" style={{ display: 'flex', alignItems: 'flex-end', gap: 10, height: 56, marginBottom: 48 }}>
-        <span style={{ width: 10, height: 56, background: RED_ON_DARK, transformOrigin: 'bottom', animation: 'sc-bell 2.4s ease-in-out infinite' }} />
-        <span style={{ width: 10, height: 56, background: RED_ON_DARK, transformOrigin: 'bottom', animation: 'sc-bell 2.4s ease-in-out 0.3s infinite' }} />
-        <span style={{ width: 10, height: 56, background: RED_ON_DARK, transformOrigin: 'bottom', animation: 'sc-bell 2.4s ease-in-out 0.6s infinite' }} />
+        <span style={{ width: 10, height: 56, background: RED, transformOrigin: 'bottom', animation: 'sc-bell 2.4s ease-in-out infinite' }} />
+        <span style={{ width: 10, height: 56, background: RED, transformOrigin: 'bottom', animation: 'sc-bell 2.4s ease-in-out 0.3s infinite' }} />
+        <span style={{ width: 10, height: 56, background: RED, transformOrigin: 'bottom', animation: 'sc-bell 2.4s ease-in-out 0.6s infinite' }} />
       </div>
       <h1
         style={{
@@ -189,7 +300,9 @@ function ScenikaHero() {
 const CALL_LABEL: React.CSSProperties = {
   fontFamily: DISPLAY,
   fontWeight: 800,
-  fontSize: 15,
+  // 19px при весе 800 попадает в «крупный текст», где достаточно 3:1 —
+  // именно это позволяет держать один красный и на тёмных секциях
+  fontSize: 19,
   letterSpacing: '0.22em',
   textTransform: 'uppercase',
   color: RED,
@@ -282,80 +395,21 @@ function QuestionTyper() {
 }
 
 function FirstCall() {
-  const rootRef = useRef<HTMLDivElement | null>(null);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    const el = rootRef.current;
-    if (!el) return;
-    let raf = 0;
-    const update = () => {
-      const rect = el.getBoundingClientRect();
-      const vh = window.innerHeight;
-      const distance = Math.max(1, rect.height * 0.9);
-      const scrolled = vh - rect.top;
-      const raw = Math.max(0, Math.min(1, scrolled / distance));
-      // Ease-out cubic — тяжёлая ткань уверенно доходит до центра
-      const inv = 1 - raw;
-      setProgress(1 - inv * inv * inv);
-    };
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
-    };
-  }, []);
-
   return (
     <div
-      ref={rootRef}
       id="path"
       style={{
         position: 'relative',
         overflow: 'hidden',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
         background: INK,
-        padding: `120px ${PAD_X}`,
+        padding: `72px ${PAD_X}`,
         scrollMarginTop: 24,
       }}
     >
-      {(() => {
-        // складки колышутся во время движения (несколько полу-волн за путь),
-        // передний край постепенно теряет тень к моменту смыкания
-        const swayL = Math.sin(progress * Math.PI * 3) * 10;
-        const swayR = Math.sin(progress * Math.PI * 3 + 0.7) * 10;
-        const edge = progress < 0.6 ? 1 : Math.max(0, 1 - (progress - 0.6) / 0.3);
-        return (
-          <>
-            <div
-              aria-hidden
-              className="sc-curtain sc-curtain-l"
-              style={{
-                transform: `translateX(${-100 + progress * 100}%)`,
-                backgroundPosition: `0px ${swayL}px`,
-                ['--sc-curtain-edge' as string]: String(edge),
-                ['--sc-curtain-mask-y' as string]: `${swayL}px`,
-              } as React.CSSProperties}
-            />
-            <div
-              aria-hidden
-              className="sc-curtain sc-curtain-r"
-              style={{
-                transform: `translateX(${100 - progress * 100}%)`,
-                backgroundPosition: `0px ${swayR}px`,
-                ['--sc-curtain-edge' as string]: String(edge),
-                ['--sc-curtain-mask-y' as string]: `${swayR}px`,
-              } as React.CSSProperties}
-            />
-          </>
-        );
-      })()}
       <div style={{ position: 'relative', zIndex: 1 }}>
       <div style={CALL_LABEL}>{typo('Первый звонок')}</div>
       <h2 style={{ ...SECTION_H2, margin: '36px 0 0', maxWidth: 900 }}>
@@ -546,14 +600,11 @@ function SecondCall() {
   );
 }
 
-/** Партнёрская полоса: одна строка на ярком красном.
- *  #E90026 — самый яркий красный тона бренда, на котором белый текст ещё
- *  держит AA (4.67). Насыщенность 0.242 против 0.173 у #A31621. */
-const STRAP_RED = '#E90026';
+/** Партнёрская полоса: одна строка на фирменном красном. */
 
 function PartnershipStrap() {
   return (
-    <div style={{ background: STRAP_RED, color: PAPER }}>
+    <div style={{ background: RED, color: PAPER }}>
       <div
         className="sc-strap"
         style={{
@@ -588,7 +639,7 @@ function PartnershipStrap() {
             flex: 'none',
             textDecoration: 'none',
             background: PAPER,
-            color: STRAP_RED,
+            color: RED,
             fontWeight: 800,
             fontSize: 14.5,
             padding: '11px 20px',
@@ -696,7 +747,7 @@ function ThirdCall() {
             top: '14vh',
             ...CALL_LABEL,
             // секция постоянно чёрная, брендовый красный тут даёт 2.51
-            color: RED_ON_DARK,
+            color: RED,
           }}
         >
           {typo('Третий звонок')}
@@ -745,7 +796,7 @@ function ThirdCall() {
             fontWeight: 800,
             fontSize: 'clamp(64px, 12vw, 184px)',
             textTransform: 'uppercase',
-            color: RED_ON_DARK,
+            color: RED,
             letterSpacing: '0.04em',
             lineHeight: 0.98,
             opacity: soldOutAppear,
@@ -809,9 +860,12 @@ function AfterConcert() {
           <div
             key={it.t}
             style={{
-              border: `1px solid ${it.rank === 0 ? MUTED_LINE : it.rank === 1 ? RED_ON_DARK : RED}`,
+              // Ступени нарастания: обычное, обведённое красным, залитое.
+              // Текст остаётся светлым — красным по тёмному мелкий кегль
+              // не читается, а обводка держит тот же акцент.
+              border: `1px solid ${it.rank === 0 ? MUTED_LINE : RED}`,
               background: it.rank === 2 ? RED : 'transparent',
-              color: it.rank === 0 ? '#F5F5F3' : it.rank === 1 ? RED_ON_DARK : PAPER,
+              color: it.rank === 2 ? PAPER : '#F5F5F3',
               padding: '14px 24px',
               fontSize: 17,
             }}
@@ -840,11 +894,14 @@ function AfterConcert() {
 }
 
 function Cases() {
-  const rows = [
+  const rows: Array<{ name: string; meta: string; note?: string }> = [
     { name: 'Павел Воля', meta: 'организация туров' },
     { name: 'Ляйсан Утяшева', meta: 'Bolero, Carmen P.S.' },
     { name: 'Егор Дружинин', meta: typo('театральные постановки и мюзиклы') },
-    { name: 'Nelson, Максим Свобода, Кристина Кошелева', meta: typo('и многие другие') },
+    // Последняя строка собирает нескольких артистов сразу, поэтому имена
+    // набираются мельче остальных, а под ними идёт ещё более мелкая приписка
+    // о жанрах: иначе строка спорит по весу с сольными именами выше.
+    { name: 'Максим Свобода, Кристина Кошелева', note: typo('концерты, шоу и постановки'), meta: typo('и многие другие') },
   ];
   return (
     <div id="cases" style={{ padding: `120px ${PAD_X}`, scrollMarginTop: 24 }}>
@@ -864,8 +921,20 @@ function Cases() {
               borderBottom: i === arr.length - 1 ? `1px solid ${BORDER}` : undefined,
             }}
           >
-            <div style={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 'clamp(22px, 3vw, 44px)', textTransform: 'uppercase' }}>
-              {r.name}
+            <div>
+              <div
+                style={{
+                  fontFamily: DISPLAY,
+                  fontWeight: 500,
+                  fontSize: r.note ? 'clamp(18px, 2.1vw, 30px)' : 'clamp(22px, 3vw, 44px)',
+                  textTransform: 'uppercase',
+                }}
+              >
+                {r.name}
+              </div>
+              {r.note && (
+                <div style={{ fontSize: 15, color: '#6F6F6F', marginTop: 8 }}>{r.note}</div>
+              )}
             </div>
             <div style={{ fontSize: 16, color: '#6F6F6F' }}>{r.meta}</div>
           </div>
