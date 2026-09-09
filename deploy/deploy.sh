@@ -10,6 +10,27 @@ SSH_OPTS="-i $SSH_KEY -o BatchMode=yes -o ConnectTimeout=15"
 WEBROOT="/var/www/maple"
 APP_DIR="$(cd "$(dirname "$0")/../app" && pwd)"
 RELEASE="$(date +%Y%m%d-%H%M%S)"
+COMMIT="$(git -C "$(dirname "$0")/.." rev-parse --short HEAD)"
+
+# Выкатываем только с main и только то, что уже в репозитории: иначе на
+# сервер уезжает код, которого нет ни у кого, кроме этой машины, и понять
+# потом, что именно там работает, будет неоткуда.
+BRANCH="$(git -C "$APP_DIR/.." rev-parse --abbrev-ref HEAD)"
+if [ "$BRANCH" != "main" ]; then
+  echo "ОСТАНОВЛЕНО: выкатка идёт только с main, а сейчас $BRANCH." >&2
+  exit 1
+fi
+if [ -n "$(git -C "$APP_DIR/.." status --porcelain)" ]; then
+  echo "ОСТАНОВЛЕНО: в рабочей копии есть незакоммиченные правки." >&2
+  git -C "$APP_DIR/.." status --short >&2
+  exit 1
+fi
+git -C "$APP_DIR/.." fetch origin main -q 2>/dev/null || true
+if [ -n "$(git -C "$APP_DIR/.." log --oneline origin/main..HEAD 2>/dev/null)" ]; then
+  echo "ОСТАНОВЛЕНО: локальные коммиты не запушены в origin/main." >&2
+  git -C "$APP_DIR/.." log --oneline origin/main..HEAD >&2
+  exit 1
+fi
 
 echo "→ Сборка"
 cd "$APP_DIR"
@@ -31,7 +52,7 @@ echo "→ Оставляем пять последних релизов"
 ssh $SSH_OPTS "$SERVER" "cd $WEBROOT/releases && ls -1t | tail -n +6 | xargs -r rm -rf"
 
 echo
-echo "Выкачено: $RELEASE"
+echo "Выкачено: $RELEASE (коммит $COMMIT)"
 for u in https://maple-media.ru/ https://scenika.ru/; do
   printf '%-28s %s\n' "$u" "$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "$u" || echo 'нет ответа')"
 done
