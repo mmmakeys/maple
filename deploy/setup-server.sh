@@ -4,7 +4,7 @@
 # 80/443 уже заняты чужим процессом — останавливается и показывает, кем.
 set -euo pipefail
 
-SERVER_IP="147.45.229.3"
+SERVER_IP="186.246.6.76"
 WEBROOTS=("/var/www/maple" "/var/www/scenika")
 EMAIL="${CERTBOT_EMAIL:-maximzotov93@gmail.com}"
 

@@ -9,7 +9,7 @@
 # откат сводится к перестановке ссылки, без повторной сборки.
 set -euo pipefail
 
-SERVER="deploy@147.45.229.3"
+SERVER="deploy@186.246.6.76"
 SSH_KEY="$HOME/.ssh/maple_deploy"
 SSH_OPTS="-i $SSH_KEY -o BatchMode=yes -o ConnectTimeout=15"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

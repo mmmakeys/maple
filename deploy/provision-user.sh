@@ -35,4 +35,4 @@ SUDO
 chmod 440 /etc/sudoers.d/deploy-nginx
 visudo -c -f /etc/sudoers.d/deploy-nginx
 
-echo "Готово: пользователь $USER_NAME, каталог $WEBROOT, sudo только на nginx -t и reload."
+echo "Готово: пользователь $USER_NAME, каталоги ${WEBROOTS[*]}, sudo только на nginx -t и reload."
