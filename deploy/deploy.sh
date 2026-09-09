@@ -17,13 +17,27 @@ RELEASE="$(date +%Y%m%d-%H%M%S)"
 COMMIT="$(git -C "$ROOT" rev-parse --short HEAD)"
 
 # Какое приложение куда едет и под каким доменом проверяется.
-webroot_for() { case "$1" in maple) echo /var/www/maple;; scenika) echo /var/www/scenika;; esac; }
-url_for()     { case "$1" in maple) echo https://maple-media.ru/;; scenika) echo https://scenika.ru/;; esac; }
+webroot_for() {
+  case "$1" in
+    maple)   echo /var/www/maple;;
+    scenika) echo /var/www/scenika;;
+    *)       echo "Неизвестное приложение: $1" >&2; return 1;;
+  esac
+}
+url_for() {
+  case "$1" in
+    maple)   echo https://maple-media.ru/;;
+    scenika) echo https://scenika.ru/;;
+    *)       return 1;;
+  esac
+}
 
-APPS=("$@")
+APPS=()
+for a in "$@"; do APPS+=("${a%/}"); done   # снимаем слэш от автодополнения
 [ ${#APPS[@]} -gt 0 ] || APPS=(maple scenika)
 for a in "${APPS[@]}"; do
   [ -d "$ROOT/apps/$a" ] || { echo "Нет приложения $a в apps/." >&2; exit 1; }
+  webroot_for "$a" >/dev/null || exit 1
 done
 
 # Выкатываем только с main и только то, что уже в репозитории: иначе на
@@ -39,10 +53,19 @@ if [ -n "$(git -C "$ROOT" status --porcelain)" ]; then
   git -C "$ROOT" status --short >&2
   exit 1
 fi
-git -C "$ROOT" fetch origin main -q 2>/dev/null || true
-if [ -n "$(git -C "$ROOT" log --oneline origin/main..HEAD 2>/dev/null)" ]; then
+# Сбой любой из этих команд означает, что проверить нечего, а не что всё
+# в порядке: молчаливый пропуск сводил бы защиту на нет.
+if ! git -C "$ROOT" fetch origin main -q; then
+  echo "ОСТАНОВЛЕНО: не удалось связаться с origin, состояние ветки неизвестно." >&2
+  exit 1
+fi
+if ! AHEAD="$(git -C "$ROOT" log --oneline origin/main..HEAD)"; then
+  echo "ОСТАНОВЛЕНО: не удалось сравнить ветку с origin/main." >&2
+  exit 1
+fi
+if [ -n "$AHEAD" ]; then
   echo "ОСТАНОВЛЕНО: локальные коммиты не запушены в origin/main." >&2
-  git -C "$ROOT" log --oneline origin/main..HEAD >&2
+  echo "$AHEAD" >&2
   exit 1
 fi
 

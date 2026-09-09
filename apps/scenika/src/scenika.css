@@ -561,20 +561,29 @@ summary:active,
 }
 
 @media (prefers-reduced-transparency: reduce) {
+  /* Без размытия подложке нужна плотность, но плотность тёмная: панель
+     стоит на чёрном, и белый фон делал бы светлый текст невидимым. */
   .sc-plan {
-      background: #ffffff;
-      -webkit-backdrop-filter: none;
-      backdrop-filter: none;
-    }
+    background: #1B1B1B;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .sc-card-btn {
+    background: #232323;
+  }
 }
 
 @media (prefers-contrast: more) {
+  /* Повышенный контраст на тёмном означает более светлые рамки и текст,
+     а не более тёмные: прежние значения делали блок хуже, чем без них. */
   .sc-card-btn {
-      border-color: rgba(17, 17, 17, 0.45);
-    }
-  .sc-card-desc {
-      color: #333333;
-    }
+    border-color: rgba(255, 255, 255, 0.45);
+  }
+  .sc-card-desc,
+  .sc-plan-sub,
+  .sc-folder-meta {
+    color: #D6D6D6;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -592,51 +601,5 @@ summary:active,
   /* убираем полёт через весь блок: карточки просто исчезают на месте */
     .sc-plan-grid[data-all] .sc-card {
       transform: none;
-    }
-}
-
-/* ---- Сценика: снимок зала под финальным призывом ----
-   Фотография должна подтверждать слова, а не спорить с ними: держим её
-   приглушённой и сажаем текст на плотную часть затемнения. */
-.sc-cta-photo {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* сцена и партер важнее потолочных ферм */
-  object-position: 50% 62%;
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-.sc-cta-scrim {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  /* два градиента: горизонтальный держит читаемость слева, где стоит текст,
-     вертикальный гасит верх и низ, чтобы снимок не спорил с соседними
-     секциями */
-  background:
-    linear-gradient(90deg, rgba(12, 12, 12, 0.9) 0%, rgba(12, 12, 12, 0.78) 38%, rgba(12, 12, 12, 0.3) 100%),
-    linear-gradient(180deg, rgba(12, 12, 12, 0.62) 0%, rgba(12, 12, 12, 0.2) 45%, rgba(12, 12, 12, 0.78) 100%);
-}
-
-@media (max-width: 900px) {
-  /* на узком экране текст занимает всю ширину, поэтому затемнение
-       становится равномерным, а не боковым */
-    .sc-cta-scrim {
-      background: linear-gradient(180deg, rgba(12, 12, 12, 0.8) 0%, rgba(12, 12, 12, 0.5) 55%, rgba(12, 12, 12, 0.84) 100%);
-    }
-  .sc-cta-photo {
-      /* узкий кадр вырезает тёмный партер — сдвигаем к сцене, она светлее */
-      object-position: 50% 44%;
-      opacity: 0.72;
-    }
-}
-
-@media (prefers-contrast: more) {
-  .sc-cta-photo {
-      opacity: 0.22;
     }
 }

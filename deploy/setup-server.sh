@@ -5,7 +5,7 @@
 set -euo pipefail
 
 SERVER_IP="147.45.229.3"
-WEBROOT="/var/www/maple"
+WEBROOTS=("/var/www/maple" "/var/www/scenika")
 EMAIL="${CERTBOT_EMAIL:-maximzotov93@gmail.com}"
 
 echo "→ Что уже слушает 80 и 443"
@@ -28,9 +28,13 @@ echo "→ Каталоги"
 # current — это симлинк на активный релиз, каталогом его создавать нельзя.
 # Владелец каталога остаётся deploy, иначе выкатка перестанет писать туда;
 # www-data достаточно группы и права на чтение.
-mkdir -p "$WEBROOT/releases" /var/www/certbot
-chown -R deploy:www-data "$WEBROOT" /var/www/certbot
-chmod 755 "$WEBROOT"
+mkdir -p /var/www/certbot
+chown -R deploy:www-data /var/www/certbot
+for w in "${WEBROOTS[@]}"; do
+  mkdir -p "$w/releases"
+  chown -R deploy:www-data "$w"
+  chmod 755 "$w"
+done
 
 echo "→ Конфиги nginx"
 # До выпуска сертификатов включаем только http-часть, иначе nginx

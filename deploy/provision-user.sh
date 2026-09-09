@@ -6,7 +6,7 @@ set -euo pipefail
 
 PUBKEY='ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICI4MnsRI5VtT+X+Xf95oQ7bd9vgpVTR6X+EpwOPvmqv maple-deploy@MacBook-Pro-2'
 USER_NAME="deploy"
-WEBROOT="/var/www/maple"
+WEBROOTS=("/var/www/maple" "/var/www/scenika")
 
 id -u "$USER_NAME" >/dev/null 2>&1 || adduser --disabled-password --gecos "" "$USER_NAME"
 
@@ -16,9 +16,14 @@ grep -qF "$PUBKEY" "/home/$USER_NAME/.ssh/authorized_keys" 2>/dev/null || \
 chmod 600 "/home/$USER_NAME/.ssh/authorized_keys"
 chown "$USER_NAME:$USER_NAME" "/home/$USER_NAME/.ssh/authorized_keys"
 
-mkdir -p "$WEBROOT/releases"
-chown -R "$USER_NAME:www-data" "$WEBROOT"
-chmod 755 "$WEBROOT"
+# Сайтов два, каталога тоже два. Владельцем остаётся deploy: симлинк
+# current создаётся внутри корня, и без прав на сам корень выкатка падает
+# уже после того, как первый сайт переключён.
+for w in "${WEBROOTS[@]}"; do
+  mkdir -p "$w/releases"
+  chown -R "$USER_NAME:www-data" "$w"
+  chmod 755 "$w"
+done
 
 # сюда certbot кладёт файлы для проверки домена, каталог общий на оба сайта
 install -d -m 755 -o "$USER_NAME" -g www-data /var/www/certbot

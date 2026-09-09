@@ -176,12 +176,22 @@ function Stage() {
   const [p, setP] = useState(0);
   const [reduced, setReduced] = useState(false);
 
+  // Закрепление уместно только там, где кадр вмещает содержимое целиком.
+  // На узком или низком экране планер «Второго звонка» разворачивается в
+  // одну колонку и вырастает вдвое выше окна: закреплённая сцена обрезала
+  // бы половину карточек. Там же, где просят уменьшить движение, сцена
+  // не нужна по другой причине.
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const sync = () => setReduced(mq.matches);
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const room = window.matchMedia('(min-width: 900px) and (min-height: 720px)');
+    const sync = () => setReduced(motion.matches || !room.matches);
     sync();
-    mq.addEventListener('change', sync);
-    return () => mq.removeEventListener('change', sync);
+    motion.addEventListener('change', sync);
+    room.addEventListener('change', sync);
+    return () => {
+      motion.removeEventListener('change', sync);
+      room.removeEventListener('change', sync);
+    };
   }, []);
 
   useEffect(() => {
@@ -209,11 +219,15 @@ function Stage() {
   }, [reduced]);
 
   if (reduced) {
+    // Обычный поток: блоки идут подряд со своей высотой, якоря живут на
+    // самих секциях, отметка тона нужна меню — без неё оно красит текст
+    // тёмным по тёмному герою.
     return (
-      <>
+      <div data-tone="dark">
         <ScenikaHero />
-        <FirstCall />
-      </>
+        <FirstCall pinned={false} />
+        <SecondCall pinned={false} />
+      </div>
     );
   }
 
@@ -333,8 +347,13 @@ function ScenikaHero() {
   useEffect(() => {
     const el = beamRef.current;
     if (!el) return;
+    // Луч рисует полноэкранный размытый градиент каждый кадр. Просят
+    // уменьшить движение — не начинаем вовсе; вкладка скрыта или герой
+    // ушёл с экрана — останавливаемся до возвращения.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     let x = 50, y = 45, tx = 50, ty = 45, vx = 0, vy = 0, sincePick = 0;
     let raf = 0;
+    let running = false;
     const pick = () => { tx = 12 + Math.random() * 76; ty = 14 + Math.random() * 72; };
     const tick = () => {
       sincePick += 1;
@@ -347,8 +366,18 @@ function ScenikaHero() {
       el.style.background = `radial-gradient(circle 240px at ${x.toFixed(2)}% ${y.toFixed(2)}%, rgba(255,255,255,0.95) 0, rgba(255,255,255,0.58) 20%, rgba(255,255,255,0.17) 46%, rgba(255,255,255,0.04) 68%, rgba(255,255,255,0) 84%)`;
       raf = requestAnimationFrame(tick);
     };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    const start = () => { if (!running) { running = true; raf = requestAnimationFrame(tick); } };
+    const stop = () => { running = false; cancelAnimationFrame(raf); };
+    const onVisibility = () => (document.hidden ? stop() : start());
+
+    const io = new IntersectionObserver(([e]) => (e.isIntersecting && !document.hidden ? start() : stop()));
+    io.observe(el);
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      stop();
+      io.disconnect();
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
   }, []);
 
   return (
@@ -469,8 +498,24 @@ function QuestionTyper() {
   const [text, setText] = useState('');
   const [qIdx, setQIdx] = useState(0);
   const [phase, setPhase] = useState<'typing' | 'holding' | 'erasing'>('typing');
+  // Набор перерисовывает блок каждые 22–55 мс и не останавливается никогда.
+  // Просят уменьшить движение — показываем первый вопрос целиком и молчим;
+  // вкладка скрыта — ждём возвращения, а не печатаем в пустоту.
+  const [awake, setAwake] = useState(true);
 
   useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setText(FIRST_QUESTIONS[0]);
+      setAwake(false);
+      return;
+    }
+    const sync = () => setAwake(!document.hidden);
+    document.addEventListener('visibilitychange', sync);
+    return () => document.removeEventListener('visibilitychange', sync);
+  }, []);
+
+  useEffect(() => {
+    if (!awake) return;
     const q = FIRST_QUESTIONS[qIdx];
     let timer = 0;
     if (phase === 'typing') {
@@ -492,7 +537,7 @@ function QuestionTyper() {
       }
     }
     return () => clearTimeout(timer);
-  }, [text, phase, qIdx]);
+  }, [text, phase, qIdx, awake]);
 
   return (
     <div
@@ -534,13 +579,14 @@ function QuestionTyper() {
   );
 }
 
-function FirstCall() {
+function FirstCall({ pinned = true }: { pinned?: boolean }) {
   return (
     <div
+      id={pinned ? undefined : 'path'}
       style={{
         position: 'relative',
         overflow: 'hidden',
-        height: '100%',
+        height: pinned ? '100%' : 'auto',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -551,7 +597,9 @@ function FirstCall() {
         color: '#F5F5F3',
         // сверху оставляем место под закреплённое меню, иначе подпись
         // звонка садится вплотную к логотипу
-        padding: `clamp(104px, 14svh, 132px) ${PAD_X} clamp(48px, 7svh, 72px)`,
+        padding: pinned
+          ? `clamp(104px, 14svh, 132px) ${PAD_X} clamp(48px, 7svh, 72px)`
+          : `120px ${PAD_X} 96px`,
         scrollMarginTop: 24,
       }}
     >
@@ -617,7 +665,7 @@ const MECH_NODES: MechNode[] = [
   { label: 'Турменеджмент', desc: typo('Контролируем день события и работу на площадке'), icon: 'M12 3A6 6 0 0118 9C18 13 12 21 12 21C12 21 6 13 6 9A6 6 0 0112 3Z M12 7A2 2 0 1012 11 A2 2 0 1012 7 Z' },
 ];
 
-function SecondCall() {
+function SecondCall({ pinned = true }: { pinned?: boolean }) {
   const N = MECH_NODES.length;
   const [done, setDone] = useState<boolean[]>(() => Array(N).fill(false));
   const count = done.filter(Boolean).length;
@@ -660,16 +708,19 @@ function SecondCall() {
 
   return (
     <section
+      id={pinned ? undefined : 'mechanism'}
       style={{
         position: 'relative',
         overflow: 'hidden',
         background: INK,
         color: '#F5F5F3',
-        minHeight: '100svh',
+        minHeight: pinned ? '100svh' : undefined,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        padding: `clamp(84px, 11svh, 112px) ${PAD_X} clamp(20px, 3svh, 48px)`,
+        padding: pinned
+          ? `clamp(84px, 11svh, 112px) ${PAD_X} clamp(20px, 3svh, 48px)`
+          : `112px ${PAD_X} 96px`,
         scrollMarginTop: 24,
       }}
     >
@@ -885,7 +936,7 @@ function ThirdCall() {
         background: BLACK,
         color: '#F5F5F3',
         position: 'relative',
-        height: '520vh',
+        height: '520svh',
         scrollMarginTop: 24,
       }}
     >
@@ -893,7 +944,7 @@ function ThirdCall() {
         style={{
           position: 'sticky',
           top: 0,
-          height: '100vh',
+          height: '100svh',
           overflow: 'hidden',
           // Первый кадр проявляется, а не выезжает снизу: предыдущая сцена
           // гаснет в тот же чёрный, и рывка на стыке не остаётся.
@@ -917,7 +968,7 @@ function ThirdCall() {
           style={{
             position: 'absolute',
             left: PAD_X,
-            top: '14vh',
+            top: '14svh',
             ...CALL_LABEL,
             // секция постоянно чёрная, брендовый красный тут даёт 2.51
             color: RED,
@@ -962,7 +1013,7 @@ function ThirdCall() {
           style={{
             position: 'absolute',
             left: PAD_X,
-            top: '58vh',
+            top: '58svh',
             transformOrigin: 'left top',
             transform: `scale(${lerp(0.72, 1, soldOutAppear)}) translateY(${lerp(24, 0, soldOutAppear)}px)`,
             fontFamily: DISPLAY,
@@ -984,7 +1035,7 @@ function ThirdCall() {
           style={{
             position: 'absolute',
             left: PAD_X,
-            bottom: '12vh',
+            bottom: '12svh',
             margin: 0,
             transform: `translateY(${lerp(24, 0, descAppear)}px)`,
             fontSize: 18,
