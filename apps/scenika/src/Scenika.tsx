@@ -67,53 +67,45 @@ function ScenikaNav() {
     if (!nav) return;
     let raf = 0;
 
-    const luminance = (rgb: string) => {
-      const m = rgb.match(/[\d.]+/g);
-      if (!m || m.length < 3) return null;
-      const a = m.length > 3 ? Number(m[3]) : 1;
-      if (a < 0.5) return null; // прозрачное не считаем подложкой
-      const [r, g, b] = m.slice(0, 3).map((v) => {
-        const c = Number(v) / 255;
-        return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-      });
-      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-    };
-
     const update = () => {
       const y = nav.getBoundingClientRect().bottom + 8;
-      for (const el of document.elementsFromPoint(window.innerWidth / 2, y)) {
-        if (nav.contains(el)) continue;
-        const l = luminance(getComputedStyle(el).backgroundColor);
-        if (l !== null) { setOnDark(l < 0.5); return; }
+      let tone: string | null = null;
+      for (const el of Array.from(document.querySelectorAll('[data-tone]'))) {
+        const r = el.getBoundingClientRect();
+        if (r.height > 0 && r.top <= y && r.bottom > y) tone = el.getAttribute('data-tone');
       }
+      setOnDark(tone === 'dark');
     };
 
-    // Событие scroll на этой странице до окна не доходит, поэтому опорой
-    // служит IntersectionObserver: узкая полоса сразу под меню, и любое
-    // пересечение с ней запускает пересчёт. Он же покрывает случаи, когда
-    // содержимое меняется без прокрутки — например, смену слоёв на сцене.
+    // Наблюдатель как второй источник события: он ловит смену секции даже
+    // тогда, когда прокрутка идёт не колесом.
     const line = nav.getBoundingClientRect().height + 8;
     const io = new IntersectionObserver(update, {
       rootMargin: `-${Math.round(line)}px 0px -${Math.max(0, window.innerHeight - line - 1)}px 0px`,
       threshold: 0,
     });
-    const root = nav.parentElement;
-    if (root) {
-      for (const child of Array.from(root.children)) {
+    const rootEl = nav.parentElement;
+    if (rootEl) {
+      for (const child of Array.from(rootEl.children)) {
         if (child !== nav) io.observe(child);
       }
     }
 
     update();
-    const onResize = () => {
+    // Прокрутка нужна отдельно от наблюдателя: шторы сцены накрывают экран
+    // белым, не будучи секцией верхнего уровня, и без этого меню оставалось
+    // бы белым на белом.
+    const onMove = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(update);
     };
-    window.addEventListener('resize', onResize);
+    window.addEventListener('scroll', onMove, { passive: true });
+    window.addEventListener('resize', onMove);
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
-      window.removeEventListener('resize', onResize);
+      window.removeEventListener('scroll', onMove);
+      window.removeEventListener('resize', onMove);
     };
   }, []);
 
@@ -231,11 +223,11 @@ function Stage() {
   // Первая половина пути — шторы: сходятся к середине, там за ними меняется
   // содержимое, дальше расходятся. Вторая половина — проявление «Второго
   // звонка» поверх «Первого»: смена без движения, только плотностью.
-  const curtain = Math.min(1, p / 0.5);
+  const curtain = Math.min(1, p / 0.3);
   const half = curtain < 0.5 ? curtain * 2 : (1 - curtain) * 2;
   const cover = half * half * (3 - 2 * half);
   const shown = curtain >= 0.5;
-  const fadeRaw = Math.max(0, Math.min(1, (p - 0.62) / 0.3));
+  const fadeRaw = Math.max(0, Math.min(1, (p - 0.55) / 0.25));
   const fade = fadeRaw * fadeRaw * (3 - 2 * fadeRaw);
 
   const swayL = Math.sin(cover * Math.PI * 3) * 10;
@@ -243,19 +235,42 @@ function Stage() {
   const edge = cover < 0.6 ? 1 : Math.max(0, 1 - (cover - 0.6) / 0.3);
 
   return (
-    <div ref={wrapRef} style={{ position: 'relative', height: '360svh' }}>
+    <div ref={wrapRef} style={{ position: 'relative', height: '260svh' }}>
       {/* Якоря меню: сами секции живут внутри закреплённого контейнера и
           с места не двигаются, поэтому переход по ссылке ведёт к меткам,
           расставленным по пути прокрутки. */}
-      <span id="path" aria-hidden style={{ position: 'absolute', top: '46%', left: 0, width: 1, height: 1 }} />
-      <span id="mechanism" aria-hidden style={{ position: 'absolute', top: '88%', left: 0, width: 1, height: 1 }} />
-      <div style={{ position: 'sticky', top: 0, height: '100svh', overflow: 'hidden' }}>
+      <span id="path" aria-hidden style={{ position: 'absolute', top: '34%', left: 0, width: 1, height: 1 }} />
+      <span id="mechanism" aria-hidden style={{ position: 'absolute', top: '86%', left: 0, width: 1, height: 1 }} />
+      <div
+        data-tone={cover > 0.5 || fade > 0.5 ? 'light' : 'dark'}
+        style={{
+          position: 'sticky',
+          top: 0,
+          height: '100svh',
+          overflow: 'hidden',
+          // Подложка сцены: слои проявляются поверх темноты, а не поверх
+          // белого фона страницы, иначе полупрозрачный кадр выцветает.
+          background: INK,
+        }}
+      >
         {/* Слои держим смонтированными и переключаем видимость: пересборка
             в момент смыкания сбрасывала бы луч прожектора и набор текста. */}
         <div style={{ position: 'absolute', inset: 0, visibility: shown ? 'hidden' : 'visible' }} aria-hidden={shown}>
           <ScenikaHero />
         </div>
-        <div style={{ position: 'absolute', inset: 0, visibility: shown ? 'visible' : 'hidden' }} aria-hidden={!shown}>
+        <div
+          aria-hidden={!shown}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            visibility: shown ? 'visible' : 'hidden',
+            // Гаснет полностью прежде, чем зажигается второй. Встречное
+            // проявление показывало оба текста разом, и заголовки налезали
+            // друг на друга. Между картинами остаётся мгновение темноты —
+            // как смена света в зале.
+            opacity: 1 - Math.min(1, fade * 2),
+          }}
+        >
           <FirstCall />
         </div>
         <div
@@ -263,10 +278,10 @@ function Stage() {
           style={{
             position: 'absolute',
             inset: 0,
-            opacity: fade,
+            opacity: Math.max(0, fade * 2 - 1),
             // пока прозрачен — не перехватывает нажатия на слой под ним
-            pointerEvents: fade > 0.5 ? 'auto' : 'none',
-            visibility: fade > 0 ? 'visible' : 'hidden',
+            pointerEvents: fade > 0.75 ? 'auto' : 'none',
+            visibility: fade > 0.5 ? 'visible' : 'hidden',
           }}
         >
           <SecondCall />
@@ -517,7 +532,13 @@ function FirstCall() {
         flexDirection: 'column',
         justifyContent: 'center',
         background: INK,
-        padding: `72px ${PAD_X}`,
+        // Раньше блок был тёмным по тёмному и проявлялся только когда белая
+        // штора накрывала его собой. Теперь шторы его открывают, поэтому
+        // текст светлый.
+        color: '#F5F5F3',
+        // сверху оставляем место под закреплённое меню, иначе подпись
+        // звонка садится вплотную к логотипу
+        padding: `clamp(104px, 14svh, 132px) ${PAD_X} clamp(48px, 7svh, 72px)`,
         scrollMarginTop: 24,
       }}
     >
@@ -528,23 +549,25 @@ function FirstCall() {
       </h2>
       <div className="sc-first-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, marginTop: 64, alignItems: 'start' }}>
         <div>
-          <p style={{ fontSize: 19, lineHeight: 1.65, color: MUTED_DEEP, margin: 0 }}>
+          <p style={{ fontSize: 19, lineHeight: 1.65, color: MUTED_DARK, margin: 0 }}>
             {typo("Полный зал не появляется сам. Мы начинаем с вопросов, которые редко задают:")}
           </p>
           <div style={{ marginTop: 36 }}>
             <QuestionTyper />
           </div>
-          <p style={{ fontSize: 19, lineHeight: 1.65, color: MUTED_DEEP, margin: '36px 0 0' }}>
+          <p style={{ fontSize: 19, lineHeight: 1.65, color: MUTED_DARK, margin: '36px 0 0' }}>
             {typo("Мы строим тур ещё до того, как появляются афиши.")}
           </p>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {[
-            { t: 'Аналитика', c: INK },
-            { t: 'Экономика', c: '#C9C9C9' },
-            { t: 'Маршрут', c: INK },
-            { t: 'Площадки', c: '#C9C9C9' },
-            { t: 'Спрос', c: INK },
+            // чередование яркого и приглушённого: приглушённый взят #7A7A7A,
+            // на #111 это 3.9 — крупному тексту порога 3:1 хватает
+            { t: 'Аналитика', c: '#F5F5F3' },
+            { t: 'Экономика', c: '#7A7A7A' },
+            { t: 'Маршрут', c: '#F5F5F3' },
+            { t: 'Площадки', c: '#7A7A7A' },
+            { t: 'Спрос', c: '#F5F5F3' },
             { t: 'Стратегия', c: RED },
           ].map((w) => (
             <div
@@ -633,7 +656,7 @@ function SecondCall() {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        padding: `clamp(28px, 4.4svh, 72px) ${PAD_X}`,
+        padding: `clamp(96px, 13svh, 124px) ${PAD_X} clamp(28px, 4.4svh, 64px)`,
         scrollMarginTop: 24,
       }}
     >
@@ -718,7 +741,7 @@ function SecondCall() {
 
 function PartnershipStrap() {
   return (
-    <div style={{ background: RED, color: PAPER }}>
+    <div data-tone="dark" style={{ background: RED, color: PAPER }}>
       <div
         className="sc-strap"
         style={{
@@ -962,7 +985,7 @@ function AfterConcert() {
   // читать их второй раз затухающим списком незачем.
   const loop = ['логистика', 'отчёты', 'закрывающие документы', 'финансы', 'следующий город'];
   return (
-    <div style={{ background: NEAR_BLACK, color: '#F5F5F3', padding: `120px ${PAD_X}` }}>
+    <div data-tone="dark" style={{ background: NEAR_BLACK, color: '#F5F5F3', padding: `120px ${PAD_X}` }}>
       <h2 style={{ ...SECTION_H2, fontSize: 'clamp(28px, 4.4vw, 64px)', lineHeight: 1.08, maxWidth: 880 }}>
         {typo("Пока зритель смотрит шоу, мы продолжаем работать")}
       </h2>
@@ -1233,6 +1256,7 @@ function ScenikaFooter() {
   return (
     <div
       className="sc-footer"
+      data-tone="dark"
       style={{
         background: BLACK,
         color: '#7B7B7B',
