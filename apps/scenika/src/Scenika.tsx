@@ -50,6 +50,34 @@ export default function Scenika() {
 }
 
 /**
+ * Логотип: три полосы и надпись.
+ *
+ * Надпись обведена в контуры из Onest ExtraBold с тем же трекингом 0.24em,
+ * что и в наборе, — начертание не зависит от того, загрузился ли шрифт, и
+ * не поедет, если Google Fonts однажды отдаст другую версию. Полосы держат
+ * фирменный красный, буквы наследуют цвет от родителя: в меню он меняется
+ * вслед за подложкой.
+ */
+function ScenikaLogo({ height = 22 }: { height?: number }) {
+  return (
+    <svg
+      viewBox="0 0 7112 890"
+      height={height}
+      role="img"
+      aria-label="Сценика"
+      style={{ display: 'block', width: 'auto' }}
+    >
+      <rect x="0" y="0" width="110" height="717" fill={RED} />
+      <rect x="180" y="0" width="110" height="717" fill={RED} />
+      <rect x="360" y="0" width="110" height="717" fill={RED} />
+      <g transform="translate(648, 717) scale(1, -1)">
+        <path fill="currentColor" d="M379 -8Q269 -8 191.0 36.0Q113 80 72.5 161.0Q32 242 32 351Q32 462 74.0 544.0Q116 626 193.5 671.5Q271 717 377 717Q459 717 525.0 688.0Q591 659 632.5 602.5Q674 546 683 460H528Q516 509 479.5 536.5Q443 564 381 564Q314 564 274.0 533.5Q234 503 216.5 456.0Q199 409 199 358Q199 305 217.5 256.0Q236 207 276.5 176.0Q317 145 384 145Q424 145 454.5 157.0Q485 169 505.0 192.0Q525 215 533 247H692Q684 164 639.5 107.0Q595 50 526.5 21.0Q458 -8 379 -8Z M1541 -173V0H1035V708H1197V149H1458V708H1620V149H1703V-173Z M2024 0V708H2546V558H2186V424H2489V280H2186V150H2546V0Z M2889 0V708H3051V424H3333V708H3495V0H3333V275H3051V0Z M3877 0V708H4039V277L4365 708H4497V0H4334V424L4009 0Z M4879 0V708H5041V425H5141L5309 708H5494L5275 366L5493 0H5304L5145 276H5041V0Z M5735 0 6015 708H6187L6464 0H6289L6250 110H5949L5909 0ZM6000 257H6199L6101 531Z" />
+      </g>
+    </svg>
+  );
+}
+
+/**
  * Меню поверх содержимого, без собственного фона.
  *
  * Раз подложка у него всё время разная (тёмная сцена, кремовый планер,
@@ -134,9 +162,7 @@ function ScenikaNav() {
         transition: 'color 220ms var(--ease-out)',
       }}
     >
-      <div style={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: 20, letterSpacing: '0.24em', textTransform: 'uppercase' }}>
-        Сценика
-      </div>
+      <ScenikaLogo height={22} />
       <div className="sc-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 28, fontSize: 14, letterSpacing: '0.04em' }}>
         <a href="#path" className="sc-nav-anchor" style={{ color: soft, textDecoration: 'none', transition: 'color 220ms var(--ease-out)' }}>{typo('Путь')}</a>
         <a href="#mechanism" className="sc-nav-anchor" style={{ color: soft, textDecoration: 'none', transition: 'color 220ms var(--ease-out)' }}>{typo('Механизм')}</a>
@@ -1362,8 +1388,8 @@ function ScenikaFooter() {
         flexWrap: 'wrap',
       }}
     >
-      <div style={{ fontFamily: DISPLAY, fontWeight: 800, letterSpacing: '0.24em', textTransform: 'uppercase', color: '#F5F5F3' }}>
-        Сценика
+      <div style={{ color: '#F5F5F3' }}>
+        <ScenikaLogo height={18} />
       </div>
       <div style={{ display: 'flex', gap: 28, alignItems: 'center', flexWrap: 'wrap' }}>
         <span>{typo('Концертное агентство полного цикла')}</span>
