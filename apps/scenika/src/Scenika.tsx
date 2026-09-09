@@ -37,7 +37,6 @@ export default function Scenika() {
     <div style={{ fontFamily: "'Manrope', sans-serif", color: INK, background: PAPER, overflowX: 'clip' }}>
       <ScenikaNav />
       <Stage />
-      <SecondCall />
       <ThirdCall />
       <PartnershipStrap />
       <AfterConcert />
@@ -50,28 +49,117 @@ export default function Scenika() {
   );
 }
 
+/**
+ * Меню поверх содержимого, без собственного фона.
+ *
+ * Раз подложка у него всё время разная (тёмная сцена, кремовый планер,
+ * белые кейсы), цвет берётся у того, что под ним: сэмплим точку под нижней
+ * кромкой, поднимаемся до первого элемента с непрозрачным фоном и считаем
+ * его светлоту. Порог 0.5 по относительной яркости — на нём человеческий
+ * глаз меняет предпочтение с тёмного текста на светлый.
+ */
 function ScenikaNav() {
+  const navRef = useRef<HTMLDivElement | null>(null);
+  const [onDark, setOnDark] = useState(true);
+
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    let raf = 0;
+
+    const luminance = (rgb: string) => {
+      const m = rgb.match(/[\d.]+/g);
+      if (!m || m.length < 3) return null;
+      const a = m.length > 3 ? Number(m[3]) : 1;
+      if (a < 0.5) return null; // прозрачное не считаем подложкой
+      const [r, g, b] = m.slice(0, 3).map((v) => {
+        const c = Number(v) / 255;
+        return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+
+    const update = () => {
+      const y = nav.getBoundingClientRect().bottom + 8;
+      for (const el of document.elementsFromPoint(window.innerWidth / 2, y)) {
+        if (nav.contains(el)) continue;
+        const l = luminance(getComputedStyle(el).backgroundColor);
+        if (l !== null) { setOnDark(l < 0.5); return; }
+      }
+    };
+
+    // Событие scroll на этой странице до окна не доходит, поэтому опорой
+    // служит IntersectionObserver: узкая полоса сразу под меню, и любое
+    // пересечение с ней запускает пересчёт. Он же покрывает случаи, когда
+    // содержимое меняется без прокрутки — например, смену слоёв на сцене.
+    const line = nav.getBoundingClientRect().height + 8;
+    const io = new IntersectionObserver(update, {
+      rootMargin: `-${Math.round(line)}px 0px -${Math.max(0, window.innerHeight - line - 1)}px 0px`,
+      threshold: 0,
+    });
+    const root = nav.parentElement;
+    if (root) {
+      for (const child of Array.from(root.children)) {
+        if (child !== nav) io.observe(child);
+      }
+    }
+
+    update();
+    const onResize = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(update);
+    };
+    window.addEventListener('resize', onResize);
+    return () => {
+      cancelAnimationFrame(raf);
+      io.disconnect();
+      window.removeEventListener('resize', onResize);
+    };
+  }, []);
+
+  const strong = onDark ? PAPER : INK;
+  const soft = onDark ? 'rgba(255,255,255,0.72)' : MUTED;
+
   return (
     <div
+      ref={navRef}
       className="sc-nav"
+      data-tone={onDark ? 'dark' : 'light'}
       style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 50,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: `28px ${PAD_X}`,
-        borderBottom: `1px solid ${BORDER}`,
+        padding: `24px ${PAD_X}`,
+        color: strong,
+        // цвет меняется вслед за подложкой, поэтому переход мягкий:
+        // резкая смена на границе секций читается как мигание
+        transition: 'color 220ms var(--ease-out)',
       }}
     >
       <div style={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: 20, letterSpacing: '0.24em', textTransform: 'uppercase' }}>
         Сценика
       </div>
       <div className="sc-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 28, fontSize: 14, letterSpacing: '0.04em' }}>
-        <a href="#path" className="sc-nav-anchor" style={{ color: MUTED, textDecoration: 'none' }}>Путь</a>
-        <a href="#mechanism" className="sc-nav-anchor" style={{ color: MUTED, textDecoration: 'none' }}>Механизм</a>
-        <a href="#sold-out" className="sc-nav-anchor" style={{ color: MUTED, textDecoration: 'none' }}>Sold Out</a>
-        <a href="#cases" className="sc-nav-anchor" style={{ color: MUTED, textDecoration: 'none' }}>Кейсы</a>
-        <a href="#numbers" className="sc-nav-anchor" style={{ color: MUTED, textDecoration: 'none' }}>Цифры</a>
-        <a href="#contact" style={{ color: INK, textDecoration: 'none', border: `1px solid ${INK}`, padding: '10px 22px' }}>
+        <a href="#path" className="sc-nav-anchor" style={{ color: soft, textDecoration: 'none', transition: 'color 220ms var(--ease-out)' }}>{typo('Путь')}</a>
+        <a href="#mechanism" className="sc-nav-anchor" style={{ color: soft, textDecoration: 'none', transition: 'color 220ms var(--ease-out)' }}>{typo('Механизм')}</a>
+        <a href="#sold-out" className="sc-nav-anchor" style={{ color: soft, textDecoration: 'none', transition: 'color 220ms var(--ease-out)' }}>Sold Out</a>
+        <a href="#cases" className="sc-nav-anchor" style={{ color: soft, textDecoration: 'none', transition: 'color 220ms var(--ease-out)' }}>{typo('Кейсы')}</a>
+        <a href="#numbers" className="sc-nav-anchor" style={{ color: soft, textDecoration: 'none', transition: 'color 220ms var(--ease-out)' }}>{typo('Цифры')}</a>
+        <a
+          href="#contact"
+          style={{
+            color: strong,
+            textDecoration: 'none',
+            border: `1px solid ${strong}`,
+            padding: '10px 22px',
+            transition: 'color 220ms var(--ease-out), border-color 220ms var(--ease-out)',
+          }}
+        >
           {typo('Обсудить тур')}
         </a>
       </div>
@@ -140,16 +228,27 @@ function Stage() {
   // симметричная (smoothstep): ткань мягко трогается, идёт ровно и мягко
   // приходит. Ease-out здесь не годится — он съедал первую четверть пути,
   // и герой скрывался раньше, чем зритель успевал его рассмотреть.
-  const half = p < 0.5 ? p * 2 : (1 - p) * 2;
+  // Первая половина пути — шторы: сходятся к середине, там за ними меняется
+  // содержимое, дальше расходятся. Вторая половина — проявление «Второго
+  // звонка» поверх «Первого»: смена без движения, только плотностью.
+  const curtain = Math.min(1, p / 0.5);
+  const half = curtain < 0.5 ? curtain * 2 : (1 - curtain) * 2;
   const cover = half * half * (3 - 2 * half);
-  const shown = p >= 0.5;
+  const shown = curtain >= 0.5;
+  const fadeRaw = Math.max(0, Math.min(1, (p - 0.62) / 0.3));
+  const fade = fadeRaw * fadeRaw * (3 - 2 * fadeRaw);
 
   const swayL = Math.sin(cover * Math.PI * 3) * 10;
   const swayR = Math.sin(cover * Math.PI * 3 + 0.7) * 10;
   const edge = cover < 0.6 ? 1 : Math.max(0, 1 - (cover - 0.6) / 0.3);
 
   return (
-    <div ref={wrapRef} style={{ position: 'relative', height: '240svh' }}>
+    <div ref={wrapRef} style={{ position: 'relative', height: '360svh' }}>
+      {/* Якоря меню: сами секции живут внутри закреплённого контейнера и
+          с места не двигаются, поэтому переход по ссылке ведёт к меткам,
+          расставленным по пути прокрутки. */}
+      <span id="path" aria-hidden style={{ position: 'absolute', top: '46%', left: 0, width: 1, height: 1 }} />
+      <span id="mechanism" aria-hidden style={{ position: 'absolute', top: '88%', left: 0, width: 1, height: 1 }} />
       <div style={{ position: 'sticky', top: 0, height: '100svh', overflow: 'hidden' }}>
         {/* Слои держим смонтированными и переключаем видимость: пересборка
             в момент смыкания сбрасывала бы луч прожектора и набор текста. */}
@@ -158,6 +257,19 @@ function Stage() {
         </div>
         <div style={{ position: 'absolute', inset: 0, visibility: shown ? 'visible' : 'hidden' }} aria-hidden={!shown}>
           <FirstCall />
+        </div>
+        <div
+          aria-hidden={fade < 0.5}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            opacity: fade,
+            // пока прозрачен — не перехватывает нажатия на слой под ним
+            pointerEvents: fade > 0.5 ? 'auto' : 'none',
+            visibility: fade > 0 ? 'visible' : 'hidden',
+          }}
+        >
+          <SecondCall />
         </div>
 
         <div
@@ -397,7 +509,6 @@ function QuestionTyper() {
 function FirstCall() {
   return (
     <div
-      id="path"
       style={{
         position: 'relative',
         overflow: 'hidden',
@@ -513,20 +624,23 @@ function SecondCall() {
 
   return (
     <section
-      id="mechanism"
       style={{
         position: 'relative',
         overflow: 'hidden',
         background: CREAM_LIGHT,
         color: INK,
-        padding: `96px ${PAD_X}`,
+        minHeight: '100svh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        padding: `clamp(28px, 4.4svh, 72px) ${PAD_X}`,
         scrollMarginTop: 24,
       }}
     >
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{ ...CALL_LABEL, color: RED }}>{typo('Второй звонок')}</div>
         <h2 style={{ ...SECTION_H2, margin: '20px 0 0', maxWidth: 900, color: INK }}>{typo('Запускаем механизм полного зала')}</h2>
-        <p style={{ fontSize: 17, lineHeight: 1.55, color: MUTED, maxWidth: 720, margin: '18px 0 0' }}>
+        <p style={{ fontSize: 17, lineHeight: 1.55, color: MUTED, maxWidth: 720, margin: 'clamp(10px, 1.8svh, 18px) 0 0' }}>
           {typo("Площадки, билеты, договоры, реклама, PR, райдеры, логистика. Каждая часть должна включиться вовремя. Собираем «под ключ», пока артист готовит шоу.")}
         </p>
 

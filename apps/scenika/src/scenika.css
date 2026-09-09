@@ -273,10 +273,10 @@ summary:active,
    поэтому он появляется только на отметке, полосе и финальной папке. */
 
 .sc-plan {
-  margin-top: 40px;
+  margin-top: clamp(14px, 2.4svh, 36px);
   max-width: 1040px;
   border-radius: 24px;
-  padding: 22px 22px 20px;
+  padding: clamp(14px, 2.2svh, 22px) 22px clamp(12px, 2svh, 20px);
   /* На светлом фоне прозрачное стекло поверх прозрачного теряет читаемость,
      поэтому подложка почти плотная, а «стеклянность» держится размытием
      и волосяной рамкой. */
@@ -389,11 +389,11 @@ summary:active,
 .sc-plan-grid {
   position: relative;
   list-style: none;
-  margin: 14px 0 0;
+  margin: clamp(8px, 1.4svh, 14px) 0 0;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
-  gap: 10px;
+  gap: clamp(6px, 1svh, 10px);
 }
 
 .sc-card {
@@ -411,7 +411,7 @@ summary:active,
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 16px;
+  padding: clamp(10px, 1.6svh, 16px) 16px;
   border: 1px solid rgba(17, 17, 17, 0.08);
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.78);
@@ -504,7 +504,7 @@ summary:active,
 .sc-folder {
   grid-column: 1 / -1;
   margin-top: 4px;
-  padding: 18px 20px;
+  padding: clamp(12px, 1.8svh, 18px) 20px;
   border-radius: 18px;
   display: flex;
   align-items: baseline;
